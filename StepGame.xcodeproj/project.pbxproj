@@ -44,7 +44,38 @@
 		ECCB978A2F2C3DB300DBC1F5 /* WaitingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB97892F2C3DB300DBC1F5 /* WaitingViewModel.swift */; };
 		ECCB978F2F2D89E500DBC1F5 /* RussoOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ECCB978E2F2D89E500DBC1F5 /* RussoOne-Regular.ttf */; };
 		ECCF7DCE2F3A5EA70003F772 /* WindTumbleweed.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCF7DCD2F3A5EA70003F772 /* WindTumbleweed.swift */; };
+		ECCF7DE62F3A8E3C0003F772 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECCF7DE52F3A8E3C0003F772 /* WidgetKit.framework */; };
+		ECCF7DE82F3A8E3C0003F772 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECCF7DE72F3A8E3C0003F772 /* SwiftUI.framework */; };
+		ECCF7DF52F3A8E3D0003F772 /* StepGameWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = ECCF7DE32F3A8E3C0003F772 /* StepGameWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		ECCF7E042F3A8E4B0003F772 /* StepGameWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCF7DFE2F3A8E4B0003F772 /* StepGameWidgetBundle.swift */; };
+		ECCF7E072F3A8F600003F772 /* RussoOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ECCB978E2F2D89E500DBC1F5 /* RussoOne-Regular.ttf */; };
+		ECCF7E0C2F3A934B0003F772 /* WidgetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCF7E0B2F3A934B0003F772 /* WidgetStore.swift */; };
+		ECCF7E122F3A97380003F772 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		ECCF7DF32F3A8E3D0003F772 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ECCAEE202F21888B0047C5DF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ECCF7DE22F3A8E3C0003F772;
+			remoteInfo = StepGameWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		ECCF7DF62F3A8E3D0003F772 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				ECCF7DF52F3A8E3D0003F772 /* StepGameWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		EC2548B22F34194E0003414C /* MapPathEditorHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPathEditorHelper.swift; sourceTree = "<group>"; };
@@ -83,6 +114,13 @@
 		ECCB97892F2C3DB300DBC1F5 /* WaitingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingViewModel.swift; sourceTree = "<group>"; };
 		ECCB978E2F2D89E500DBC1F5 /* RussoOne-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "RussoOne-Regular.ttf"; sourceTree = "<group>"; };
 		ECCF7DCD2F3A5EA70003F772 /* WindTumbleweed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindTumbleweed.swift; sourceTree = "<group>"; };
+		ECCF7DE32F3A8E3C0003F772 /* StepGameWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StepGameWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		ECCF7DE52F3A8E3C0003F772 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		ECCF7DE72F3A8E3C0003F772 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		ECCF7DFC2F3A8E4B0003F772 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ECCF7DFE2F3A8E4B0003F772 /* StepGameWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepGameWidgetBundle.swift; sourceTree = "<group>"; };
+		ECCF7E082F3A920A0003F772 /* StepGameWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepGameWidgetExtension.entitlements; sourceTree = "<group>"; };
+		ECCF7E0B2F3A934B0003F772 /* WidgetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +130,15 @@
 			files = (
 				ECCAEE3A2F218A8B0047C5DF /* FirebaseAuth in Frameworks */,
 				ECCAEE3C2F218A8B0047C5DF /* FirebaseFirestore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ECCF7DE02F3A8E3C0003F772 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ECCF7DE82F3A8E3C0003F772 /* SwiftUI.framework in Frameworks */,
+				ECCF7DE62F3A8E3C0003F772 /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,6 +167,9 @@
 			isa = PBXGroup;
 			children = (
 				ECCAEE412F218AAA0047C5DF /* StepGame */,
+				ECCF7E082F3A920A0003F772 /* StepGameWidgetExtension.entitlements */,
+				ECCF7E002F3A8E4B0003F772 /* StepGameWidget */,
+				ECCF7DE42F3A8E3C0003F772 /* Frameworks */,
 				ECCAEE292F21888B0047C5DF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -128,6 +178,7 @@
 			isa = PBXGroup;
 			children = (
 				ECCAEE282F21888B0047C5DF /* StepGame.app */,
+				ECCF7DE32F3A8E3C0003F772 /* StepGameWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -139,6 +190,7 @@
 				ECCB95C82F29473600DBC1F5 /* Services */,
 				ECCB95C72F29473600DBC1F5 /* Models */,
 				ECCB95C62F29472F00DBC1F5 /* Pages */,
+				ECCF7E0A2F3A93350003F772 /* Widget */,
 				ECCB95C12F29472F00DBC1F5 /* Resources */,
 			);
 			path = StepGame;
@@ -292,6 +344,32 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		ECCF7DE42F3A8E3C0003F772 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				ECCF7DE52F3A8E3C0003F772 /* WidgetKit.framework */,
+				ECCF7DE72F3A8E3C0003F772 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		ECCF7E002F3A8E4B0003F772 /* StepGameWidget */ = {
+			isa = PBXGroup;
+			children = (
+				ECCF7DFE2F3A8E4B0003F772 /* StepGameWidgetBundle.swift */,
+				ECCF7DFC2F3A8E4B0003F772 /* Info.plist */,
+			);
+			path = StepGameWidget;
+			sourceTree = "<group>";
+		};
+		ECCF7E0A2F3A93350003F772 /* Widget */ = {
+			isa = PBXGroup;
+			children = (
+				ECCF7E0B2F3A934B0003F772 /* WidgetStore.swift */,
+			);
+			path = Widget;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -302,10 +380,12 @@
 				ECCAEE242F21888B0047C5DF /* Sources */,
 				ECCAEE252F21888B0047C5DF /* Frameworks */,
 				ECCAEE262F21888B0047C5DF /* Resources */,
+				ECCF7DF62F3A8E3D0003F772 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				ECCF7DF42F3A8E3D0003F772 /* PBXTargetDependency */,
 			);
 			name = StepGame;
 			packageProductDependencies = (
@@ -315,6 +395,25 @@
 			productName = StepGame;
 			productReference = ECCAEE282F21888B0047C5DF /* StepGame.app */;
 			productType = "com.apple.product-type.application";
+		};
+		ECCF7DE22F3A8E3C0003F772 /* StepGameWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ECCF7DFA2F3A8E3D0003F772 /* Build configuration list for PBXNativeTarget "StepGameWidgetExtension" */;
+			buildPhases = (
+				ECCF7DDF2F3A8E3C0003F772 /* Sources */,
+				ECCF7DE02F3A8E3C0003F772 /* Frameworks */,
+				ECCF7DE12F3A8E3C0003F772 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StepGameWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = StepGameWidgetExtension;
+			productReference = ECCF7DE32F3A8E3C0003F772 /* StepGameWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -327,6 +426,9 @@
 				LastUpgradeCheck = 2610;
 				TargetAttributes = {
 					ECCAEE272F21888B0047C5DF = {
+						CreatedOnToolsVersion = 26.1.1;
+					};
+					ECCF7DE22F3A8E3C0003F772 = {
 						CreatedOnToolsVersion = 26.1.1;
 					};
 				};
@@ -349,6 +451,7 @@
 			projectRoot = "";
 			targets = (
 				ECCAEE272F21888B0047C5DF /* StepGame */,
+				ECCF7DE22F3A8E3C0003F772 /* StepGameWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -361,6 +464,15 @@
 				ECCAEE422F218AAA0047C5DF /* Assets.xcassets in Resources */,
 				ECCB978F2F2D89E500DBC1F5 /* RussoOne-Regular.ttf in Resources */,
 				ECCAEE432F218AAA0047C5DF /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ECCF7DE12F3A8E3C0003F772 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ECCF7E122F3A97380003F772 /* Assets.xcassets in Resources */,
+				ECCF7E072F3A8F600003F772 /* RussoOne-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,6 +501,7 @@
 				ECCF7DCE2F3A5EA70003F772 /* WindTumbleweed.swift in Sources */,
 				EC6BAB1E2F315A3000BDBEC8 /* GameSession.swift in Sources */,
 				ECCB95E92F294C8F00DBC1F5 /* StartViewModel.swift in Sources */,
+				ECCF7E0C2F3A934B0003F772 /* WidgetStore.swift in Sources */,
 				ECCB95EF2F294CC900DBC1F5 /* MapView.swift in Sources */,
 				ECCB95FB2F294D9D00DBC1F5 /* PuzzleResultPopup.swift in Sources */,
 				ECCB95ED2F294CAE00DBC1F5 /*  SetupChallengeViewModel.swift in Sources */,
@@ -406,7 +519,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		ECCF7DDF2F3A8E3C0003F772 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ECCF7E042F3A8E4B0003F772 /* StepGameWidgetBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		ECCF7DF42F3A8E3D0003F772 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ECCF7DE22F3A8E3C0003F772 /* StepGameWidgetExtension */;
+			targetProxy = ECCF7DF32F3A8E3D0003F772 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		ECCAEE312F21888C0047C5DF /* Debug */ = {
@@ -612,6 +741,68 @@
 			};
 			name = Release;
 		};
+		ECCF7DF72F3A8E3D0003F772 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = StepGameWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q3BRAU32HS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StepGameWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = StepGameWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.2026.StepGame.StepGameWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		ECCF7DF82F3A8E3D0003F772 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = StepGameWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q3BRAU32HS;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StepGameWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = StepGameWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.2026.StepGame.StepGameWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -629,6 +820,15 @@
 			buildConfigurations = (
 				ECCAEE342F21888C0047C5DF /* Debug */,
 				ECCAEE352F21888C0047C5DF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ECCF7DFA2F3A8E3D0003F772 /* Build configuration list for PBXNativeTarget "StepGameWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ECCF7DF72F3A8E3D0003F772 /* Debug */,
+				ECCF7DF82F3A8E3D0003F772 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

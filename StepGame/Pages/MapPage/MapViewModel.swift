@@ -301,6 +301,26 @@ final class MapViewModel: ObservableObject {
             if a.isMe != b.isMe { return a.isMe }
             return a.steps > b.steps
         }
+        
+        let me = mapPlayers.first(where: { $0.isMe })
+        let friend = mapPlayers.first(where: { !$0.isMe })
+
+        guard let me else { return }
+
+        let userImage = me.mapSprite
+        let friendImage = friend?.mapSprite ?? "character2_normal"
+
+        WidgetStore.save(
+            challengeName: ch.name,
+            userName: me.name,
+            userSteps: me.steps,
+            userGoal: ch.goalSteps,
+            userImage: userImage,
+            friendName: friend?.name ?? "Friend",
+            friendSteps: friend?.steps ?? 0,
+            friendGoal: ch.goalSteps,
+            friendImage: friendImage
+        )
     }
 
     // MARK: - HUD Text

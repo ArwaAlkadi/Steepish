@@ -2,7 +2,6 @@
 //  ProfileViewModel.swift
 //  StepGame
 //
-//
 
 import Foundation
 import SwiftUI

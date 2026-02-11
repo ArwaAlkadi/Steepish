@@ -11,12 +11,15 @@ import Combine
 struct ProfileView: View {
 
     @EnvironmentObject private var session: GameSession
-    @StateObject private var vm = ProfileViewModel()
+    @EnvironmentObject private var connectivity: ConnectivityMonitor
 
+    @StateObject private var vm = ProfileViewModel()
     @Environment(\.dismiss) private var dismiss
-    
+
+    @State private var showOfflineBanner: Bool = false
+
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             Color.light3.ignoresSafeArea()
 
             VStack(spacing: 28) {
@@ -34,6 +37,8 @@ struct ProfileView: View {
             }
             .padding(.horizontal, 22)
             .padding(.top, 8)
+
+            OfflineBanner(isVisible: $showOfflineBanner)
         }
         .onAppear {
             vm.loadFromSession(session.player)
@@ -46,24 +51,24 @@ struct ProfileView: View {
         } message: {
             Text(vm.errorMessage ?? "Something went wrong.")
         }
+        .onChange(of: connectivity.isOnline) { _, online in
+            if online {
+                withAnimation(.easeInOut) { showOfflineBanner = false }
+            }
+        }
     }
-        
 
     // MARK: - Top Bar
-
     private var topBar: some View {
         HStack {
             if vm.isEditing {
                 Button {
-                    Task { await doneTapped() }
                     dismiss()
                 } label: {
-                    Text("Done")
+                    Text("Cancel")
                         .font(.custom("RussoOne-Regular", size: 18))
                         .foregroundStyle(Color.light1)
                 }
-                .disabled(vm.isSaving)
-                .opacity(vm.isSaving ? 0.6 : 1)
 
             } else {
                 Button {
@@ -76,12 +81,23 @@ struct ProfileView: View {
             }
 
             Spacer()
+
+            if vm.isEditing {
+                Button {
+                    Task { await doneTapped() }
+                } label: {
+                    Text("Done")
+                        .font(.custom("RussoOne-Regular", size: 18))
+                        .foregroundStyle(Color.light1)
+                }
+                .disabled(vm.isSaving)
+                .opacity(vm.isSaving ? 0.6 : 1)
+            }
         }
         .padding(.top, 6)
     }
 
     // MARK: - View Mode Content
-
     private var viewContent: some View {
         VStack(spacing: 16) {
             ZStack(alignment: .bottomTrailing) {
@@ -107,7 +123,6 @@ struct ProfileView: View {
     }
 
     // MARK: - Editing Content
-
     private var editingContent: some View {
         VStack(spacing: 20) {
             CharacterCarousel(
@@ -132,13 +147,13 @@ struct ProfileView: View {
 
             Text("Name")
                 .font(.custom("RussoOne-Regular", size: 14))
-                .foregroundStyle(Color.light1.opacity(0.5))
+                .foregroundStyle(Color.light1)
                 .padding(.horizontal)
 
             ZStack {
                 RoundedRectangle(cornerRadius: 20)
                     .fill(Color.light4.opacity(0.7))
-                    .stroke(Color.light1, lineWidth: 1)
+                    .stroke(Color.light1, lineWidth: 2)
                     .frame(height: 54)
 
                 TextField("Name", text: $vm.draftName)
@@ -152,14 +167,20 @@ struct ProfileView: View {
     }
 
     // MARK: - Actions
-
     private func doneTapped() async {
+
+        guard connectivity.isOnline else {
+            withAnimation(.easeInOut) { showOfflineBanner = true }
+            return
+        }
+
         guard let sessionPlayer = session.player else { return }
 
         let ok = vm.validateDraft()
         guard ok else { return }
 
         await vm.save(session: session, currentPlayer: sessionPlayer)
+
         if !vm.showError {
             vm.exitEdit()
         }
@@ -167,7 +188,6 @@ struct ProfileView: View {
 }
 
 // MARK: - Avatar Circle
-
 private struct AvatarCircle: View {
     let imageName: String
     let size: CGFloat
@@ -187,7 +207,6 @@ private struct AvatarCircle: View {
 }
 
 // MARK: - Character Carousel
-
 private struct CharacterCarousel: View {
 
     @Binding var selection: CharacterType
@@ -207,7 +226,6 @@ private struct CharacterCarousel: View {
 }
 
 // MARK: - Capsule Indicator
-
 private struct CapsuleIndicator: View {
     let currentIndex: Int
     let total: Int
@@ -218,51 +236,6 @@ private struct CapsuleIndicator: View {
                 Capsule()
                     .fill(i == currentIndex ? Color.light1 : Color.light1.opacity(0.25))
                     .frame(width: i == currentIndex ? 26 : 8, height: 6)
-            }
-        }
-    }
-}
-
-// MARK: - Preview Host
-
-#Preview("ProfileView (View Mode)") {
-    ProfilePreviewHost(startEditing: false)
-}
-
-#Preview("ProfileView (Editing Mode)") {
-    ProfilePreviewHost(startEditing: true)
-}
-
-private struct ProfilePreviewHost: View {
-
-    let startEditing: Bool
-
-    @StateObject private var session = GameSession()
-    @StateObject private var health = HealthKitManager()
-
-    var body: some View {
-        NavigationStack {
-            ProfileView()
-                .environmentObject(session)
-                .environmentObject(health)
-        }
-        .onAppear {
-            session.player = Player(
-                id: "preview_uid",
-                name: "Sarah",
-                totalChallenges: 3,
-                completedChallenges: 1,
-                totalSteps: 12000,
-                characterType: .character1,
-                lastUpdated: Date(),
-                createdAt: Date()
-            )
-            session.playerName = "Sarah"
-
-            if startEditing {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    session.player?.name = "Sarah"
-                }
             }
         }
     }

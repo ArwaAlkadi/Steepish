@@ -96,14 +96,17 @@ final class FirebaseService {
 
         let joinCode = Self.generateJoinCode()
 
-        let start = Date()
-        let end = Calendar.current.date(byAdding: .day, value: durationDays, to: start)
-            ?? start.addingTimeInterval(TimeInterval(durationDays * 86400))
+        let now = Date()
+
+        let startDay = Calendar.current.startOfDay(for: now)
+
+        let endDay = Calendar.current.date(byAdding: .day, value: durationDays, to: startDay)
+            ?? startDay.addingTimeInterval(TimeInterval(durationDays * 86400))
 
         let isSocial = (mode == .social)
 
         let status: ChallengeStatus = isSocial ? .waiting : .active
-        let startedAt: Date? = isSocial ? nil : start
+        let startedAt: Date? = isSocial ? nil : now
 
         var challenge = Challenge(
             name: name,
@@ -115,10 +118,10 @@ final class FirebaseService {
             status: status,
             createdBy: hostUid,
             playerIds: [hostUid],
-            startDate: start,
-            endDate: end,
+            startDate: startDay,
+            endDate: endDay,
             extensionSeconds: 0,
-            createdAt: Date(),
+            createdAt: now,
             startedAt: startedAt,
             winnerId: nil,
             winnerFinishedAt: nil
@@ -141,8 +144,8 @@ final class FirebaseService {
             steps: 0,
             progress: 0,
             characterState: .normal,
-            lastUpdated: Date(),
-            createdAt: Date(),
+            lastUpdated: now,
+            createdAt: now,
             finishedAt: nil,
             place: nil,
             didShowResultPopup: false
@@ -383,7 +386,7 @@ final class FirebaseService {
         let letters = Array("ABCDEFGHJKLMNPQRSTUVWXYZ23456789")
         return String((0..<6).compactMap { _ in letters.randomElement() })
     }
-    
+
     func listenMyParticipant(
         challengeId: String,
         uid: String,

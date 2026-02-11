@@ -10,11 +10,16 @@ import Combine
 struct EnterNameView: View {
 
     @EnvironmentObject var session: GameSession
+    @EnvironmentObject private var connectivity: ConnectivityMonitor
+
     @StateObject private var vm = EnterNameViewModel()
     @StateObject private var keyboard = KeyboardObserver()
 
+    @State private var showOfflineBanner: Bool = true
+
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
+
             Image("Map")
                 .resizable()
                 .scaledToFill()
@@ -77,6 +82,11 @@ struct EnterNameView: View {
 
                             // MARK: - Start Action
                             Button {
+                                guard connectivity.isOnline else {
+                                    withAnimation(.easeInOut) { showOfflineBanner = true }
+                                    return
+                                }
+
                                 Task { await session.createPlayer(name: vm.name) }
                             } label: {
                                 Text(session.isLoading ? "Saving..." : "Start")
@@ -105,10 +115,17 @@ struct EnterNameView: View {
                 .padding(.bottom, keyboard.height * 0.25)
                 .animation(.easeOut(duration: 0.25), value: keyboard.height)
             }
+
+            OfflineBanner(isVisible: $showOfflineBanner)
         }
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
                                             to: nil, from: nil, for: nil)
+        }
+        .onChange(of: connectivity.isOnline) { _, online in
+            if online {
+                withAnimation(.easeInOut) { showOfflineBanner = false }
+            }
         }
     }
 }
@@ -120,11 +137,13 @@ struct EnterNameView: View {
 // MARK: - Preview Host
 private struct EnterNamePreviewHost: View {
     @StateObject private var session = GameSession()
+    @StateObject private var connectivity = ConnectivityMonitor()
 
     var body: some View {
         NavigationStack {
             EnterNameView()
                 .environmentObject(session)
+                .environmentObject(connectivity)
         }
         .onAppear {
             session.player = nil

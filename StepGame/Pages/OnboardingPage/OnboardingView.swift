@@ -9,13 +9,14 @@ struct OnboardingView: View {
     var onFinish: () -> Void = {}
 
     var body: some View {
+
         VStack {
+
             // MARK: - Top Bar
             HStack {
                 Spacer()
                 if viewModel.currentPage < viewModel.totalPages - 1 {
                     Button("Skip") {
-                        // ✅ بدل ما يروح لآخر صفحة فقط، نقفل الأونبوردنق
                         onFinish()
                     }
                     .font(.custom("RussoOne-Regular", size: 16))
@@ -25,35 +26,26 @@ struct OnboardingView: View {
                 }
             }
 
-            Spacer()
+            TabView(selection: $viewModel.currentPage) {
 
-            // MARK: - Title
-            Text(titleText)
-                .font(.custom("RussoOne-Regular", size: 28))
-                .foregroundColor(Color(red: 0.45, green: 0.22, blue: 0.10))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-                .padding(.bottom, 24)
+                // Page 0
+                pageView(pageIndex: 0)
+                    .tag(0)
 
-            // MARK: - Content
-            if viewModel.currentPage == 2 {
-                avatarsView
-            } else {
-                characterView
+                // Page 1
+                pageView(pageIndex: 1)
+                    .tag(1)
+
+                // Page 2
+                pageView(pageIndex: 2)
+                    .tag(2)
             }
-
-            // MARK: - Subtitle
-            Text(subtitleText)
-                .font(.custom("RussoOne-Regular", size: 16))
-                .foregroundColor(Color(red: 0.45, green: 0.22, blue: 0.10))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 48)
-                .padding(.top, 24)
-
-            Spacer()
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .animation(.easeInOut, value: viewModel.currentPage)
 
             // MARK: - Bottom Controls
             HStack {
+
                 // Progress Dots
                 HStack(spacing: 8) {
                     ForEach(0..<viewModel.totalPages, id: \.self) { index in
@@ -74,7 +66,6 @@ struct OnboardingView: View {
 
                 // Button
                 Button {
-                    // ✅ NEW: إذا آخر صفحة -> finish
                     if viewModel.currentPage == viewModel.totalPages - 1 {
                         onFinish()
                     } else {
@@ -98,18 +89,51 @@ struct OnboardingView: View {
                 .ignoresSafeArea()
         )
     }
+
+    private func pageView(pageIndex: Int) -> some View {
+
+        VStack {
+
+            Spacer()
+
+            // MARK: - Title
+            Text(titleText(for: pageIndex))
+                .font(.custom("RussoOne-Regular", size: 28))
+                .foregroundColor(Color(red: 0.45, green: 0.22, blue: 0.10))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+                .padding(.bottom, 24)
+
+            // MARK: - Content
+            if pageIndex == 2 {
+                avatarsView
+            } else {
+                characterView(imageName: characterImage(for: pageIndex))
+            }
+
+            // MARK: - Subtitle
+            Text(subtitleText(for: pageIndex))
+                .font(.custom("RussoOne-Regular", size: 16))
+                .foregroundColor(Color(red: 0.45, green: 0.22, blue: 0.10))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 48)
+                .padding(.top, 24)
+
+            Spacer()
+        }
+    }
 }
 
 // MARK: - Reusable Views
 extension OnboardingView {
 
-    var characterView: some View {
+    func characterView(imageName: String) -> some View {
         ZStack {
             Circle()
                 .fill(Color(red: 0.95, green: 0.87, blue: 0.80))
                 .frame(width: 260, height: 260)
 
-            Image(characterImage)
+            Image(imageName)
                 .resizable()
                 .scaledToFit()
                 .frame(height: 350)
@@ -141,40 +165,29 @@ extension OnboardingView {
 // MARK: - Page Content
 extension OnboardingView {
 
-    var titleText: String {
-        switch viewModel.currentPage {
-        case 0:
-            return "Walk • Play • Win"
-        case 1:
-            return "Your Character Shows\nYour Progress"
-        case 2:
-            return "Walk, think, and compete!"
-        default:
-            return ""
+    func titleText(for page: Int) -> String {
+        switch page {
+        case 0: return "Walk • Play • Win"
+        case 1: return "Your Character Shows\nYour Progress"
+        case 2: return "Walk, think, and compete!"
+        default: return ""
         }
     }
 
-    var subtitleText: String {
-        switch viewModel.currentPage {
-        case 0:
-            return "Turn your daily steps into an exciting game"
-        case 1:
-            return "The more you move, the better your character looks"
-        case 2:
-            return "Play solo or challenge a friend.\nWalk, think, and compete!"
-        default:
-            return ""
+    func subtitleText(for page: Int) -> String {
+        switch page {
+        case 0: return "Turn your daily steps into an exciting game"
+        case 1: return "The more you move, the better your character looks"
+        case 2: return "Play solo or challenge a friend.\nWalk, think, and compete!"
+        default: return ""
         }
     }
 
-    var characterImage: String {
-        switch viewModel.currentPage {
-        case 0:
-            return "lunawalk"
-        case 1:
-            return "lunawin"
-        default:
-            return ""
+    func characterImage(for page: Int) -> String {
+        switch page {
+        case 0: return "lunawalk"
+        case 1: return "lunawin"
+        default: return ""
         }
     }
 }
@@ -182,4 +195,3 @@ extension OnboardingView {
 #Preview {
     OnboardingView()
 }
-

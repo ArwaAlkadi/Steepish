@@ -38,7 +38,8 @@ final class ChallengeResultPopupViewModel: ObservableObject {
     @Published private(set) var footerText: String = ""
 
     @Published private(set) var rows: [Row] = []
-    @Published private(set) var soloAvatar: String = ""
+
+    @Published private(set) var soloResultImage: String = ""
 
     init(
         challenge: Challenge,
@@ -64,28 +65,55 @@ final class ChallengeResultPopupViewModel: ObservableObject {
         titleText = (state == .win) ? "Well Done!" : "Oops!"
 
         let goal = challenge.goalSteps
-        let days = challenge.durationDays
+        let originalDays = challenge.durationDays
 
         switch mode {
+
         case .solo:
-            soloAvatar = avatarAsset(for: me.characterType)
-            footerText = (state == .win)
-                ? "\(goal.formatted()) Steps in \(days) Days"
-                : "You didn’t complete the \(goal.formatted())\nsteps in \(days) days.. Try again!"
+            soloResultImage = resultAsset(for: me.characterType, didWin: (state == .win))
+
+            if myParticipant.finishedAt != nil {
+                let usedDays = daysUsedIfFinished()
+                footerText = "\(goal.formatted()) Steps in \(usedDays) Days"
+            } else {
+                footerText = "You didn’t complete the \(goal.formatted())\nsteps in \(originalDays) days.. Try again!"
+            }
 
         case .group:
             let timeEnded = Date() >= challenge.effectiveEndDate
-
-            if challenge.winnerId != nil {
-                footerText = "\(goal.formatted()) Steps in \(days) Days"
-            } else if timeEnded {
-                footerText = "No one completed the \(goal.formatted())\nsteps in \(days) days"
-            } else {
-                footerText = "\(goal.formatted()) Steps in \(days) Days"
-            }
+            let iFinished = (myParticipant.finishedAt != nil)
 
             rows = buildGroupRows()
+
+            if iFinished {
+                let usedDays = daysUsedIfFinished()
+                footerText = "\(goal.formatted()) Steps in \(usedDays) Days"
+            } else {
+                if challenge.winnerId != nil {
+                    footerText = "\(goal.formatted()) Steps in \(originalDays) Days"
+                } else if timeEnded {
+                    footerText = "No one completed the \(goal.formatted())\nsteps in \(originalDays) days"
+                } else {
+                    footerText = "\(goal.formatted()) Steps in \(originalDays) Days"
+                }
+            }
         }
+    }
+
+    // ✅ يحسب الأيام الفعلية لإنهاء اللاعب (inclusive)
+    private func daysUsedIfFinished() -> Int {
+        guard let finishedAt = myParticipant.finishedAt else {
+            return challenge.durationDays
+        }
+
+        let start = challenge.startedAt ?? challenge.startDate
+        let cal = Calendar.current
+
+        let startDay = cal.startOfDay(for: start)
+        let finishDay = cal.startOfDay(for: finishedAt)
+
+        let diff = (cal.dateComponents([.day], from: startDay, to: finishDay).day ?? 0) + 1
+        return max(1, diff)
     }
 
     // MARK: - Group Rows
@@ -132,18 +160,23 @@ final class ChallengeResultPopupViewModel: ObservableObject {
         }
     }
 
-    /// Avatar asset key
     private func avatarAsset(for type: CharacterType) -> String {
         "\(type.rawValue)_avatar"
     }
 
-    /// Shortens a uid for display
+    // ✅ character1_win / character1_lose
+    private func resultAsset(for type: CharacterType, didWin: Bool) -> String {
+        let suffix = didWin ? "win" : "lose"
+        return "\(type.rawValue)_\(suffix)"
+    }
+
     private func shortId(_ id: String) -> String {
         if id.count <= 6 { return id }
         return "\(id.prefix(3))...\(id.suffix(3))"
     }
 }
 
+//
 //  ChallengeResultPopupView.swift
 //  StepGame
 //
@@ -170,7 +203,7 @@ struct ChallengeResultPopup: View {
                         Image(systemName: "xmark.circle.fill")
                             .resizable()
                             .scaledToFit()
-                            .foregroundStyle(.light2)
+                            .foregroundStyle(.light1)
                             .frame(width: 30, height: 30)
                     }
                     .buttonStyle(.plain)
@@ -230,7 +263,7 @@ struct ChallengeResultPopup: View {
 
     private var soloContent: some View {
         VStack(spacing: 10) {
-            Image(vm.soloAvatar)
+            Image(vm.soloResultImage)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 300)
@@ -282,7 +315,6 @@ private struct GroupPlayerRow: View {
         .padding(.horizontal, 6)
     }
 
-    /// Trophy asset for top 3 places
     private func placeAssetName(_ place: Int) -> String {
         switch place {
         case 1: return "Place1"
@@ -292,4 +324,3 @@ private struct GroupPlayerRow: View {
         }
     }
 }
-

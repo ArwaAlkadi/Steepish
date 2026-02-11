@@ -109,7 +109,7 @@ struct ChallengesSheet: View {
         VStack(spacing: 12) {
             Text("No active challenges")
                 .font(.custom("RussoOne-Regular", size: 16))
-                .foregroundColor(.gray)
+                .foregroundColor(.light1.opacity(0.4))
         }
     }
 
@@ -335,6 +335,12 @@ struct ChallengesCard: View {
     private var crownImageName: String? {
         guard challenge.status == .ended else { return nil }
         guard let place = myPlaceForThisChallenge else { return nil }
+
+        let playerCount = challenge.playerIds.count
+
+        if playerCount == 1 {
+            return "PlaceSolo"
+        }
 
         switch place {
         case 1: return "Place1"

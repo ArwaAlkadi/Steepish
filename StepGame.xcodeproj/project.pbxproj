@@ -13,6 +13,7 @@
 		EC7628CB2F395ADB008952D9 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7628CA2F395ADB008952D9 /* Models.swift */; };
 		EC7628D42F396171008952D9 /* ChallengeResultPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7628D32F396171008952D9 /* ChallengeResultPopup.swift */; };
 		EC7628D62F39619F008952D9 /* ChallengeResultSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7628D52F39619F008952D9 /* ChallengeResultSheet.swift */; };
+		EC77AE8E2F3B9A320056D261 /* OfflineBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC77AE8D2F3B9A320056D261 /* OfflineBanner.swift */; };
 		ECCAEE3A2F218A8B0047C5DF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE392F218A8B0047C5DF /* FirebaseAuth */; };
 		ECCAEE3C2F218A8B0047C5DF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE3B2F218A8B0047C5DF /* FirebaseFirestore */; };
 		ECCAEE422F218AAA0047C5DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */; };
@@ -84,6 +85,7 @@
 		EC7628CA2F395ADB008952D9 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		EC7628D32F396171008952D9 /* ChallengeResultPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeResultPopup.swift; sourceTree = "<group>"; };
 		EC7628D52F39619F008952D9 /* ChallengeResultSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeResultSheet.swift; sourceTree = "<group>"; };
+		EC77AE8D2F3B9A320056D261 /* OfflineBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineBanner.swift; sourceTree = "<group>"; };
 		ECCAEE282F21888B0047C5DF /* StepGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StepGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ECCAEE3F2F218AAA0047C5DF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 			isa = PBXGroup;
 			children = (
 				EC2548B22F34194E0003414C /* MapPathEditorHelper.swift */,
+				EC77AE8D2F3B9A320056D261 /* OfflineBanner.swift */,
 				ECCF7DCD2F3A5EA70003F772 /* WindTumbleweed.swift */,
 			);
 			path = Helpers;
@@ -212,7 +215,6 @@
 				ECCB95F02F294CD100DBC1F5 /* MapViewModel.swift */,
 				ECCB95F22F294CEF00DBC1F5 /* ChallengesSheet.swift */,
 				EC7628D22F395DA5008952D9 /* ChallengeResult */,
-				EC2548B12F34193E0003414C /* Helpers */,
 			);
 			path = MapPage;
 			sourceTree = "<group>";
@@ -286,6 +288,7 @@
 				ECCB95BD2F29472F00DBC1F5 /* MapPage */,
 				ECCB95D92F294BED00DBC1F5 /* Puzzle */,
 				ECCB95BF2F29472F00DBC1F5 /* ProfilePage */,
+				EC2548B12F34193E0003414C /* Helpers */,
 			);
 			path = Pages;
 			sourceTree = "<group>";
@@ -484,6 +487,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ECCB95D52F29483B00DBC1F5 /* FirebaseService.swift in Sources */,
+				EC77AE8E2F3B9A320056D261 /* OfflineBanner.swift in Sources */,
 				ECCB97882F2C3DA100DBC1F5 /* WaitingView.swift in Sources */,
 				ECCB95E52F294C6100DBC1F5 /* EnterNameViewModel.swift in Sources */,
 				ECCB95EB2F294CA700DBC1F5 /*  SetupChallengeView.swift in Sources */,

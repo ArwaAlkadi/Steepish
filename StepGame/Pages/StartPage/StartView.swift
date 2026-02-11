@@ -49,7 +49,7 @@ struct StartView: View {
                                     Circle().fill(Color.light4.opacity(0.7))
                                 )
                                 .overlay(
-                                    Circle().stroke(Color.light2.opacity(0.8), lineWidth: 3)
+                                    Circle().stroke(Color.light1.opacity(0.8), lineWidth: 4)
                                 )
                                 .clipShape(Circle())
                                 .padding(30)

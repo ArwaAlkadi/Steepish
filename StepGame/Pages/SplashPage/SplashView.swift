@@ -19,8 +19,8 @@ struct SplashView: View {
                     .frame(width: 72)
                     .opacity(show ? 1 : 0)
                     .animation(
-                        .easeOut(duration: 0.4)
-                            .delay(Double(i) * 0.2),
+                        .easeOut(duration: 0.28)
+                            .delay(Double(i) * 0.10),
                         value: show
                     )
                     .position(
@@ -37,8 +37,8 @@ struct SplashView: View {
                     .frame(width: 50)
                     .opacity(show ? 1 : 0)
                     .animation(
-                        .easeOut(duration: 0.4)
-                            .delay(0.4 + Double(i) * 0.2),
+                        .easeOut(duration: 0.28)
+                            .delay(0.18 + Double(i) * 0.10),
                         value: show
                     )
                     .position(
@@ -55,8 +55,8 @@ struct SplashView: View {
                     .frame(width: 30)
                     .opacity(show ? 1 : 0)
                     .animation(
-                        .easeOut(duration: 0.35)
-                            .delay(1.2 + Double(i) * 0.2),   // يظهر أول
+                        .easeOut(duration: 0.24)
+                            .delay(0.40 + Double(i) * 0.10),
                         value: show
                     )
                     .position(
@@ -73,8 +73,8 @@ struct SplashView: View {
                     .frame(width: 23)
                     .opacity(show ? 1 : 0)
                     .animation(
-                        .easeOut(duration: 0.35)
-                            .delay(1.8 + Double(i) * 0.2),   // يظهر بعد
+                        .easeOut(duration: 0.24)
+                            .delay(0.58 + Double(i) * 0.10),
                         value: show
                     )
                     .position(
@@ -89,8 +89,8 @@ struct SplashView: View {
                 .foregroundColor(Color(red: 0.29, green: 0.12, blue: 0.06))
                 .opacity(show ? 1 : 0)
                 .animation(
-                    .easeIn(duration: 0.5)
-                        .delay(2.4),
+                    .easeIn(duration: 0.30)
+                        .delay(0.75),
                     value: show
                 )
                 .position(

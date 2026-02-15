@@ -20,6 +20,9 @@ final class ProfileViewModel: ObservableObject {
     @Published var showError: Bool = false
     @Published var errorMessage: String? = nil
 
+    private var originalName: String = ""
+    private var originalCharacter: CharacterType = .character1
+    
     let allCharacters: [CharacterType] = [.character1, .character2, .character3]
 
     var displayName: String {
@@ -41,8 +44,12 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Load
     func loadFromSession(_ player: Player?) {
         guard let player else { return }
+
         draftName = player.name
         selectedCharacter = player.characterType
+
+        originalName = player.name
+        originalCharacter = player.characterType
     }
 
     // MARK: - Edit Mode
@@ -68,6 +75,13 @@ final class ProfileViewModel: ObservableObject {
         }
         draftName = trimmed
         return true
+    }
+
+    // MARK: - HasChanges
+
+    var hasChanges: Bool {
+        draftName != originalName ||
+        selectedCharacter != originalCharacter
     }
 
     // MARK: - Save

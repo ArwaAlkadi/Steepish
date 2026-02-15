@@ -15,7 +15,7 @@ struct EnterNameView: View {
     @StateObject private var vm = EnterNameViewModel()
     @StateObject private var keyboard = KeyboardObserver()
 
-    @State private var showOfflineBanner: Bool = true
+    @State private var showOfflineBanner: Bool = false
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -53,7 +53,7 @@ struct EnterNameView: View {
                             Text("Enter Your Name!")
                                 .font(.custom("RussoOne-Regular", size: 30))
                                 .foregroundStyle(.light3)
-                                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
+                               
 
                             VStack(alignment: .leading, spacing: 8) {
 
@@ -63,13 +63,18 @@ struct EnterNameView: View {
                                         .foregroundStyle(.light3.opacity(0.25))
                                         .frame(height: 56)
 
-                                    TextField("Name", text: $vm.name)
-                                        .font(.custom("RussoOne-Regular", size: 20))
-                                        .foregroundStyle(.light3)
-                                        .padding(.horizontal, 20)
-                                        .onChange(of: vm.name) { _, newValue in
-                                            vm.enforceNameLimit(newValue)
-                                        }
+                                    TextField(
+                                        "",
+                                        text: $vm.name,
+                                        prompt: Text("Name")
+                                            .foregroundColor(Color.light3.opacity(0.4))
+                                    )
+                                    .font(.custom("RussoOne-Regular", size: 20))
+                                    .foregroundStyle(Color.light3)
+                                    .padding(.horizontal, 20)
+                                    .onChange(of: vm.name) { _, newValue in
+                                        vm.enforceNameLimit(newValue)
+                                    }
                                 }
 
                                 // \\ Character Count
@@ -98,8 +103,8 @@ struct EnterNameView: View {
                                             .foregroundStyle(.light1)
                                     )
                             }
-                            .disabled(!vm.isStartEnabled || session.isLoading)
-                            .opacity((!vm.isStartEnabled || session.isLoading) ? 0.5 : 1)
+                            .disabled(!vm.isStartEnabled || session.isLoading || !connectivity.isOnline)
+                            .opacity((!vm.isStartEnabled || session.isLoading || !connectivity.isOnline) ? 0.5 : 1)
 
                             // \\ Error Message
                             if let msg = session.errorMessage {
@@ -116,17 +121,16 @@ struct EnterNameView: View {
                 .animation(.easeOut(duration: 0.25), value: keyboard.height)
             }
 
-            OfflineBanner(isVisible: $showOfflineBanner)
+            if !connectivity.isOnline {
+                OfflineBanner(isVisible: $showOfflineBanner)
+            }
+          
         }
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
                                             to: nil, from: nil, for: nil)
         }
-        .onChange(of: connectivity.isOnline) { _, online in
-            if online {
-                withAnimation(.easeInOut) { showOfflineBanner = false }
-            }
-        }
+       
     }
 }
 

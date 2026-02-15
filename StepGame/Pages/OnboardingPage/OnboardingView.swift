@@ -5,7 +5,6 @@ struct OnboardingView: View {
 
     @StateObject private var viewModel = OnboardingViewModel()
 
-    // ✅ NEW: RootView يمرر هذا عشان نقفل الأونبوردنق
     var onFinish: () -> Void = {}
 
     var body: some View {
@@ -20,7 +19,7 @@ struct OnboardingView: View {
                         onFinish()
                     }
                     .font(.custom("RussoOne-Regular", size: 16))
-                    .foregroundColor(Color(red: 0.55, green: 0.32, blue: 0.18))
+                    .foregroundColor(Color.light2)
                     .padding(.trailing, 24)
                     .padding(.top, 12)
                 }
@@ -52,8 +51,8 @@ struct OnboardingView: View {
                         Capsule()
                             .fill(
                                 index == viewModel.currentPage
-                                ? Color(red: 0.55, green: 0.32, blue: 0.18)
-                                : Color(red: 0.55, green: 0.32, blue: 0.18).opacity(0.3)
+                                ? Color.light2
+                                : Color.light2.opacity(0.3)
                             )
                             .frame(
                                 width: index == viewModel.currentPage ? 28 : 8,
@@ -77,7 +76,7 @@ struct OnboardingView: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 36)
                         .padding(.vertical, 14)
-                        .background(Color(red: 0.55, green: 0.32, blue: 0.18))
+                        .background(Color.light2)
                         .cornerRadius(28)
                 }
             }
@@ -99,7 +98,7 @@ struct OnboardingView: View {
             // MARK: - Title
             Text(titleText(for: pageIndex))
                 .font(.custom("RussoOne-Regular", size: 28))
-                .foregroundColor(Color(red: 0.45, green: 0.22, blue: 0.10))
+                .foregroundColor(Color.light1)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
                 .padding(.bottom, 24)
@@ -130,21 +129,21 @@ extension OnboardingView {
     func characterView(imageName: String) -> some View {
         ZStack {
             Circle()
-                .fill(Color(red: 0.95, green: 0.87, blue: 0.80))
+                .fill(Color.light2.opacity(0.1))
                 .frame(width: 260, height: 260)
 
             Image(imageName)
                 .resizable()
                 .scaledToFit()
                 .frame(height: 350)
-                .offset(x: 25, y: -10)
+                .offset(y: -10)
         }
     }
 
     var avatarsView: some View {
         ZStack {
             Circle()
-                .fill(Color(red: 0.95, green: 0.87, blue: 0.80))
+                .fill(Color.light2.opacity(0.1))
                 .frame(width: 260, height: 260)
 
             avatar("rosyavatar", x: -70, y: -60)

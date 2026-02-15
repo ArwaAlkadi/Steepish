@@ -90,8 +90,8 @@ struct ProfileView: View {
                         .font(.custom("RussoOne-Regular", size: 18))
                         .foregroundStyle(Color.light1)
                 }
-                .disabled(vm.isSaving)
-                .opacity(vm.isSaving ? 0.6 : 1)
+                .disabled(vm.isSaving || !vm.hasChanges)
+                .opacity((vm.isSaving || !vm.hasChanges) ? 0.6 : 1)
             }
         }
         .padding(.top, 6)
@@ -156,11 +156,16 @@ struct ProfileView: View {
                     .stroke(Color.light1, lineWidth: 2)
                     .frame(height: 54)
 
-                TextField("Name", text: $vm.draftName)
-                    .font(.custom("RussoOne-Regular", size: 22))
-                    .foregroundStyle(Color.light1)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 14)
+                TextField(
+                    "",
+                    text: $vm.draftName,
+                    prompt: Text("Name")
+                        .foregroundColor(Color.light1.opacity(0.4))
+                )
+                .font(.custom("RussoOne-Regular", size: 22))
+                .foregroundStyle(Color.light1)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 14)
             }
         }
         .frame(maxWidth: 320)

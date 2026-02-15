@@ -9,6 +9,7 @@ import Combine
 
 struct WaitingRoomView: View {
 
+    @EnvironmentObject private var connectivity: ConnectivityMonitor
     @EnvironmentObject private var session: GameSession
     @StateObject private var vm = WaitingRoomViewModel()
 
@@ -16,6 +17,8 @@ struct WaitingRoomView: View {
     @State private var showShareSheet = false
     @State private var didCopy = false
 
+    @State private var showOfflineBanner: Bool = true
+    
     var body: some View {
         ZStack {
             Color.light3.ignoresSafeArea()
@@ -29,10 +32,8 @@ struct WaitingRoomView: View {
                         showLeaveAlert = true
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 28, height: 28)
-                            .foregroundStyle(Color.light1.opacity(0.9))
+                            .font(.system(size: 25, weight: .bold))
+                            .foregroundStyle(.light1)
                     }
                     .buttonStyle(.plain)
                 }
@@ -70,6 +71,11 @@ struct WaitingRoomView: View {
                     }
                 }
 
+                Text(vm.playerCountText)
+                    .font(.custom("RussoOne-Regular", size: 14))
+                    .foregroundStyle(Color.light1.opacity(0.9))
+                    .padding(.top, -6)
+                
                 Spacer(minLength: 10)
 
                 LobbyCenter(players: vm.lobbyPlayers)
@@ -102,6 +108,11 @@ struct WaitingRoomView: View {
                 }
             }
             .padding(.horizontal, 20)
+            
+            if !connectivity.isOnline {
+                OfflineBanner(isVisible: $showOfflineBanner)
+            }
+            
         }
         .navigationBarBackButtonHidden(true)
 

@@ -14,15 +14,17 @@ import WidgetKit
 final class MapViewModel: ObservableObject {
 
     // MARK: - Published State
+
     @Published private(set) var challenge: Challenge? = nil
     @Published private(set) var participants: [ChallengeParticipant] = []
     @Published private(set) var playersById: [String: Player] = [:]
     @Published private(set) var myParticipant: ChallengeParticipant? = nil
 
+    @Published var pendingMapPopup: MapPopupType? = nil
+
     @Published var isShowingResultPopup: Bool = false
     @Published var resultPopupVM: ChallengeResultPopupViewModel? = nil
 
-    // MARK: - Map Player VM
     struct MapPlayerVM: Identifiable {
         let id: String
         let name: String
@@ -32,22 +34,81 @@ final class MapViewModel: ObservableObject {
         let progress: Double
         let isMe: Bool
         let place: Int?
+
+        let attackedByName: String?
+        let isUnderSabotage: Bool
+        let sabotageExpiresAt: Date?
+        let isAttackedByMe: Bool
+        let lastSyncedAt: Date?
+        let isChallengeEnded: Bool
+      
     }
 
     @Published private(set) var mapPlayers: [MapPlayerVM] = []
 
     // MARK: - Dependencies
+
     private let firebase = FirebaseService.shared
     private weak var session: GameSession?
 
-    // MARK: - Listeners
     private var challengeListener: ListenerRegistration?
     private var participantsListener: ListenerRegistration?
 
-    // MARK: - Sync
     private var syncTimerCancellable: AnyCancellable?
     private var appForegroundCancellable: AnyCancellable?
     private var lastUploadedSteps: Int? = nil
+
+    // MARK: - Popup Gating
+
+    private var warmupUntil: Date? = nil
+    private var lastPopupShown: MapPopupType? = nil
+    private var lastPopupShownAt: Date? = nil
+
+    private var isWarmupActive: Bool {
+        if let until = warmupUntil {
+            return Date() < until
+        }
+        return false
+    }
+
+    private var maxStepsAcrossParticipants: Int {
+        participants.map(\.steps).max() ?? 0
+    }
+
+    private var areStepsMeaningful: Bool {
+        maxStepsAcrossParticipants > 0
+    }
+
+    private func shouldAllowPuzzlePopups(
+        checkSteps: Bool = true,
+        now: Date = Date()
+    ) -> Bool {
+        if isChallengeEnded { return false }
+        if isWarmupActive { return false }
+        if checkSteps && !areStepsMeaningful { return false }
+        if pendingMapPopup != nil { return false }
+        return true
+    }
+
+    private func tryPresentPopup(
+        _ popup: MapPopupType,
+        cooldownSeconds: TimeInterval = 60,
+        now: Date = Date()
+    ) {
+        if pendingMapPopup != nil { return }
+
+        if lastPopupShown == popup,
+           let t = lastPopupShownAt,
+           now.timeIntervalSince(t) < cooldownSeconds {
+            return
+        }
+
+        lastPopupShown = popup
+        lastPopupShownAt = now
+        pendingMapPopup = popup
+    }
+
+    // MARK: - Lifecycle
 
     deinit {
         MainActor.assumeIsolated {
@@ -59,6 +120,7 @@ final class MapViewModel: ObservableObject {
     }
 
     // MARK: - Map Points
+
     private let pathPoints: [CGPoint] = [
         .init(x: 0.714, y: 0.867),
         .init(x: 0.705, y: 0.746),
@@ -72,7 +134,7 @@ final class MapViewModel: ObservableObject {
         .init(x: 0.693, y: 0.121),
         .init(x: 0.770, y: 0.053),
     ]
-    
+
     private let flagAnchors: [CGPoint] = [
         .init(x: 0.604, y: 0.847),
         .init(x: 0.595, y: 0.726),
@@ -86,13 +148,10 @@ final class MapViewModel: ObservableObject {
         .init(x: 0.583, y: 0.101),
     ]
 
-    // MARK: - Challenge Ended Helper
     var isChallengeEnded: Bool {
         guard let ch = challenge else { return false }
         return ch.status == .ended || Date() >= ch.effectiveEndDate
     }
-
-    // MARK: - Flag Progress Mapping (prevents passing flags early)
 
     private lazy var flagProgressesOnPath: [CGFloat] = {
         computeFlagProgressesOnPath()
@@ -125,9 +184,7 @@ final class MapViewModel: ObservableObject {
             if steps < nextM {
                 let denom = max(nextM - prevM, 1)
                 var local = CGFloat(steps - prevM) / CGFloat(denom)
-
                 local = min(max(local, 0), 0.999)
-
                 return lerp(fp[i - 1], fp[i], local)
             }
         }
@@ -186,6 +243,7 @@ final class MapViewModel: ObservableObject {
     }
 
     // MARK: - Bind / Unbind
+
     func bind(session: GameSession) {
         self.session = session
         unbind()
@@ -195,9 +253,13 @@ final class MapViewModel: ObservableObject {
         playersById = [:]
         resultPopupVM = nil
         isShowingResultPopup = false
+        pendingMapPopup = nil
 
-        self.challenge = session.challenge
+        lastPopupShown = nil
+        lastPopupShownAt = nil
+        warmupUntil = nil
 
+        challenge = session.challenge
         lastUploadedSteps = nil
 
         if isChallengeEnded {
@@ -223,6 +285,10 @@ final class MapViewModel: ObservableObject {
                 self.rebuildAllUI()
                 self.evaluateResultPopupIfNeeded()
                 self.maybeEndChallengeIfNeeded()
+
+                self.evaluateSoloLate()
+                self.evaluateGroupAttack()
+                self.evaluateGroupDefender()
             }
         }
 
@@ -235,6 +301,10 @@ final class MapViewModel: ObservableObject {
                 self.rebuildAllUI()
                 self.evaluateResultPopupIfNeeded()
                 self.maybeEndChallengeIfNeeded()
+
+                self.evaluateSoloLate()
+                self.evaluateGroupAttack()
+                self.evaluateGroupDefender()
             }
         }
     }
@@ -242,7 +312,6 @@ final class MapViewModel: ObservableObject {
     func unbind() {
         challengeListener?.remove()
         challengeListener = nil
-
         participantsListener?.remove()
         participantsListener = nil
     }
@@ -264,18 +333,69 @@ final class MapViewModel: ObservableObject {
                 if let id = p.id { dict[id] = p }
             }
             playersById = dict
-        } catch {
-            // silent
+        } catch { }
+    }
+
+    // MARK: - Feature Triggers
+
+    func evaluateSoloLate(now: Date = Date()) {
+        guard shouldAllowPuzzlePopups(checkSteps: false, now: now) else { return }
+        guard let ch = challenge else { return }
+        guard isEffectivelySolo else { return }
+        guard let myPart = myParticipant else { return }
+
+        if isLockedToday(myPart.soloAttemptedAt, now: now) { return }
+        if isCooldownActive(myPart.soloDismissedAt, seconds: dismissCooldown, now: now) { return }
+
+        let expected = expectedProgressByTime(challenge: ch, now: now)
+        let actual = CGFloat(myPart.steps) / CGFloat(max(ch.goalSteps, 1))
+
+        guard actual < expected else { return }
+        tryPresentPopup(.soloLate, cooldownSeconds: 2 * 60 * 60, now: now)
+    }
+
+    func evaluateGroupDefender(now: Date = Date()) {
+        guard let myPart = myParticipant else { return }
+
+        if isLockedToday(myPart.groupDefenseAttemptedAt, now: now) { return }
+        if isCooldownActive(myPart.groupDefenseDismissedAt, seconds: dismissCooldown, now: now) { return }
+
+        if let exp = myPart.sabotageExpiresAt, now < exp {
+            if !isWarmupActive, pendingMapPopup == nil {
+                tryPresentPopup(.groupDefender, cooldownSeconds: 2 * 60 * 60, now: now)
+            }
         }
     }
 
+    func evaluateGroupAttack(now: Date = Date()) {
+        guard shouldAllowPuzzlePopups(checkSteps: false, now: now) else { return }
+        guard isGroupChallenge else { return }
+        guard let myPart = myParticipant else { return }
+
+        if isLockedToday(myPart.groupAttackAttemptedAt, now: now) { return }
+        if isCooldownActive(myPart.groupAttackDismissedAt, seconds: dismissCooldown, now: now) { return }
+
+        guard let last = lastParticipant(),
+              let leader = leadingParticipant() else { return }
+
+        guard last.playerId == myPart.playerId else { return }
+        guard leader.playerId != myPart.playerId else { return }
+
+        let stepsDifference = leader.steps - myPart.steps
+        guard stepsDifference > 0 else { return }
+
+        if let exp = leader.sabotageExpiresAt, now < exp { return }
+
+        tryPresentPopup(.groupAttacker, cooldownSeconds: 2 * 60 * 60, now: now)
+    }
     // MARK: - UI Builders
+
     private func rebuildAllUI() {
         guard let session else { return }
         guard let ch = challenge else { return }
 
         let myId = session.uid ?? session.player?.id ?? ""
-        let goal = max(ch.goalSteps, 1)
+        let now = Date()
 
         let vms: [MapPlayerVM] = participants.map { part in
             let isMe = (part.playerId == myId)
@@ -288,7 +408,28 @@ final class MapViewModel: ObservableObject {
             let mapped = mappedProgressForSteps(part.steps, goalSteps: ch.goalSteps)
             let progress = Double(mapped)
 
-            let state = computedCharacterState(challenge: ch, steps: part.steps)
+            let isUnderSabotage: Bool = {
+                guard let exp = part.sabotageExpiresAt else { return false }
+                return now < exp
+            }()
+
+            let attackerId = part.sabotageByPlayerId
+
+            let isAttackedByMe = {
+                guard isUnderSabotage else { return false }
+                guard let attackerId else { return false }
+                return attackerId == myId
+            }()
+
+            let attackedByName: String? = {
+                guard isUnderSabotage, let attackerId else { return nil }
+                if attackerId == myId {
+                    return "You"
+                }
+                return playersById[attackerId]?.name ?? shortId(attackerId)
+            }()
+
+            let state = computedCharacterState(challenge: ch, participant: part)
             let mapSprite = type.imageKey(state: state)
 
             return MapPlayerVM(
@@ -299,8 +440,15 @@ final class MapViewModel: ObservableObject {
                 steps: part.steps,
                 progress: progress,
                 isMe: isMe,
-                place: part.place
+                place: part.place,
+                attackedByName: attackedByName,
+                isUnderSabotage: isUnderSabotage,
+                sabotageExpiresAt: part.sabotageExpiresAt,
+                isAttackedByMe: isAttackedByMe,
+                lastSyncedAt: part.lastSyncedAt,
+                isChallengeEnded: isChallengeEnded
             )
+            
         }
 
         mapPlayers = vms.sorted { a, b in
@@ -330,7 +478,24 @@ final class MapViewModel: ObservableObject {
         WidgetCenter.shared.reloadAllTimelines()
     }
 
-    // MARK: - HUD Text
+    // MARK: - Helpers
+
+    private func isSameDay(_ a: Date, _ b: Date) -> Bool {
+        Calendar.current.isDate(a, inSameDayAs: b)
+    }
+
+    private func isLockedToday(_ date: Date?, now: Date) -> Bool {
+        guard let date else { return false }
+        return isSameDay(date, now)
+    }
+
+    private func isCooldownActive(_ date: Date?, seconds: TimeInterval, now: Date) -> Bool {
+        guard let date else { return false }
+        return now.timeIntervalSince(date) < seconds
+    }
+
+    private let dismissCooldown: TimeInterval = 2 * 60 * 60
+    
     var titleText: String { challenge?.name ?? "" }
 
     var isGroupChallenge: Bool {
@@ -353,13 +518,13 @@ final class MapViewModel: ObservableObject {
     }
 
     var stepsLeftText: String {
-        guard let ch = challenge else { return "0 Step Left" }
+        guard let ch = challenge else { return "0 Steps Left" }
         let left = max(0, ch.goalSteps - mySteps)
-        return "\(left.formatted()) Step Left"
+        return "\(left.formatted()) Steps Left"
     }
 
     var daysLeftText: String {
-        guard let ch = challenge else { return "0 Day Left" }
+        guard let ch = challenge else { return "0 Days Left" }
 
         let cal = Calendar.current
         let todayStart = cal.startOfDay(for: Date())
@@ -368,45 +533,45 @@ final class MapViewModel: ObservableObject {
         let diff = cal.dateComponents([.day], from: todayStart, to: endDayStart).day ?? 0
         let daysLeft = max(0, diff)
 
-        return "\(daysLeft) Day Left"
+        let dayWord = daysLeft == 1 ? "Day" : "Days"
+        return "\(daysLeft) \(dayWord) Left"
     }
 
-    // MARK: - Player Map Positioning
     func positionForPlayer(_ player: MapPlayerVM, mapSize: CGSize) -> CGPoint {
-
-        let base = positionForProgress(
-            progress: CGFloat(player.progress),
-            mapSize: mapSize
-        )
+        let base = positionForProgress(progress: CGFloat(player.progress), mapSize: mapSize)
 
         let grouped = mapPlayers
             .sorted { $0.id < $1.id }
-            .filter { abs($0.progress - player.progress) < 0.001 }
+            .filter { abs($0.progress - player.progress) < 0.01 }
 
-        guard grouped.count > 1 else {
+        guard grouped.count > 1,
+              let idx = grouped.firstIndex(where: { $0.id == player.id }) else {
             return clampToBounds(base, mapSize: mapSize)
         }
 
-        guard let idx = grouped.firstIndex(where: { $0.id == player.id }) else {
-            return clampToBounds(base, mapSize: mapSize)
-        }
+        let count = grouped.count
 
-        let horizontalSpacing: CGFloat = 65
+        let radius: CGFloat = 40
+        let startAngle: CGFloat = .pi
+        let endAngle: CGFloat = 0
 
-        let totalWidth = CGFloat(grouped.count - 1) * horizontalSpacing
-        let startOffset = -totalWidth / 2
-        let xOffset = startOffset + CGFloat(idx) * horizontalSpacing
+        let angleStep = (endAngle - startAngle) / CGFloat(max(count - 1, 1))
+        let angle = startAngle + angleStep * CGFloat(idx)
+
+        let offset = CGPoint(
+            x: cos(angle) * radius,
+            y: sin(angle) * radius
+        )
 
         let shifted = CGPoint(
-            x: base.x + xOffset,
-            y: base.y
+            x: base.x + offset.x,
+            y: base.y - abs(offset.y)
         )
 
         return clampToBounds(shifted, mapSize: mapSize)
     }
-    
-    private func clampToBounds(_ point: CGPoint, mapSize: CGSize) -> CGPoint {
 
+    private func clampToBounds(_ point: CGPoint, mapSize: CGSize) -> CGPoint {
         let bubbleWidth: CGFloat = 60
         let spriteWidth: CGFloat = 85
 
@@ -415,7 +580,6 @@ final class MapViewModel: ObservableObject {
 
         let minX = paddingX
         let maxX = mapSize.width - paddingX
-
         let minY = paddingY
         let maxY = mapSize.height - paddingY
 
@@ -425,7 +589,6 @@ final class MapViewModel: ObservableObject {
         )
     }
 
-    // MARK: - Flags
     var milestones: [Int] {
         guard let ch = challenge else { return [] }
         return makeMilestones(goalSteps: ch.goalSteps, count: flagAnchors.count, unit: 100)
@@ -439,9 +602,9 @@ final class MapViewModel: ObservableObject {
     }
 
     // MARK: - Steps Sync
+
     func startStepsSync(health: HealthKitManager) {
         stopStepsSync()
-
         if isChallengeEnded { return }
 
         Task { await syncOnce(health: health) }
@@ -463,7 +626,6 @@ final class MapViewModel: ObservableObject {
     func stopStepsSync() {
         syncTimerCancellable?.cancel()
         syncTimerCancellable = nil
-
         appForegroundCancellable?.cancel()
         appForegroundCancellable = nil
     }
@@ -518,23 +680,20 @@ final class MapViewModel: ObservableObject {
             if now >= endDay {
                 stopStepsSync()
             }
-        } catch {
-            // silent
-        }
+        } catch { }
     }
 
     // MARK: - Result Popup
+
     private func evaluateResultPopupIfNeeded(now: Date = Date()) {
         guard !isShowingResultPopup else { return }
         guard let ch = challenge, let chId = ch.id else { return }
         guard let me = session?.player else { return }
         guard let myPart = myParticipant else { return }
-
         if myPart.challengeId != chId { return }
 
         let iFinished = (myPart.finishedAt != nil)
         let timeEnded = (now >= ch.effectiveEndDate)
-
         guard iFinished || timeEnded else { return }
 
         resultPopupVM = ChallengeResultPopupViewModel(
@@ -552,11 +711,23 @@ final class MapViewModel: ObservableObject {
         resultPopupVM = nil
     }
 
-    // MARK: - Character State Logic
-    private func computedCharacterState(challenge: Challenge, steps: Int, now: Date = Date()) -> CharacterState {
+    // MARK: - Character State
+
+    private func computedCharacterState(
+        challenge: Challenge,
+        participant: ChallengeParticipant,
+        now: Date = Date()
+    ) -> CharacterState {
+
+        if let exp = participant.sabotageExpiresAt,
+           now < exp,
+           let s = participant.sabotageState {
+            return s
+        }
+
         let goal = max(challenge.goalSteps, 1)
 
-        let stepsProgress = CGFloat(steps) / CGFloat(goal)
+        let stepsProgress = CGFloat(participant.steps) / CGFloat(goal)
         let expected = expectedProgressByTime(challenge: challenge, now: now)
         let diff = stepsProgress - expected
 
@@ -580,7 +751,6 @@ final class MapViewModel: ObservableObject {
         return min(max(CGFloat(p), 0), 1)
     }
 
-    // MARK: - Path
     private func positionForProgress(progress: CGFloat, mapSize: CGSize) -> CGPoint {
         guard pathPoints.count >= 2 else { return .zero }
 
@@ -602,7 +772,8 @@ final class MapViewModel: ObservableObject {
         return CGPoint(x: xNorm * mapSize.width, y: yNorm * mapSize.height)
     }
 
-    // MARK: - End Challenge
+    // MARK: - Challenge End
+
     private func maybeEndChallengeIfNeeded(now: Date = Date()) {
         guard let ch = challenge, let chId = ch.id else { return }
         guard ch.status != .ended else { return }
@@ -612,12 +783,11 @@ final class MapViewModel: ObservableObject {
 
         guard timeEnded || allFinished else { return }
 
-        Task {
-            try? await firebase.markChallengeEnded(challengeId: chId, now: now)
-        }
+        Task { try? await firebase.markChallengeEnded(challengeId: chId, now: now) }
     }
 
     // MARK: - Milestones
+
     private func makeMilestones(goalSteps: Int, count: Int, unit: Int) -> [Int] {
         guard count > 0 else { return [] }
 
@@ -647,7 +817,28 @@ final class MapViewModel: ObservableObject {
         return "\(id.prefix(3))...\(id.suffix(3))"
     }
 
-    func syncFromHealth(health: HealthKitManager) async {
-        await syncOnce(health: health)
+    // MARK: - Group Helpers
+
+    func leadingParticipant() -> ChallengeParticipant? {
+        guard isGroupChallenge else { return nil }
+        return participants
+            .sorted { $0.steps > $1.steps }
+            .first
+    }
+
+    private func lastParticipant() -> ChallengeParticipant? {
+        participants
+            .sorted { $0.steps < $1.steps }
+            .first
+    }
+
+    var leadingPlayerId: String? {
+        participants.sorted { $0.steps > $1.steps }.first?.playerId
+    }
+    
+    private var isEffectivelySolo: Bool {
+        guard let ch = challenge else { return false }
+        if ch.originalMode == .solo { return true }
+        return ch.originalMode == .social && participants.count <= 1
     }
 }

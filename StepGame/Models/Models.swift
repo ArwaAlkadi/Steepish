@@ -8,7 +8,6 @@ import FirebaseFirestore
 import Combine
 
 // MARK: - Enums
-
 enum ChallengeMode: String, Codable {
     case solo
     case social
@@ -52,8 +51,23 @@ enum CharacterState: String, Codable, CaseIterable {
     case lazy
 }
 
-// MARK: - Player
 
+
+
+
+// MARK: - Avatar Helper
+extension CharacterType {
+
+    func avatarKey() -> String {
+        "\(rawValue)_avatar"
+    }
+}
+
+
+
+
+
+// MARK: - Player
 struct Player: Identifiable, Codable {
 
     @DocumentID var id: String?
@@ -90,8 +104,11 @@ struct Player: Identifiable, Codable {
     }
 }
 
-// MARK: - Challenge
 
+
+
+
+// MARK: - Challenge
 struct Challenge: Identifiable, Codable {
 
     @DocumentID var id: String?
@@ -131,7 +148,7 @@ struct Challenge: Identifiable, Codable {
         return mode
     }
 
-    var maxPlayers: Int { originalMode == .solo ? 1 : 5 }
+    var maxPlayers: Int { originalMode == .solo ? 1 : 4 }
     var isFull: Bool { playerIds.count >= maxPlayers }
 
     func canJoin() -> Bool {
@@ -177,8 +194,11 @@ struct Challenge: Identifiable, Codable {
     }
 }
 
-// MARK: - ChallengeParticipant
 
+
+
+
+// MARK: - ChallengeParticipant
 struct ChallengeParticipant: Identifiable, Codable {
 
     @DocumentID var id: String?
@@ -193,15 +213,31 @@ struct ChallengeParticipant: Identifiable, Codable {
     var lastUpdated: Date
     var createdAt: Date
 
+    /// Sabotage (existing / keep)
     var sabotageState: CharacterState?
     var sabotageExpiresAt: Date?
     var sabotageByPlayerId: String?
 
+
+    /// Attack metadata (to compare with defense time)
+    var sabotageAttackTimeSeconds: Double?
+    var sabotageAppliedAt: Date?
+    var groupAttackSucceededAt: Date?
     /// Result tracking per participant
     var finishedAt: Date? = nil
     var place: Int? = nil
     var didShowResultPopup: Bool? = nil
 
+    var lastSyncedAt: Date?
+    
+    var soloAttemptedAt: Date?
+    var groupAttackAttemptedAt: Date?
+    var groupDefenseAttemptedAt: Date?
+
+    var soloDismissedAt: Date?
+    var groupAttackDismissedAt: Date?
+    var groupDefenseDismissedAt: Date?
+    
     init(
         id: String? = nil,
         challengeId: String,
@@ -211,12 +247,28 @@ struct ChallengeParticipant: Identifiable, Codable {
         characterState: CharacterState = .normal,
         lastUpdated: Date = Date(),
         createdAt: Date = Date(),
+
         sabotageState: CharacterState? = nil,
         sabotageExpiresAt: Date? = nil,
         sabotageByPlayerId: String? = nil,
+
+        soloPuzzleFailedAt: Date? = nil,
+        groupAttackPuzzleFailedAt: Date? = nil,
+
+        sabotageAttackTimeSeconds: Double? = nil,
+        sabotageAppliedAt: Date? = nil,
+        groupAttackSucceededAt: Date? = nil,
         finishedAt: Date? = nil,
         place: Int? = nil,
-        didShowResultPopup: Bool? = nil
+        didShowResultPopup: Bool? = nil,
+        lastSyncedAt: Date? = nil,
+        soloAttemptedAt: Date?  = nil,
+        groupAttackAttemptedAt: Date?  = nil,
+        groupDefenseAttemptedAt: Date?  = nil,
+
+        soloDismissedAt: Date? = nil,
+        groupAttackDismissedAt: Date? = nil,
+        groupDefenseDismissedAt: Date? = nil
     ) {
         self.id = id
         self.challengeId = challengeId
@@ -226,12 +278,26 @@ struct ChallengeParticipant: Identifiable, Codable {
         self.characterState = characterState
         self.lastUpdated = lastUpdated
         self.createdAt = createdAt
+
         self.sabotageState = sabotageState
         self.sabotageExpiresAt = sabotageExpiresAt
         self.sabotageByPlayerId = sabotageByPlayerId
+
+        self.sabotageAttackTimeSeconds = sabotageAttackTimeSeconds
+        self.sabotageAppliedAt = sabotageAppliedAt
+        self.groupAttackSucceededAt = groupAttackSucceededAt
+
         self.finishedAt = finishedAt
         self.place = place
         self.didShowResultPopup = didShowResultPopup
+        self.lastSyncedAt = lastSyncedAt
+        self.soloAttemptedAt = soloAttemptedAt
+        self.groupAttackAttemptedAt = groupAttackAttemptedAt
+        self.groupDefenseAttemptedAt = groupDefenseAttemptedAt
+
+        self.soloDismissedAt = soloDismissedAt
+        self.groupAttackDismissedAt = groupAttackDismissedAt
+        self.groupDefenseDismissedAt = groupDefenseDismissedAt
     }
 
     /// Effective character state considering sabotage
@@ -244,30 +310,5 @@ struct ChallengeParticipant: Identifiable, Codable {
 
     var hasShownResultPopup: Bool {
         didShowResultPopup ?? false
-    }
-}
-
-// MARK: - PuzzleEffect
-
-struct PuzzleEffect: Identifiable, Codable {
-
-    @DocumentID var id: String?
-
-    var challengeId: String
-    var targetPlayerId: String
-    var attackerId: String
-    var mode: PuzzleMode
-    var attackTime: TimeInterval
-    var appliedAt: Date
-    var expiresAt: Date
-    var isActive: Bool
-}
-
-// MARK: - Avatar Helper
-
-extension CharacterType {
-
-    func avatarKey() -> String {
-        "\(rawValue)_avatar"
     }
 }

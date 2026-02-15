@@ -31,7 +31,7 @@ struct StartView: View {
                 .clipped()
                 .ignoresSafeArea()
 
-            VStack(spacing: 20) {
+            VStack(spacing: 16) {
 
                 ZStack {
 
@@ -77,13 +77,14 @@ struct StartView: View {
 
                 VStack {
                     Text(vm.greetingText(playerName: session.player?.name))
-                        .font(.custom("RussoOne-Regular", size: 36))
+                        .font(.custom("RussoOne-Regular", size: 35))
                         .foregroundStyle(Color.light1)
 
                     Text(vm.subtitleText())
-                        .font(.custom("RussoOne-Regular", size: 24))
+                        .font(.custom("RussoOne-Regular", size: 28))
                         .foregroundStyle(Color.light1)
                 }
+                .padding(.bottom, 20)
 
                 Button {
                     showSetup = true
@@ -101,6 +102,8 @@ struct StartView: View {
                 .disabled(!vm.isInteractionEnabled(isLoading: session.isLoading, isHealthAuthorized: health.isAuthorized))
                 .opacity(vm.isInteractionEnabled(isLoading: session.isLoading, isHealthAuthorized: health.isAuthorized) ? 1 : 0.5)
                 .padding(.bottom, 70)
+                
+               
             }
 
             // MARK: - Join Code Popup
@@ -156,11 +159,10 @@ private struct BigButtonLabel: View {
     var body: some View {
         Text(title)
             .font(.custom("RussoOne-Regular", size: 20))
-            .foregroundColor(.light3)
+            .foregroundColor(.light4)
             .frame(width: 280, height: 55)
             .background(Color("Light1"))
             .cornerRadius(30)
-            .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
     }
 }
 

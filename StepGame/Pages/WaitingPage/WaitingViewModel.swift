@@ -210,4 +210,10 @@ final class WaitingRoomViewModel: ObservableObject {
         if id.count <= 6 { return id }
         return "\(id.prefix(3))...\(id.suffix(3))"
     }
+    
+    var playerCountText: String {
+        let current = challenge?.playerIds.count ?? lobbyPlayers.count
+        let max = challenge?.maxPlayers ?? 4
+        return "\(current)/\(max)"
+    }
 }

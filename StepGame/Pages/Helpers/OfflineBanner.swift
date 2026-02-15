@@ -33,7 +33,7 @@ struct OfflineBanner: View {
                     }
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.system(size: 25, weight: .bold))
                         .foregroundStyle(.light3)
                         .padding(12)
                 }

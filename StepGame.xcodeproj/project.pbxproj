@@ -8,12 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		EC2548B32F34194E0003414C /* MapPathEditorHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC2548B22F34194E0003414C /* MapPathEditorHelper.swift */; };
+		EC26DE262F3D3873007DDE2B /* WiringGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC26DE202F3D3873007DDE2B /* WiringGameViewModel.swift */; };
+		EC26DE292F3D3992007DDE2B /* PuzzlePromptPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC26DE282F3D3992007DDE2B /* PuzzlePromptPopup.swift */; };
+		EC26DE2D2F3D3A01007DDE2B /* PuzzleResultPopUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC26DE2C2F3D3A01007DDE2B /* PuzzleResultPopUp.swift */; };
 		EC6BAB1C2F3159E300BDBEC8 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6BAB1B2F3159E300BDBEC8 /* RootView.swift */; };
 		EC6BAB1E2F315A3000BDBEC8 /* GameSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6BAB1D2F315A3000BDBEC8 /* GameSession.swift */; };
 		EC7628CB2F395ADB008952D9 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7628CA2F395ADB008952D9 /* Models.swift */; };
-		EC7628D42F396171008952D9 /* ChallengeResultPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7628D32F396171008952D9 /* ChallengeResultPopup.swift */; };
-		EC7628D62F39619F008952D9 /* ChallengeResultSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7628D52F39619F008952D9 /* ChallengeResultSheet.swift */; };
 		EC77AE8E2F3B9A320056D261 /* OfflineBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC77AE8D2F3B9A320056D261 /* OfflineBanner.swift */; };
+		EC80F3C62F3F810800544443 /* MapView+Content.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3C52F3F810800544443 /* MapView+Content.swift */; };
+		EC80F3C82F3F812F00544443 /* MapView+Sheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3C72F3F812F00544443 /* MapView+Sheets.swift */; };
+		EC80F3CA2F3F814300544443 /* MapView+Puzzle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3C92F3F814300544443 /* MapView+Puzzle.swift */; };
+		EC80F3CF2F3FB01200544443 /* ChallengeResultPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3CC2F3FB01200544443 /* ChallengeResultPopup.swift */; };
+		EC80F3D02F3FB01200544443 /* ChallengesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3CD2F3FB01200544443 /* ChallengesSheet.swift */; };
+		EC80F3D22F3FB44900544443 /* PuzzleWiringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3D12F3FB44900544443 /* PuzzleWiringView.swift */; };
 		ECCAEE3A2F218A8B0047C5DF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE392F218A8B0047C5DF /* FirebaseAuth */; };
 		ECCAEE3C2F218A8B0047C5DF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE3B2F218A8B0047C5DF /* FirebaseFirestore */; };
 		ECCAEE422F218AAA0047C5DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */; };
@@ -33,14 +40,9 @@
 		ECCB95ED2F294CAE00DBC1F5 /*  SetupChallengeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95EC2F294CAE00DBC1F5 /*  SetupChallengeViewModel.swift */; };
 		ECCB95EF2F294CC900DBC1F5 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95EE2F294CC900DBC1F5 /* MapView.swift */; };
 		ECCB95F12F294CD100DBC1F5 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95F02F294CD100DBC1F5 /* MapViewModel.swift */; };
-		ECCB95F32F294CEF00DBC1F5 /* ChallengesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95F22F294CEF00DBC1F5 /* ChallengesSheet.swift */; };
-		ECCB95F72F294D5C00DBC1F5 /* PuzzleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95F62F294D5C00DBC1F5 /* PuzzleView.swift */; };
-		ECCB95F92F294D7000DBC1F5 /* PuzzleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95F82F294D7000DBC1F5 /* PuzzleViewModel.swift */; };
-		ECCB95FB2F294D9D00DBC1F5 /* PuzzleResultPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95FA2F294D9D00DBC1F5 /* PuzzleResultPopup.swift */; };
 		ECCB95FF2F294DD900DBC1F5 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95FE2F294DD900DBC1F5 /* ProfileViewModel.swift */; };
 		ECCB96012F294DE900DBC1F5 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB96002F294DE900DBC1F5 /* ProfileView.swift */; };
 		ECCB96032F294DFF00DBC1F5 /* JoinWithCodePopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB96022F294DFF00DBC1F5 /* JoinWithCodePopup.swift */; };
-		ECCB96052F294E0F00DBC1F5 /* ShareCodePopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB96042F294E0F00DBC1F5 /* ShareCodePopup.swift */; };
 		ECCB97882F2C3DA100DBC1F5 /* WaitingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB97872F2C3DA100DBC1F5 /* WaitingView.swift */; };
 		ECCB978A2F2C3DB300DBC1F5 /* WaitingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB97892F2C3DB300DBC1F5 /* WaitingViewModel.swift */; };
 		ECCB978F2F2D89E500DBC1F5 /* RussoOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ECCB978E2F2D89E500DBC1F5 /* RussoOne-Regular.ttf */; };
@@ -80,12 +82,19 @@
 
 /* Begin PBXFileReference section */
 		EC2548B22F34194E0003414C /* MapPathEditorHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPathEditorHelper.swift; sourceTree = "<group>"; };
+		EC26DE202F3D3873007DDE2B /* WiringGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WiringGameViewModel.swift; sourceTree = "<group>"; };
+		EC26DE282F3D3992007DDE2B /* PuzzlePromptPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzlePromptPopup.swift; sourceTree = "<group>"; };
+		EC26DE2C2F3D3A01007DDE2B /* PuzzleResultPopUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleResultPopUp.swift; sourceTree = "<group>"; };
 		EC6BAB1B2F3159E300BDBEC8 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		EC6BAB1D2F315A3000BDBEC8 /* GameSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSession.swift; sourceTree = "<group>"; };
 		EC7628CA2F395ADB008952D9 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
-		EC7628D32F396171008952D9 /* ChallengeResultPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeResultPopup.swift; sourceTree = "<group>"; };
-		EC7628D52F39619F008952D9 /* ChallengeResultSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeResultSheet.swift; sourceTree = "<group>"; };
 		EC77AE8D2F3B9A320056D261 /* OfflineBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineBanner.swift; sourceTree = "<group>"; };
+		EC80F3C52F3F810800544443 /* MapView+Content.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapView+Content.swift"; sourceTree = "<group>"; };
+		EC80F3C72F3F812F00544443 /* MapView+Sheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapView+Sheets.swift"; sourceTree = "<group>"; };
+		EC80F3C92F3F814300544443 /* MapView+Puzzle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapView+Puzzle.swift"; sourceTree = "<group>"; };
+		EC80F3CC2F3FB01200544443 /* ChallengeResultPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeResultPopup.swift; sourceTree = "<group>"; };
+		EC80F3CD2F3FB01200544443 /* ChallengesSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengesSheet.swift; sourceTree = "<group>"; };
+		EC80F3D12F3FB44900544443 /* PuzzleWiringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleWiringView.swift; sourceTree = "<group>"; };
 		ECCAEE282F21888B0047C5DF /* StepGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StepGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ECCAEE3F2F218AAA0047C5DF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -104,14 +113,9 @@
 		ECCB95EC2F294CAE00DBC1F5 /*  SetupChallengeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " SetupChallengeViewModel.swift"; sourceTree = "<group>"; };
 		ECCB95EE2F294CC900DBC1F5 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		ECCB95F02F294CD100DBC1F5 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
-		ECCB95F22F294CEF00DBC1F5 /* ChallengesSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengesSheet.swift; sourceTree = "<group>"; };
-		ECCB95F62F294D5C00DBC1F5 /* PuzzleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleView.swift; sourceTree = "<group>"; };
-		ECCB95F82F294D7000DBC1F5 /* PuzzleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleViewModel.swift; sourceTree = "<group>"; };
-		ECCB95FA2F294D9D00DBC1F5 /* PuzzleResultPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleResultPopup.swift; sourceTree = "<group>"; };
 		ECCB95FE2F294DD900DBC1F5 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		ECCB96002F294DE900DBC1F5 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		ECCB96022F294DFF00DBC1F5 /* JoinWithCodePopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinWithCodePopup.swift; sourceTree = "<group>"; };
-		ECCB96042F294E0F00DBC1F5 /* ShareCodePopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCodePopup.swift; sourceTree = "<group>"; };
 		ECCB97872F2C3DA100DBC1F5 /* WaitingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingView.swift; sourceTree = "<group>"; };
 		ECCB97892F2C3DB300DBC1F5 /* WaitingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingViewModel.swift; sourceTree = "<group>"; };
 		ECCB978E2F2D89E500DBC1F5 /* RussoOne-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "RussoOne-Regular.ttf"; sourceTree = "<group>"; };
@@ -157,20 +161,65 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
-		EC7628D22F395DA5008952D9 /* ChallengeResult */ = {
+		EC26DE1F2F3D3873007DDE2B /* View */ = {
 			isa = PBXGroup;
 			children = (
-				EC7628D32F396171008952D9 /* ChallengeResultPopup.swift */,
-				EC7628D52F39619F008952D9 /* ChallengeResultSheet.swift */,
+				EC80F3D12F3FB44900544443 /* PuzzleWiringView.swift */,
+				EC26DE282F3D3992007DDE2B /* PuzzlePromptPopup.swift */,
+				EC26DE2C2F3D3A01007DDE2B /* PuzzleResultPopUp.swift */,
 			);
-			path = ChallengeResult;
+			path = View;
+			sourceTree = "<group>";
+		};
+		EC26DE212F3D3873007DDE2B /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				EC26DE202F3D3873007DDE2B /* WiringGameViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		EC26DE222F3D3873007DDE2B /* PuzzlePage */ = {
+			isa = PBXGroup;
+			children = (
+				EC26DE212F3D3873007DDE2B /* ViewModel */,
+				EC26DE1F2F3D3873007DDE2B /* View */,
+			);
+			path = PuzzlePage;
+			sourceTree = "<group>";
+		};
+		EC80F3C32F3F802800544443 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				ECCB95F02F294CD100DBC1F5 /* MapViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		EC80F3C42F3F802A00544443 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				ECCB95EE2F294CC900DBC1F5 /* MapView.swift */,
+				EC80F3C52F3F810800544443 /* MapView+Content.swift */,
+				EC80F3C72F3F812F00544443 /* MapView+Sheets.swift */,
+				EC80F3C92F3F814300544443 /* MapView+Puzzle.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		EC80F3CE2F3FB01200544443 /* ChallengesSheet */ = {
+			isa = PBXGroup;
+			children = (
+				EC80F3CD2F3FB01200544443 /* ChallengesSheet.swift */,
+				EC80F3CC2F3FB01200544443 /* ChallengeResultPopup.swift */,
+			);
+			path = ChallengesSheet;
 			sourceTree = "<group>";
 		};
 		ECCAEE1F2F21888B0047C5DF = {
 			isa = PBXGroup;
 			children = (
 				ECCAEE412F218AAA0047C5DF /* StepGame */,
-				ECCF7E082F3A920A0003F772 /* StepGameWidgetExtension.entitlements */,
 				ECCF7E002F3A8E4B0003F772 /* StepGameWidget */,
 				ECCF7DE42F3A8E3C0003F772 /* Frameworks */,
 				ECCAEE292F21888B0047C5DF /* Products */,
@@ -211,10 +260,8 @@
 		ECCB95BD2F29472F00DBC1F5 /* MapPage */ = {
 			isa = PBXGroup;
 			children = (
-				ECCB95EE2F294CC900DBC1F5 /* MapView.swift */,
-				ECCB95F02F294CD100DBC1F5 /* MapViewModel.swift */,
-				ECCB95F22F294CEF00DBC1F5 /* ChallengesSheet.swift */,
-				EC7628D22F395DA5008952D9 /* ChallengeResult */,
+				EC80F3C32F3F802800544443 /* ViewModel */,
+				EC80F3C42F3F802A00544443 /* View */,
 			);
 			path = MapPage;
 			sourceTree = "<group>";
@@ -252,7 +299,7 @@
 			children = (
 				ECCB95EA2F294CA700DBC1F5 /*  SetupChallengeView.swift */,
 				ECCB95EC2F294CAE00DBC1F5 /*  SetupChallengeViewModel.swift */,
-				ECCB96042F294E0F00DBC1F5 /* ShareCodePopup.swift */,
+				ECCB96022F294DFF00DBC1F5 /* JoinWithCodePopup.swift */,
 			);
 			path = SetupChallengePage;
 			sourceTree = "<group>";
@@ -271,7 +318,6 @@
 			children = (
 				ECCB95E62F294C8100DBC1F5 /* StartView.swift */,
 				ECCB95E82F294C8F00DBC1F5 /* StartViewModel.swift */,
-				ECCB96022F294DFF00DBC1F5 /* JoinWithCodePopup.swift */,
 			);
 			path = StartPage;
 			sourceTree = "<group>";
@@ -286,7 +332,8 @@
 				ECCB95C22F29472F00DBC1F5 /* SetupChallengePage */,
 				ECCB97862F2C3D5900DBC1F5 /* WaitingPage */,
 				ECCB95BD2F29472F00DBC1F5 /* MapPage */,
-				ECCB95D92F294BED00DBC1F5 /* Puzzle */,
+				EC80F3CE2F3FB01200544443 /* ChallengesSheet */,
+				EC26DE222F3D3873007DDE2B /* PuzzlePage */,
 				ECCB95BF2F29472F00DBC1F5 /* ProfilePage */,
 				EC2548B12F34193E0003414C /* Helpers */,
 			);
@@ -320,16 +367,6 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		ECCB95D92F294BED00DBC1F5 /* Puzzle */ = {
-			isa = PBXGroup;
-			children = (
-				ECCB95F62F294D5C00DBC1F5 /* PuzzleView.swift */,
-				ECCB95F82F294D7000DBC1F5 /* PuzzleViewModel.swift */,
-				ECCB95FA2F294D9D00DBC1F5 /* PuzzleResultPopup.swift */,
-			);
-			path = Puzzle;
-			sourceTree = "<group>";
-		};
 		ECCB97862F2C3D5900DBC1F5 /* WaitingPage */ = {
 			isa = PBXGroup;
 			children = (
@@ -352,6 +389,7 @@
 			children = (
 				ECCF7DE52F3A8E3C0003F772 /* WidgetKit.framework */,
 				ECCF7DE72F3A8E3C0003F772 /* SwiftUI.framework */,
+				ECCF7E082F3A920A0003F772 /* StepGameWidgetExtension.entitlements */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -488,38 +526,40 @@
 			files = (
 				ECCB95D52F29483B00DBC1F5 /* FirebaseService.swift in Sources */,
 				EC77AE8E2F3B9A320056D261 /* OfflineBanner.swift in Sources */,
+				EC80F3CF2F3FB01200544443 /* ChallengeResultPopup.swift in Sources */,
+				EC80F3D02F3FB01200544443 /* ChallengesSheet.swift in Sources */,
 				ECCB97882F2C3DA100DBC1F5 /* WaitingView.swift in Sources */,
 				ECCB95E52F294C6100DBC1F5 /* EnterNameViewModel.swift in Sources */,
+				EC80F3C62F3F810800544443 /* MapView+Content.swift in Sources */,
 				ECCB95EB2F294CA700DBC1F5 /*  SetupChallengeView.swift in Sources */,
 				EC2548B32F34194E0003414C /* MapPathEditorHelper.swift in Sources */,
 				ECCB96032F294DFF00DBC1F5 /* JoinWithCodePopup.swift in Sources */,
 				ECCB978A2F2C3DB300DBC1F5 /* WaitingViewModel.swift in Sources */,
+				EC80F3C82F3F812F00544443 /* MapView+Sheets.swift in Sources */,
 				ECCB95D72F29484A00DBC1F5 /* HealthKitService.swift in Sources */,
-				EC7628D62F39619F008952D9 /* ChallengeResultSheet.swift in Sources */,
 				ECCB95DF2F294C3D00DBC1F5 /* OnboardingView.swift in Sources */,
 				ECCB96012F294DE900DBC1F5 /* ProfileView.swift in Sources */,
 				EC7628CB2F395ADB008952D9 /* Models.swift in Sources */,
-				ECCB96052F294E0F00DBC1F5 /* ShareCodePopup.swift in Sources */,
 				ECCB95E72F294C8100DBC1F5 /* StartView.swift in Sources */,
 				EC6BAB1C2F3159E300BDBEC8 /* RootView.swift in Sources */,
+				EC80F3D22F3FB44900544443 /* PuzzleWiringView.swift in Sources */,
 				ECCF7DCE2F3A5EA70003F772 /* WindTumbleweed.swift in Sources */,
+				EC26DE292F3D3992007DDE2B /* PuzzlePromptPopup.swift in Sources */,
 				EC6BAB1E2F315A3000BDBEC8 /* GameSession.swift in Sources */,
 				ECCB95E92F294C8F00DBC1F5 /* StartViewModel.swift in Sources */,
 				ECCF7E0C2F3A934B0003F772 /* WidgetStore.swift in Sources */,
 				ECCB95EF2F294CC900DBC1F5 /* MapView.swift in Sources */,
-				ECCB95FB2F294D9D00DBC1F5 /* PuzzleResultPopup.swift in Sources */,
 				ECCB95ED2F294CAE00DBC1F5 /*  SetupChallengeViewModel.swift in Sources */,
-				EC7628D42F396171008952D9 /* ChallengeResultPopup.swift in Sources */,
+				EC26DE262F3D3873007DDE2B /* WiringGameViewModel.swift in Sources */,
 				ECCB95FF2F294DD900DBC1F5 /* ProfileViewModel.swift in Sources */,
 				ECCB95E12F294C4500DBC1F5 /* OnboardingViewModel.swift in Sources */,
 				ECCB95CD2F29478100DBC1F5 /* StepGameApp.swift in Sources */,
 				ECCB95DB2F294C0F00DBC1F5 /* SplashView.swift in Sources */,
 				ECCB95DD2F294C2100DBC1F5 /* SplashViewModel.swift in Sources */,
-				ECCB95F72F294D5C00DBC1F5 /* PuzzleView.swift in Sources */,
-				ECCB95F92F294D7000DBC1F5 /* PuzzleViewModel.swift in Sources */,
+				EC80F3CA2F3F814300544443 /* MapView+Puzzle.swift in Sources */,
 				ECCB95E32F294C5A00DBC1F5 /* EnterNameView.swift in Sources */,
 				ECCB95F12F294CD100DBC1F5 /* MapViewModel.swift in Sources */,
-				ECCB95F32F294CEF00DBC1F5 /* ChallengesSheet.swift in Sources */,
+				EC26DE2D2F3D3A01007DDE2B /* PuzzleResultPopUp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -666,8 +706,9 @@
 		ECCAEE342F21888C0047C5DF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = StepGame/StepGame.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -676,10 +717,12 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = StepGame/Info.plist;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Turn on step tracking to start your journey!";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app requests access to your step count data to display your progress inside the app.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "";
+				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -707,8 +750,9 @@
 		ECCAEE352F21888C0047C5DF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = StepGame/StepGame.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -717,10 +761,12 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = StepGame/Info.plist;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Turn on step tracking to start your journey!";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app requests access to your step count data to display your progress inside the app.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = "";
+				INFOPLIST_KEY_UIStatusBarHidden = NO;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;

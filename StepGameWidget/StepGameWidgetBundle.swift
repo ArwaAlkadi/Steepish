@@ -77,7 +77,7 @@ struct StepGameWidgetProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<StepEntry>) -> Void) {
         let entry = loadEntry() ?? demoEntry
         let timeline = Timeline(entries: [entry],
-                                policy: .after(Date().addingTimeInterval(60 * 15)))
+                                policy: .after(Date().addingTimeInterval(60 * 1)))
         completion(timeline)
     }
 
@@ -122,7 +122,8 @@ struct StepGameWidgetProvider: TimelineProvider {
 private struct PlayerCardView: View {
 
     let challengeName: String
-  
+    let imageName: String  
+
     let steps: Int
     let goal: Int
     let displayName: String
@@ -130,7 +131,6 @@ private struct PlayerCardView: View {
     var body: some View {
         VStack(spacing: 6) {
 
-            // Top: Goal number
             Text("\(goal)")
                 .font(.russo(24))
                 .foregroundColor(.brown)
@@ -139,18 +139,14 @@ private struct PlayerCardView: View {
 
             Spacer()
 
-            // Avatar
-            Image("character1_active")
+            Image("\(imageName)")
                 .resizable()
                 .scaledToFit()
                 .frame(height: 50)
 
             Spacer()
 
-            // Bottom info
             VStack(spacing: 3) {
-
-                // Challenge name + steps
                 HStack(spacing: 4) {
                     Text(challengeName)
                         .font(.russo(10))
@@ -177,19 +173,15 @@ private struct PlayerCardView: View {
             }
             .padding(.horizontal, 10)
             .padding(.bottom, 10)
-          
+
         }
         .frame(width: 160, height: 140)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(
-                    .light3
-                )
-            
+                .fill(.light3)
         )
     }
 }
-
 // MARK: - Entry View
 
 struct StepGameWidgetEntryView: View {
@@ -213,6 +205,7 @@ struct StepGameWidgetEntryView: View {
 
             PlayerCardView(
                 challengeName: entry.challengeName,
+                imageName: entry.userImage,   // ✅
                 steps: entry.userSteps,
                 goal: entry.userGoal,
                 displayName: "Me"
@@ -224,13 +217,15 @@ struct StepGameWidgetEntryView: View {
 
                 PlayerCardView(
                     challengeName: entry.challengeName,
+                    imageName: entry.userImage,  
                     steps: entry.userSteps,
                     goal: entry.userGoal,
-                    displayName: "Me" 
+                    displayName: "Me"
                 )
-
+                
                 PlayerCardView(
                     challengeName: entry.challengeName,
+                    imageName: entry.friendImage,
                     steps: entry.friendSteps,
                     goal: entry.friendGoal,
                     displayName: entry.friendName

@@ -8,6 +8,7 @@ import SwiftUI
 import Combine
 import FirebaseFirestore
 import UIKit
+import WidgetKit
 
 @MainActor
 final class MapViewModel: ObservableObject {
@@ -326,6 +327,7 @@ final class MapViewModel: ObservableObject {
             friendGoal: ch.goalSteps,
             friendImage: friendImage
         )
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     // MARK: - HUD Text

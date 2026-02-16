@@ -61,6 +61,7 @@ extension MapView {
             isGroup: vm.isGroupChallenge,
             avatars: vm.hudAvatars,
             myAvatar: vm.myHudAvatar,
+            durationText: vm.durationText,
             stepsLeftText: vm.stepsLeftText,
             daysLeftText: vm.daysLeftText,
             isChallengeEnded: vm.isChallengeEnded,
@@ -170,6 +171,7 @@ private struct MapHUDLayer: View {
     var isGroup: Bool
     var avatars: [String]
     var myAvatar: String
+    var durationText: String
     var stepsLeftText: String
     var daysLeftText: String
     var isChallengeEnded: Bool
@@ -178,13 +180,14 @@ private struct MapHUDLayer: View {
     var body: some View {
         VStack(spacing: 0) {
             Rectangle()
-                .frame(height: 155)
+                .frame(height: 185)
                 .cornerRadius(20)
                 .foregroundStyle(Color.light1.opacity(0.3))
                 .overlay(
                     VStack(alignment: .leading, spacing: 6) {
                         MapTopHUD(
                             title: title,
+                            durationText: durationText,
                             isGroup: isGroup,
                             avatars: avatars,
                             myAvatar: myAvatar,
@@ -448,18 +451,28 @@ private struct FlagMarker: View {
 
 private struct MapTopHUD: View {
     var title: String
+    var durationText: String
     var isGroup: Bool
     var avatars: [String]
     var myAvatar: String
     var onTapMyAvatar: () -> Void
 
     var body: some View {
+        
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 12) {
-                Text(title)
-                    .font(.custom("RussoOne-Regular", size: 28))
-                    .foregroundStyle(.white)
+                
+                VStack (alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.custom("RussoOne-Regular", size: 28))
+                        .foregroundStyle(.white)
 
+                    Text("Period: \(durationText)")
+                            .font(.custom("RussoOne-Regular", size: 16))
+                            .foregroundStyle(.white)
+                            
+                }
+              
                 if isGroup {
                     HStack(spacing: -10) {
                         ForEach(Array(avatars.prefix(6).enumerated()), id: \.offset) { _, a in
@@ -569,7 +582,8 @@ private struct ProfileAvatarButton: View {
             place: 1,
             attackedByName: "Arwa",
             isUnderSabotage: true,
-            sabotageExpiresAt: Date().addingTimeInterval(60 * 60 * 2),            isAttackedByMe: false,
+            sabotageExpiresAt: Date().addingTimeInterval(60 * 60 * 2),
+            isAttackedByMe: false,
             lastSyncedAt: Date().addingTimeInterval(-60 * 5),
             isChallengeEnded: false
         )

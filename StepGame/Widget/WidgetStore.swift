@@ -24,8 +24,11 @@ enum WidgetStore {
         let friendSteps: Int
         let friendGoal: Int
         let friendImage: String
-        
+
         let isSoloChallenge: String?
+
+        let startDate: Date
+        let durationDays: Int
     }
 
     static func save(
@@ -38,7 +41,9 @@ enum WidgetStore {
         friendSteps: Int,
         friendGoal: Int,
         friendImage: String,
-        isSoloChallenge: String?
+        isSoloChallenge: String?,
+        startDate: Date,
+        durationDays: Int
     ) {
         let payload = Payload(
             challengeName: challengeName,
@@ -50,7 +55,9 @@ enum WidgetStore {
             friendSteps: friendSteps,
             friendGoal: friendGoal,
             friendImage: friendImage,
-            isSoloChallenge: isSoloChallenge
+            isSoloChallenge: isSoloChallenge,
+            startDate: startDate,
+            durationDays: durationDays
         )
 
         guard let data = try? JSONEncoder().encode(payload) else { return }

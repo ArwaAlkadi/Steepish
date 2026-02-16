@@ -37,8 +37,11 @@ struct StepEntry: TimelineEntry {
     let friendSteps: Int
     let friendGoal: Int
     let friendName: String
-    
+
     let isSoloChallenge: Bool
+
+    let startDate: Date
+    let durationDays: Int
 }
 
 // MARK: - Custom Font
@@ -68,8 +71,11 @@ struct StepGameWidgetProvider: TimelineProvider {
         let friendSteps: Int
         let friendGoal: Int
         let friendImage: String
-        
+
         let isSoloChallenge: String?
+
+        let startDate: Date
+        let durationDays: Int
     }
 
     func placeholder(in context: Context) -> StepEntry {
@@ -84,29 +90,20 @@ struct StepGameWidgetProvider: TimelineProvider {
             friendSteps: 0,
             friendGoal: 0,
             friendName: "Friend",
-            isSoloChallenge: true
+            isSoloChallenge: true,
+            startDate: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
+            durationDays: 7
         )
     }
 
     func getSnapshot(in context: Context, completion: @escaping (StepEntry) -> Void) {
-        if let entry = loadEntry() {
-            completion(entry)
-        } else {
-            completion(placeholder(in: context))
-        }
+        completion(loadEntry() ?? placeholder(in: context))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<StepEntry>) -> Void) {
-        if let entry = loadEntry() {
-            let timeline = Timeline(entries: [entry],
-                                    policy: .after(Date().addingTimeInterval(60 * 1)))
-            completion(timeline)
-        } else {
-            let placeholder = placeholder(in: context)
-            let timeline = Timeline(entries: [placeholder],
-                                    policy: .after(Date().addingTimeInterval(60 * 1)))
-            completion(timeline)
-        }
+        let entry = loadEntry() ?? placeholder(in: context)
+        let timeline = Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(60 * 1)))
+        completion(timeline)
     }
 
     private func loadEntry() -> StepEntry? {
@@ -126,7 +123,9 @@ struct StepGameWidgetProvider: TimelineProvider {
             friendSteps: payload.friendSteps,
             friendGoal: payload.friendGoal,
             friendName: payload.friendName,
-            isSoloChallenge: payload.isSoloChallenge == "solo"
+            isSoloChallenge: payload.isSoloChallenge == "solo",
+            startDate: payload.startDate,
+            durationDays: payload.durationDays
         )
     }
 }
@@ -141,53 +140,70 @@ private struct PlayerCardView: View {
     let steps: Int
     let goal: Int
     let displayName: String
-    
+
     var isSolo: Bool = false
+
+    let startDate: Date
+    let durationDays: Int
+
+    private var elapsedDays: Int {
+        let cal = Calendar.current
+        let start = cal.startOfDay(for: startDate)
+        let today = cal.startOfDay(for: Date())
+        let diff = cal.dateComponents([.day], from: start, to: today).day ?? 0
+        // day index (1-based) + clamp
+        return min(max(1, diff + 1), max(durationDays, 1))
+    }
+
+    private var stepsDurationText: String {
+        "\(steps) steps in \(elapsedDays) of \(max(durationDays, 1)) days"
+    }
 
     var body: some View {
         VStack(spacing: 6) {
 
-            Text("\(challengeName)")
+            Text(challengeName)
                 .font(.russo(11))
                 .foregroundColor(.light1)
-                .offset(x: 0, y: 40)
+                .offset(x: 0, y: 50)
                 .lineLimit(1)
-              
-            
+
             Text("\(goal)")
                 .font(.russo(28))
-                .foregroundColor(.light2.opacity(0.5))
+                .foregroundColor(.light2.opacity(0.4))
                 .padding(.horizontal, 3)
-                .offset(x: 0, y: 28)
+                .offset(x: 0, y: 40)
                 .lineLimit(1)
-           
 
-            Image("\(imageName)")
+            Image(imageName)
                 .resizable()
                 .scaledToFit()
                 .frame(height: 100)
+                .offset(x: 0, y: 7)
+            
+            Text(displayName)
+                .font(.russo(11))
+                .foregroundColor(.light1)
+            
 
             HStack {
                 
-                Text(displayName)
-                    .font(.russo(11))
-                    .foregroundColor(.light1)
-                    
+                
                 HStack(spacing: 2) {
                     Image(systemName: "figure.walk")
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundColor(.light2)
-                    Text("\(steps)")
+
+                    Text(stepsDurationText)
                         .font(.russo(10))
                         .foregroundColor(.light2)
-                
-
-                    }
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                }
+                .offset(x: 0, y: -10)
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 40)
-
-           
 
         }
         .frame(width: isSolo ? 320 : 160, height: 145)
@@ -195,11 +211,8 @@ private struct PlayerCardView: View {
             RoundedRectangle(cornerRadius: 16)
                 .fill(.light3)
         )
-        
     }
 }
-
-
 
 private struct NoActiveGroupChallengeView: View {
     var body: some View {
@@ -228,7 +241,6 @@ private struct NoActiveGroupChallengeView: View {
     }
 }
 
-
 // MARK: - Entry View
 
 struct StepGameWidgetEntryView: View {
@@ -237,18 +249,13 @@ struct StepGameWidgetEntryView: View {
     @Environment(\.widgetFamily) var family
 
     var body: some View {
-        ZStack {
-            content
-        }
-        .padding(10)
-        .containerBackground(for: .widget) {
-            Color.light1
-        }
+        ZStack { content }
+            .padding(10)
+            .containerBackground(for: .widget) { Color.light1 }
     }
 
     @ViewBuilder
     private var content: some View {
-        /// If Solo Challenge - show single player only
         if entry.isSoloChallenge {
             PlayerCardView(
                 challengeName: entry.challengeName,
@@ -256,34 +263,37 @@ struct StepGameWidgetEntryView: View {
                 steps: entry.userSteps,
                 goal: entry.userGoal,
                 displayName: "Me",
-                isSolo: true
+                isSolo: true,
+                startDate: entry.startDate,
+                durationDays: entry.durationDays
             )
         } else {
-            /// Group Challenge - show both players
             HStack(spacing: 12) {
-
                 PlayerCardView(
                     challengeName: entry.challengeName,
                     imageName: entry.userImage,
                     steps: entry.userSteps,
                     goal: entry.userGoal,
                     displayName: "Me",
-                    isSolo: false
+                    isSolo: false,
+                    startDate: entry.startDate,
+                    durationDays: entry.durationDays
                 )
-                
+
                 PlayerCardView(
                     challengeName: entry.challengeName,
                     imageName: entry.friendImage,
                     steps: entry.friendSteps,
                     goal: entry.friendGoal,
                     displayName: entry.friendName,
-                    isSolo: false
+                    isSolo: false,
+                    startDate: entry.startDate,
+                    durationDays: entry.durationDays
                 )
             }
         }
     }
 }
-
 
 #Preview(as: .systemMedium) {
     StepGameWidget()
@@ -292,13 +302,15 @@ struct StepGameWidgetEntryView: View {
         date: Date(),
         challengeName: "Desert Run",
         userImage: "character1_normal",
-        userSteps: 2000666,
+        userSteps: 400000,
         userGoal: 3000000,
         userName: "Me",
         friendImage: "character2_lazy",
         friendSteps: 1500,
         friendGoal: 3000,
         friendName: "Friend",
-        isSoloChallenge: true
+        isSoloChallenge: true,
+        startDate: Calendar.current.date(byAdding: .day, value: -2, to: Date()) ?? Date(),
+        durationDays: 100
     )
 }

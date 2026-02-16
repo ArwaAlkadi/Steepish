@@ -475,13 +475,25 @@ final class MapViewModel: ObservableObject {
         }
         
         let me = mapPlayers.first(where: { $0.isMe })
-        let friend = mapPlayers.first(where: { !$0.isMe })
+        
+        let friend: MapPlayerVM? = {
+            let others = mapPlayers.filter { !$0.isMe }
+            guard !others.isEmpty, let me = mapPlayers.first(where: { $0.isMe }) else {
+                return others.first
+            }
+            
+            return others.max(by: { player1, player2 in
+                let diff1 = abs(me.steps - player1.steps)
+                let diff2 = abs(me.steps - player2.steps)
+                return diff1 < diff2
+            })
+        }()
 
         guard let me else { return }
 
         let userImage = me.mapSprite
         let friendImage = friend?.mapSprite ?? "character2_normal"
-
+        
         WidgetStore.save(
             challengeName: ch.name,
             userName: me.name,
@@ -492,11 +504,13 @@ final class MapViewModel: ObservableObject {
             friendSteps: friend?.steps ?? 0,
             friendGoal: ch.goalSteps,
             friendImage: friendImage,
-            isSoloChallenge: ch.currentMode.rawValue
+            isSoloChallenge: ch.currentMode.rawValue,
+            startDate: (ch.startedAt ?? ch.startDate),
+            durationDays: ch.durationDays
         )
         WidgetCenter.shared.reloadAllTimelines()
     }
-
+    
     // MARK: - Helpers
 
     private func isSameDay(_ a: Date, _ b: Date) -> Bool {
@@ -556,6 +570,14 @@ final class MapViewModel: ObservableObject {
         return "\(daysLeft) \(dayWord) Left"
     }
 
+
+    var durationText: String {
+        guard let ch = challenge else { return "0 Days" }
+        let days = ch.durationDays
+        let dayWord = days == 1 ? "Day" : "Days"
+        return "\(days) \(dayWord)"
+    }
+    
     func positionForPlayer(_ player: MapPlayerVM, mapSize: CGSize) -> CGPoint {
         let base = positionForProgress(progress: CGFloat(player.progress), mapSize: mapSize)
 

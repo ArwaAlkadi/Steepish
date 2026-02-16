@@ -109,8 +109,8 @@ struct OnboardingView: View {
 
             // MARK: - Subtitle
             Text(subtitleText(for: pageIndex))
-                .font(.custom("RussoOne-Regular", size: 16))
-                .foregroundColor(Color(red: 0.45, green: 0.22, blue: 0.10))
+                .font(.custom("RussoOne-Regular", size: 20))
+                .foregroundColor(.light1)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 48)
                 .padding(.top, 24)

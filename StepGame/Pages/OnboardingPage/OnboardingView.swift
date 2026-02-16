@@ -14,6 +14,7 @@ struct OnboardingView: View {
             // MARK: - Top Bar
             HStack {
                 Spacer()
+
                 if viewModel.currentPage < viewModel.totalPages - 1 {
                     Button("Skip") {
                         onFinish()
@@ -22,22 +23,27 @@ struct OnboardingView: View {
                     .foregroundColor(Color.light2)
                     .padding(.trailing, 24)
                     .padding(.top, 12)
+                } else {
+                    Color.clear
+                        .frame(width: 60, height: 20)
+                        .padding(.trailing, 24)
+                        .padding(.top, 12)
                 }
             }
 
             TabView(selection: $viewModel.currentPage) {
 
-                // Page 0
                 pageView(pageIndex: 0)
                     .tag(0)
 
-                // Page 1
                 pageView(pageIndex: 1)
                     .tag(1)
 
-                // Page 2
                 pageView(pageIndex: 2)
                     .tag(2)
+
+                pageView(pageIndex: 3)
+                    .tag(3)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.easeInOut, value: viewModel.currentPage)
@@ -60,6 +66,7 @@ struct OnboardingView: View {
                             )
                     }
                 }
+                .animation(.easeInOut, value: viewModel.currentPage)
 
                 Spacer()
 
@@ -84,7 +91,7 @@ struct OnboardingView: View {
             .padding(.bottom, 32)
         }
         .background(
-            Color(red: 0.98, green: 0.94, blue: 0.88)
+            Color.light3
                 .ignoresSafeArea()
         )
     }
@@ -103,9 +110,11 @@ struct OnboardingView: View {
                 .padding(.horizontal, 32)
                 .padding(.bottom, 24)
 
-            
+            if pageIndex == 2 {
+                avatarsView
+            } else {
                 characterView(imageName: characterImage(for: pageIndex))
-          
+            }
 
             // MARK: - Subtitle
             Text(subtitleText(for: pageIndex))
@@ -137,7 +146,25 @@ extension OnboardingView {
         }
     }
 
-    
+    var avatarsView: some View {
+        ZStack {
+            Circle()
+                .fill(Color.light2.opacity(0.1))
+                .frame(width: 260, height: 260)
+
+            avatar("rosyavatar", x: -70, y: -60)
+            avatar("rayavatar", x: 70, y: -60)
+            avatar("lunaavatar", x: 0, y: 60)
+        }
+    }
+
+    func avatar(_ name: String, x: CGFloat, y: CGFloat) -> some View {
+        Image(name)
+            .resizable()
+            .scaledToFit()
+            .frame(height: 120)
+            .offset(x: x, y: y)
+    }
 }
 
 // MARK: - Page Content
@@ -148,6 +175,7 @@ extension OnboardingView {
         case 0: return "Walk • Play • Win"
         case 1: return "Your Character Shows\nYour Progress"
         case 2: return "Walk, think, and compete"
+        case 3: return "Stay Updated Instantly with the Widget"
         default: return ""
         }
     }
@@ -156,7 +184,8 @@ extension OnboardingView {
         switch page {
         case 0: return "Turn your daily steps into an exciting game"
         case 1: return "The more you move, the better your character looks"
-        case 2: return "Play solo or challenge a friend. Track your challenge with the Steepish Widget!"
+        case 2: return "Play solo or challenge a friend"
+        case 3: return "Track your challenge"
         default: return ""
         }
     }
@@ -165,7 +194,8 @@ extension OnboardingView {
         switch page {
         case 0: return "lunawalk"
         case 1: return "lunawin"
-        default: return "wid"
+        case 3: return "wid"
+        default: return ""
         }
     }
 }

@@ -716,6 +716,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = StepGame/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Steepish;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Turn on step tracking to start your journey!";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app requests access to your step count data to display your progress inside the app.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -760,6 +761,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = StepGame/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Steepish;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Turn on step tracking to start your journey!";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app requests access to your step count data to display your progress inside the app.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

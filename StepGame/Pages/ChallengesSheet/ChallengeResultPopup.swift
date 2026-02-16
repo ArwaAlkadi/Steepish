@@ -225,9 +225,11 @@ final class ChallengeResultPopupViewModel: ObservableObject {
 
             if myParticipant.finishedAt != nil {
                 let usedDays = daysUsedIfFinished()
-                footerText = "\(goal.formatted()) Steps in \(usedDays) Days"
+                let dayWord = usedDays == 1 ? "Day" : "Days"
+                footerText = "\(goal.formatted()) Steps in \(usedDays) \(dayWord)"
             } else {
-                footerText = "You didn’t complete the \(goal.formatted())\nsteps in \(originalDays) days.. Try again!"
+                let dayWord = originalDays == 1 ? "day" : "days"
+                footerText = "You didn't complete the \(goal.formatted())\nsteps in \(originalDays) \(dayWord). Try again!"
             }
 
         case .group:
@@ -238,14 +240,17 @@ final class ChallengeResultPopupViewModel: ObservableObject {
 
             if iFinished {
                 let usedDays = daysUsedIfFinished()
-                footerText = "\(goal.formatted()) Steps in \(usedDays) Days"
+                let dayWord = usedDays == 1 ? "Day" : "Days"
+                footerText = "\(goal.formatted()) Steps in \(usedDays) \(dayWord)"
             } else {
+                let dayWord = originalDays == 1 ? "Day" : "Days"
                 if challenge.winnerId != nil {
-                    footerText = "\(goal.formatted()) Steps in \(originalDays) Days"
+                    footerText = "\(goal.formatted()) Steps in \(originalDays) \(dayWord)"
                 } else if timeEnded {
-                    footerText = "No one completed the \(goal.formatted())\nsteps in \(originalDays) days"
+                    let dayWordLower = originalDays == 1 ? "day" : "days"
+                    footerText = "No one completed the \(goal.formatted())\nsteps in \(originalDays) \(dayWordLower)"
                 } else {
-                    footerText = "\(goal.formatted()) Steps in \(originalDays) Days"
+                    footerText = "\(goal.formatted()) Steps in \(originalDays) \(dayWord)"
                 }
             }
         }

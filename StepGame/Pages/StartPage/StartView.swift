@@ -159,7 +159,7 @@ private struct BigButtonLabel: View {
     var body: some View {
         Text(title)
             .font(.custom("RussoOne-Regular", size: 20))
-            .foregroundColor(.light4)
+            .foregroundColor(.light3)
             .frame(width: 280, height: 55)
             .background(Color("Light1"))
             .cornerRadius(30)

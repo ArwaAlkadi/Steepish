@@ -50,11 +50,15 @@ struct SetupChallengeView: View {
                             .font(.custom("RussoOne-Regular", size: 24))
                             .foregroundStyle(.light2)
                             .frame(maxWidth: .infinity, alignment: .leading)
+                            .minimumScaleFactor(0.7)
+                            .lineLimit(1)
 
                         Image("Flag3")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 35, height: 35)
+                            .minimumScaleFactor(0.7)
+                            .lineLimit(1)
                            
 
                     }

@@ -103,12 +103,9 @@ struct OnboardingView: View {
                 .padding(.horizontal, 32)
                 .padding(.bottom, 24)
 
-            // MARK: - Content
-            if pageIndex == 2 {
-                avatarsView
-            } else {
+            
                 characterView(imageName: characterImage(for: pageIndex))
-            }
+          
 
             // MARK: - Subtitle
             Text(subtitleText(for: pageIndex))
@@ -135,30 +132,12 @@ extension OnboardingView {
             Image(imageName)
                 .resizable()
                 .scaledToFit()
-                .frame(height: 350)
+                .frame(width: 330, height: 350)
                 .offset(y: -10)
         }
     }
 
-    var avatarsView: some View {
-        ZStack {
-            Circle()
-                .fill(Color.light2.opacity(0.1))
-                .frame(width: 260, height: 260)
-
-            avatar("rosyavatar", x: -70, y: -60)
-            avatar("rayavatar", x: 70, y: -60)
-            avatar("lunaavatar", x: 0, y: 60)
-        }
-    }
-
-    func avatar(_ name: String, x: CGFloat, y: CGFloat) -> some View {
-        Image(name)
-            .resizable()
-            .scaledToFit()
-            .frame(height: 120)
-            .offset(x: x, y: y)
-    }
+    
 }
 
 // MARK: - Page Content
@@ -168,7 +147,7 @@ extension OnboardingView {
         switch page {
         case 0: return "Walk • Play • Win"
         case 1: return "Your Character Shows\nYour Progress"
-        case 2: return "Walk, think, and compete!"
+        case 2: return "Walk, think, and compete"
         default: return ""
         }
     }
@@ -177,7 +156,7 @@ extension OnboardingView {
         switch page {
         case 0: return "Turn your daily steps into an exciting game"
         case 1: return "The more you move, the better your character looks"
-        case 2: return "Play solo or challenge a friend.\nWalk, think, and compete!"
+        case 2: return "Play solo or challenge a friend. Track your challenge with the Steepish Widget!"
         default: return ""
         }
     }
@@ -186,7 +165,7 @@ extension OnboardingView {
         switch page {
         case 0: return "lunawalk"
         case 1: return "lunawin"
-        default: return ""
+        default: return "wid"
         }
     }
 }

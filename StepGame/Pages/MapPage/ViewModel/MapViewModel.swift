@@ -344,6 +344,12 @@ final class MapViewModel: ObservableObject {
         guard isEffectivelySolo else { return }
         guard let myPart = myParticipant else { return }
 
+        /// Don't show popup in first 3 hours of challenge
+        if let startedAt = ch.startedAt ?? ch.startDate as Date? {
+            let hoursElapsed = now.timeIntervalSince(startedAt) / 3600
+            guard hoursElapsed >= 3 else { return }
+        }
+
         if isLockedToday(myPart.soloAttemptedAt, now: now) { return }
         if isCooldownActive(myPart.soloDismissedAt, seconds: dismissCooldown, now: now) { return }
 
@@ -356,6 +362,12 @@ final class MapViewModel: ObservableObject {
 
     func evaluateGroupDefender(now: Date = Date()) {
         guard let myPart = myParticipant else { return }
+
+        /// Don't show popup in first 3 hours of challenge
+        if let ch = challenge, let startedAt = ch.startedAt ?? ch.startDate as Date? {
+            let hoursElapsed = now.timeIntervalSince(startedAt) / 3600
+            guard hoursElapsed >= 3 else { return }
+        }
 
         if isLockedToday(myPart.groupDefenseAttemptedAt, now: now) { return }
         if isCooldownActive(myPart.groupDefenseDismissedAt, seconds: dismissCooldown, now: now) { return }
@@ -371,6 +383,11 @@ final class MapViewModel: ObservableObject {
         guard shouldAllowPuzzlePopups(checkSteps: false, now: now) else { return }
         guard isGroupChallenge else { return }
         guard let myPart = myParticipant else { return }
+
+        if let ch = challenge, let startedAt = ch.startedAt ?? ch.startDate as Date? {
+            let hoursElapsed = now.timeIntervalSince(startedAt) / 3600
+            guard hoursElapsed >= 3 else { return }
+        }
 
         if isLockedToday(myPart.groupAttackAttemptedAt, now: now) { return }
         if isCooldownActive(myPart.groupAttackDismissedAt, seconds: dismissCooldown, now: now) { return }
@@ -388,6 +405,7 @@ final class MapViewModel: ObservableObject {
 
         tryPresentPopup(.groupAttacker, cooldownSeconds: 2 * 60 * 60, now: now)
     }
+    
     // MARK: - UI Builders
 
     private func rebuildAllUI() {
@@ -473,7 +491,8 @@ final class MapViewModel: ObservableObject {
             friendName: friend?.name ?? "Friend",
             friendSteps: friend?.steps ?? 0,
             friendGoal: ch.goalSteps,
-            friendImage: friendImage
+            friendImage: friendImage,
+            isSoloChallenge: ch.currentMode.rawValue
         )
         WidgetCenter.shared.reloadAllTimelines()
     }

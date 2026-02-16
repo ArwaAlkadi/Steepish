@@ -223,14 +223,14 @@ final class WiringGameViewModel: ObservableObject {
 
     @Published var isComplete = false
     @Published var hasFailed = false
-    @Published var timeRemaining: Double = 8.0
+    @Published var timeRemaining: Double = 7.0
 
     let gameState: WiringGameState
 
     private var timer: Timer?
     var timeLimit: Double
 
-    init(timeLimit: Double = 8.0) {
+    init(timeLimit: Double = 7.0) {
         self.timeLimit = timeLimit
         self.gameState = WiringGameState()
         startTimer()

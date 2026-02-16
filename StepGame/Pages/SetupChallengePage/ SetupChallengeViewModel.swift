@@ -14,7 +14,7 @@ final class SetupChallengeViewModel: ObservableObject {
     // MARK: - Inputs
     @Published var challengeName: String = ""
     @Published var selectedPeriod: PeriodOption = .threeDays
-    @Published var steps: Double = 6000
+    @Published var steps: Double = 5000
     @Published var mode: ModeOption = .solo
 
     // MARK: - Validation

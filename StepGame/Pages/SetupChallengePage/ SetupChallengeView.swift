@@ -128,20 +128,20 @@ struct SetupChallengeView: View {
                             .foregroundStyle(Color.light1)
 
                         CustomStepSlider(
-                            value: $vm.steps,
+                           value: $vm.steps,
                             min: 1000,
-                            max: 1_000_000,
-                            step: 100,
+                           max: 1_000_000,
+                            step: 5000,
                             fillColor: Color.light2,
                             trackColor: Color.white
                         )
                         .onChange(of: vm.steps) { _, newValue in
-                            vm.steps = (newValue / 100).rounded() * 100
+                            vm.steps = (newValue / 5000).rounded() * 5000  
                         }
                         .frame(height: 34)
-
+                        
                         HStack {
-                            Text("1000")
+                            Text("5000")
 
                             Spacer()
 
@@ -205,7 +205,7 @@ struct SetupChallengeView: View {
                             )
                     }
                     .buttonStyle(.plain)
-                    .disabled(session.isLoading || !connectivity.isOnline)
+                    .disabled(session.isLoading || !connectivity.isOnline || vm.steps <= 0) 
                     .opacity((session.isLoading || !connectivity.isOnline) ? 0.6 : 1.0)
                     .padding(.top, 8)
                 }

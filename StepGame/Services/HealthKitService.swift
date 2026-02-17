@@ -1,163 +1,131 @@
-//
-//  HealthKitService.swift
-//  StepGame
-//
-
-import Foundation
 import HealthKit
+import SwiftUI
 import Combine
-import UIKit
 
 @MainActor
 final class HealthKitManager: ObservableObject {
-
-    private let store = HKHealthStore()
-
-    @Published private(set) var isAuthorized: Bool = false
-
-    private var stepType: HKQuantityType? {
-        HKObjectType.quantityType(forIdentifier: .stepCount)
-    }
-
-    // MARK: - Authorization
-
-    func requestAuthorization() {
-        guard HKHealthStore.isHealthDataAvailable(),
-              let stepType else {
+    
+    @Published var isAuthorized: Bool = false
+    
+    private let healthStore = HKHealthStore()
+    private let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+    
+    func requestAuthorization() async {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            print("HealthKit not available")
             isAuthorized = false
             return
         }
-
-        store.requestAuthorization(toShare: [], read: [stepType]) { [weak self] _, _ in
-            guard let self else { return }
-            Task { @MainActor in
-                await self.refreshAuthorizationState()
-
-                if self.isAuthorized {
-                    self.enableBackgroundStepsUpdates()
-                    self.startObservingSteps {
-                    }
-                }
-            }
-        }
-    }
-
-    // MARK: - Refresh Authorization State
-    /// Performs a lightweight read to verify access without treating all errors as denial
-    func refreshAuthorizationState() async {
-        guard HKHealthStore.isHealthDataAvailable(),
-              let _ = stepType else {
-            isAuthorized = false
-            return
-        }
-
-        let now = Date()
-        let start = now.addingTimeInterval(-5 * 60)
-
+        
         do {
-            _ = try await fetchSteps(from: start, to: now)
-            isAuthorized = true
+            try await healthStore.requestAuthorization(
+                toShare: [],
+                read: [stepType]
+            )
+            
+            print("Authorization requested")
+            
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            await refreshAuthorizationState()
+            
         } catch {
-            if isAuthorizationError(error) {
-                isAuthorized = false
-            } else {
-                isAuthorized = true
-            }
+            print("Authorization failed: \(error)")
+            isAuthorized = false
         }
     }
-
-    // MARK: - Authorization Error Detection
-    private func isAuthorizationError(_ error: Error) -> Bool {
-        let ns = error as NSError
-
-        if ns.domain == HKErrorDomain,
-           let code = HKError.Code(rawValue: ns.code) {
-            switch code {
-            case .errorAuthorizationDenied,
-                 .errorAuthorizationNotDetermined:
-                return true
-            default:
-                return false
-            }
+    
+    func refreshAuthorizationState() async {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            isAuthorized = false
+            print("HealthKit not available")
+            return
         }
-
-        return false
+        
+        let authorized = await canReadSteps()
+        isAuthorized = authorized
+        
+        print("HealthKit authorization check: \(authorized)")
     }
-
-    func openAppSettings() {
-        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
-        UIApplication.shared.open(url)
-    }
-
-    // MARK: - Steps Fetch
-
-    func fetchSteps(from startDate: Date, to endDate: Date) async throws -> Int {
-        guard HKHealthStore.isHealthDataAvailable(),
-              let stepType else { return 0 }
-
-        let clampedEnd = max(endDate, startDate)
-
-        return try await withCheckedThrowingContinuation { cont in
+    
+    private func canReadSteps() async -> Bool {
+        return await withCheckedContinuation { continuation in
+            
+            let now = Date()
+            let startOfDay = Calendar.current.startOfDay(for: now)
+            
             let predicate = HKQuery.predicateForSamples(
-                withStart: startDate,
-                end: clampedEnd,
+                withStart: startOfDay,
+                end: now,
                 options: .strictStartDate
             )
-
+            
             let query = HKStatisticsQuery(
                 quantityType: stepType,
                 quantitySamplePredicate: predicate,
                 options: .cumulativeSum
             ) { _, result, error in
-                if let error {
-                    cont.resume(throwing: error)
+                
+                if let error = error as? HKError {
+                    if error.code == .errorAuthorizationDenied ||
+                       error.code == .errorAuthorizationNotDetermined {
+                        print("HealthKit: Access denied or not determined")
+                        continuation.resume(returning: false)
+                        return
+                    }
+                }
+                
+                if error != nil {
+                    print("HealthKit: Read failed - \(error!.localizedDescription)")
+                    continuation.resume(returning: false)
                     return
                 }
-
-                // MARK: - Cumulative Step Count
-                let sum = result?.sumQuantity()?.doubleValue(for: HKUnit.count()) ?? 0
-                cont.resume(returning: Int(sum))
+                
+                let steps = result?.sumQuantity()?.doubleValue(for: .count()) ?? 0
+                print("HealthKit: Read successful - \(Int(steps)) steps")
+                continuation.resume(returning: true)
             }
-
-            self.store.execute(query)
+            
+            healthStore.execute(query)
         }
     }
-
-    // MARK: - Background Delivery
-
-    func enableBackgroundStepsUpdates() {
-        guard HKHealthStore.isHealthDataAvailable(),
-              let stepsType = HKObjectType.quantityType(forIdentifier: .stepCount) else { return }
-
-        store.enableBackgroundDelivery(
-            for: stepsType,
-            frequency: HKUpdateFrequency.immediate
-        ) { success, error in
-            if success {
-                print("Background delivery enabled")
-            } else {
-                print("Failed background delivery: \(error?.localizedDescription ?? "Unknown")")
-            }
+    
+    func openAppSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url)
         }
     }
-
-    // MARK: - Observer Query
-
-    func startObservingSteps(onUpdate: @escaping () -> Void) {
-        guard HKHealthStore.isHealthDataAvailable(),
-              let stepsType = HKObjectType.quantityType(forIdentifier: .stepCount) else { return }
-
-        let query = HKObserverQuery(sampleType: stepsType, predicate: nil) { _, completionHandler, error in
-
-            if error == nil {
-                DispatchQueue.main.async {
-                    onUpdate()
+    
+    func fetchSteps(from start: Date, to end: Date) async throws -> Int {
+        return try await withCheckedThrowingContinuation { continuation in
+            
+            let predicate = HKQuery.predicateForSamples(
+                withStart: start,
+                end: end,
+                options: .strictStartDate
+            )
+            
+            let query = HKStatisticsQuery(
+                quantityType: stepType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum
+            ) { _, result, error in
+                
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
                 }
+                
+                let steps = result?.sumQuantity()?.doubleValue(for: .count()) ?? 0
+                continuation.resume(returning: Int(steps))
             }
-
-            completionHandler()
+            
+            healthStore.execute(query)
         }
-
-        store.execute(query)
+    }
+    
+    func getTodaySteps() async throws -> Int {
+        let now = Date()
+        let startOfDay = Calendar.current.startOfDay(for: now)
+        return try await fetchSteps(from: startOfDay, to: now)
     }
 }

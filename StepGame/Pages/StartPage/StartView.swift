@@ -13,10 +13,13 @@ struct StartView: View {
     @EnvironmentObject var session: GameSession
     @EnvironmentObject var health: HealthKitManager
     @StateObject private var vm = StartViewModel()
-
+    @EnvironmentObject private var connectivity: ConnectivityMonitor
+    
     @State private var showSetup = false
     @State private var showProfile = false
-
+    @State private var hasCheckedHealth = false
+    @State private var showOfflineBanner: Bool = true
+    
     var body: some View {
         ZStack {
 
@@ -55,21 +58,26 @@ struct StartView: View {
                                 .padding(30)
                         }
                         .buttonStyle(.plain)
-                        .fullScreenCover(isPresented: $showProfile) {
-                            NavigationStack {
-                                ProfileView()
-                                    .environmentObject(session)
-                            }
-                        }
                     }
+                    .zIndex(1)
 
-                    if !health.isAuthorized {
+                    if hasCheckedHealth && !health.isAuthorized {
                         HealthPermissionGate(
-                            onAllow: { health.requestAuthorization() },
-                            onOpenSettings: { health.openAppSettings() }
+                            onAllow: {
+                                Task {
+                                    await health.requestAuthorization()
+                                    try? await Task.sleep(nanoseconds: 500_000_000)
+                                    await health.refreshAuthorizationState()
+                                }
+                            },
+                            onOpenSettings: {
+                                health.openAppSettings()
+                            }
                         )
                         .padding(.horizontal, 18)
                         .padding(.top, 70)
+                        .zIndex(2)
+                        .transition(.opacity)
                     }
                 }
 
@@ -102,51 +110,53 @@ struct StartView: View {
                 .disabled(!vm.isInteractionEnabled(isLoading: session.isLoading, isHealthAuthorized: health.isAuthorized))
                 .opacity(vm.isInteractionEnabled(isLoading: session.isLoading, isHealthAuthorized: health.isAuthorized) ? 1 : 0.5)
                 .padding(.bottom, 70)
-                
-               
             }
 
-            // MARK: - Join Code Popup
             if vm.showJoinPopup {
                 JoinCodePopup(
                     isPresented: $vm.showJoinPopup,
                     onJoin: { code in
-                        /// Clear any previous error
                         session.clearError()
-
                         await session.joinWithCode(code)
-
-                            /// Return error message to keep popup open
                         if let msg = session.errorMessage, !msg.isEmpty {
                             return msg
                         }
-
                         return nil
                     }
                 )
                 .transition(.opacity)
+                .zIndex(3)
             }
+            
+            if !connectivity.isOnline {
+                OfflineBanner(isVisible: $showOfflineBanner)
+            }
+            
         }
         .sheet(isPresented: $showSetup) {
             SetupChallengeView(isPresented: $showSetup)
                 .environmentObject(session)
         }
+        .fullScreenCover(isPresented: $showProfile) {
+            NavigationStack {
+                ProfileView()
+                    .environmentObject(session)
+            }
+        }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            Task {
-                await health.refreshAuthorizationState()
-                if !health.isAuthorized {
-                    await health.requestAuthorization()
-                }
-            }
+        .task {
+            await health.refreshAuthorizationState()
+            hasCheckedHealth = true
         }
         .onReceive(
             NotificationCenter.default.publisher(
                 for: UIApplication.willEnterForegroundNotification
             )
         ) { _ in
-            Task { await health.refreshAuthorizationState() }
+            Task {
+                await health.refreshAuthorizationState()
+            }
         }
     }
 }

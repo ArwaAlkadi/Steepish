@@ -149,6 +149,9 @@ struct StartView: View {
         .task {
             await health.refreshAuthorizationState()
             hasCheckedHealth = true
+            if !health.isAuthorized {
+                    await health.requestAuthorization()
+                }
         }
         .onReceive(
             NotificationCenter.default.publisher(

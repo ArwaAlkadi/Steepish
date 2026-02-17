@@ -102,9 +102,10 @@ struct ChallengesSheet: View {
             }
             .buttonStyle(.plain)
         }
+        .padding(.top)
     }
 
-    // \\ Empty state
+    /// Empty state
     private var emptyState: some View {
         VStack(spacing: 12) {
             Text("No active challenges")
@@ -113,7 +114,7 @@ struct ChallengesSheet: View {
         }
     }
 
-    // \\ Badge label for a challenge
+    /// Badge label for a challenge
     private func badgeForChallenge(_ ch: Challenge) -> String? {
         if ch.originalMode == .solo { return "Solo" }
         if ch.status == .waiting { return "Waiting" }

@@ -56,6 +56,7 @@ struct StartView: View {
                                 )
                                 .clipShape(Circle())
                                 .padding(30)
+                                .padding(.top, 30)
                         }
                         .buttonStyle(.plain)
                     }

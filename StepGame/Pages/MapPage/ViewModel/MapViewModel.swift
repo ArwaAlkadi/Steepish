@@ -403,6 +403,18 @@ final class MapViewModel: ObservableObject {
 
         if let exp = leader.sabotageExpiresAt, now < exp { return }
 
+        guard let ch = challenge else { return }
+        
+        let leaderState = computedCharacterState(
+            challenge: ch,
+            participant: leader,
+            now: now
+        )
+        
+        guard leaderState != .lazy else {
+            return
+        }
+
         tryPresentPopup(.groupAttacker, cooldownSeconds: 2 * 60 * 60, now: now)
     }
     

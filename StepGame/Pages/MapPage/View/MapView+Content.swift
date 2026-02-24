@@ -302,15 +302,21 @@ private struct MapPlayerMarker: View {
                     
                     // Timer badge if under attack
                     if isUnderSabotage, let expires = sabotageExpiresAt {
-                        Text(timeRemainingString(until: expires))
-                            .font(.custom("RussoOne-Regular", size: 10))
-                            .foregroundStyle(.white)
-                            .padding(.horizontal, 15)
-                            .padding(.vertical, 3)
-                            .background(
-                                Capsule()
-                                    .fill(Color.red)
-                            )
+                        HStack(spacing: 4) {
+                            Image(systemName: "clock.fill")
+                                .font(.system(size: 9))
+                                .foregroundStyle(.white)
+                            
+                            Text(timeRemainingString(until: expires))
+                                .font(.custom("RussoOne-Regular", size: 10))
+                                .foregroundStyle(.white)
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 3)
+                        .background(
+                            Capsule()
+                                .fill(Color.red)
+                        )
                     }
                 }
                 .padding(.bottom, 8)
@@ -372,26 +378,6 @@ private struct MapPlayerMarker: View {
         }
     }
 }
-    // MARK: - Helper Functions
-    
-    private func timeRemainingString(until date: Date) -> String {
-        let remaining = Int(date.timeIntervalSince(Date()))
-        if remaining <= 0 { return "0m" }
-        let hours = remaining / 3600
-        let minutes = (remaining % 3600) / 60
-        return hours > 0 ? "\(hours)h\(minutes)m" : "\(minutes)m"
-    }
-    
-    private func placeAssetName(_ place: Int) -> String {
-        switch place {
-        case 1: return "Place1"
-        case 2: return "Place2"
-        case 3: return "Place3"
-        default: return "Place1"
-        }
-    
-}
-
 
 // MARK: - Player Info Bubble
 
@@ -444,7 +430,7 @@ private struct PlayerInfoBubble: View {
                         .foregroundStyle(.light2)
                        
                     
-                    Text(formatSyncDate(lastSyncedAt))
+                    Text("Steps updated: \(formatSyncDate(lastSyncedAt))")
                         .font(.custom("RussoOne-Regular", size: 10))
                         .foregroundStyle(.light2)
                         .multilineTextAlignment(.leading)
@@ -463,7 +449,7 @@ private struct PlayerInfoBubble: View {
                         .font(.custom("RussoOne-Regular", size: 12))
                         .foregroundStyle(.red)
                     
-                    Text(isAttackedByMe ? "Attacked by you" : "By \(attackedByName)")
+                    Text(isAttackedByMe ? "Turned lazy by you" : "Turned lazy by \(attackedByName)")
                         .font(.custom("RussoOne-Regular", size: 10))
                         .foregroundStyle(.red)
                     
@@ -484,30 +470,38 @@ private struct PlayerInfoBubble: View {
         let calendar = Calendar.current
         let now = Date()
         
+        // Today
         if calendar.isDateInToday(date) {
+            return "Today"
+        }
+        
+        // Yesterday
+        if calendar.isDateInYesterday(date) {
+            return "Yesterday"
+        }
+        
+        // Last 7 days (show day name)
+        let daysDiff = calendar.dateComponents([.day], from: calendar.startOfDay(for: date), to: calendar.startOfDay(for: now)).day ?? 0
+        
+        if daysDiff > 0 && daysDiff < 7 {
             let formatter = DateFormatter()
-            formatter.timeStyle = .short
-            return "Today \(formatter.string(from: date))"
-        } else if calendar.isDateInYesterday(date) {
-            let formatter = DateFormatter()
-            formatter.timeStyle = .short
-            return "Yesterday \(formatter.string(from: date))"
-        } else {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .short
-            formatter.timeStyle = .short
+            formatter.dateFormat = "EEEE"  // "Monday", "Tuesday", etc.
             return formatter.string(from: date)
         }
+        
+        // This year (show date without year)
+        if calendar.component(.year, from: date) == calendar.component(.year, from: now) {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MMM d"  // "Feb 15"
+            return formatter.string(from: date)
+        }
+        
+        // Previous years (show full date)
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, yyyy"  // "Feb 15, 2025"
+        return formatter.string(from: date)
     }
     
-    private func timeRemainingString(until date: Date) -> String {
-        let remaining = Int(date.timeIntervalSince(Date()))
-        if remaining <= 0 { return "0m" }
-        let hours = remaining / 3600
-        let minutes = (remaining % 3600) / 60
-        return hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
-    }
-
     private func placeAssetName(_ place: Int) -> String {
         switch place {
         case 1: return "Place1"

@@ -130,7 +130,7 @@ struct SetupChallengeView: View {
                         CustomStepSlider(
                            value: $vm.steps,
                             min: 1000,
-                           max: 1_000_000,
+                           max: 500_000,
                             step: 5000,
                             fillColor: Color.light2,
                             trackColor: Color.white
@@ -151,7 +151,7 @@ struct SetupChallengeView: View {
 
                             Spacer()
 
-                            Text("1,000,000")
+                            Text("500,000")
                         }
                         .font(.custom("RussoOne-Regular", size: 12))
                         .foregroundStyle(Color.light2)

@@ -590,9 +590,11 @@ final class MapViewModel: ObservableObject {
         return "\(days) \(dayWord)"
     }
     
+
     func positionForPlayer(_ player: MapPlayerVM, mapSize: CGSize) -> CGPoint {
         let base = positionForProgress(progress: CGFloat(player.progress), mapSize: mapSize)
 
+        // Group players with similar progress
         let grouped = mapPlayers
             .sorted { $0.id < $1.id }
             .filter { abs($0.progress - player.progress) < 0.01 }
@@ -603,22 +605,16 @@ final class MapViewModel: ObservableObject {
         }
 
         let count = grouped.count
+        let spacing: CGFloat = 100 // Horizontal spacing between players
 
-        let radius: CGFloat = 40
-        let startAngle: CGFloat = .pi
-        let endAngle: CGFloat = 0
-
-        let angleStep = (endAngle - startAngle) / CGFloat(max(count - 1, 1))
-        let angle = startAngle + angleStep * CGFloat(idx)
-
-        let offset = CGPoint(
-            x: cos(angle) * radius,
-            y: sin(angle) * radius
-        )
+        // Calculate offset from center (side by side arrangement)
+        let totalWidth = CGFloat(count - 1) * spacing
+        let startX = -totalWidth / 2
+        let offsetX = startX + CGFloat(idx) * spacing
 
         let shifted = CGPoint(
-            x: base.x + offset.x,
-            y: base.y - abs(offset.y)
+            x: base.x + offsetX,
+            y: base.y  // Keep same Y position (players side by side)
         )
 
         return clampToBounds(shifted, mapSize: mapSize)

@@ -216,7 +216,6 @@ private struct MapHUDLayer: View {
 }
 
 // MARK: - Player Marker
-
 private struct MapPlayerMarker: View {
     let mapSprite: String
     let name: String
@@ -231,21 +230,46 @@ private struct MapPlayerMarker: View {
     let lastSyncedAt: Date?
     let isChallengeEnded: Bool
     
-    @State private var showSyncInfo = false
-    @State private var showSabotageInfo = false
+    @State private var showBubble = false
+    @State private var showInfoIcon = true
     @GestureState private var dragOffset: CGSize = .zero
 
     var body: some View {
-        VStack(spacing: 6) {
-
-            Image(systemName: "bubble.middle.bottom.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 90)
-                .foregroundStyle(.white)
-                .overlay(alignment: .center) {
-                    VStack(spacing: 2) {
-                        HStack(spacing: 4) {
+        VStack(spacing: 0) {
+            
+            // Show either bubble OR name badge
+            if showBubble {
+                PlayerInfoBubble(
+                    name: name,
+                    steps: steps,
+                    isMe: isMe,
+                    isGroup: isGroup,
+                    place: place,
+                    attackedByName: attackedByName,
+                    isUnderSabotage: isUnderSabotage,
+                    sabotageExpiresAt: sabotageExpiresAt,
+                    isAttackedByMe: isAttackedByMe,
+                    lastSyncedAt: lastSyncedAt,
+                    isChallengeEnded: isChallengeEnded
+                )
+                .fixedSize()
+                .padding(.bottom, 8)
+                .transition(.scale.combined(with: .opacity))
+                .onTapGesture {
+                    withAnimation(.spring(response: 0.3)) {
+                        showBubble = false
+                    }
+                }
+            } else {
+                VStack(spacing: 4) {
+                    // Player name button
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            showBubble.toggle()
+                        }
+                    } label: {
+                        // Name and Place
+                        HStack(spacing: 6) {
                             Text(isMe ? "Me" : name)
                                 .font(.custom("RussoOne-Regular", size: 12))
                                 .foregroundStyle(.light1)
@@ -256,74 +280,52 @@ private struct MapPlayerMarker: View {
                                     .scaledToFit()
                                     .frame(width: 16, height: 16)
                             }
-                        }
-
-                    
-                        HStack(spacing: 2) {
-                            Text("\(steps.formatted()) Steps")
-                                .font(.custom("RussoOne-Regular", size: 10))
-                                .foregroundStyle(.light2)
-
-                            if !isChallengeEnded && place == nil {
-                                Button {
-                                    withAnimation(.spring()) { showSyncInfo.toggle() }
-                                } label: {
-                                    Image(systemName: "lightbulb.circle.fill")
-                                        .foregroundStyle(.light2)
-                                        .font(.system(size: 12))
-                                }
-                                .buttonStyle(.plain)
+                            
+                            if showInfoIcon {
+                                Image(systemName: "info.circle.fill")
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(.light1)
+                                    .transition(.opacity)
                             }
                         }
-                      
-                        
-                        if isUnderSabotage, let expires = sabotageExpiresAt {
-                            HStack(spacing: 2) {
-                                Text(timeRemainingString(until: expires))
-                                    .font(.custom("RussoOne-Regular", size: 10))
-                                    .foregroundStyle(.red)
-
-                                Button {
-                                    withAnimation(.spring()) { showSabotageInfo.toggle() }
-                                } label: {
-                                    Image(systemName: "questionmark.circle.fill")
-                                        .foregroundStyle(.red)
-                                        .font(.system(size: 12))
-                                }
-                                .buttonStyle(.plain)
+                        .padding(.horizontal, 15)
+                        .padding(.vertical, 3)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.light3)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                            withAnimation(.easeOut(duration: 0.5)) {
+                                showInfoIcon = false
                             }
                         }
                     }
-                    .multilineTextAlignment(.center)
-                    .offset(y: -6)
+                    
+                    // Timer badge if under attack
+                    if isUnderSabotage, let expires = sabotageExpiresAt {
+                        Text(timeRemainingString(until: expires))
+                            .font(.custom("RussoOne-Regular", size: 10))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 15)
+                            .padding(.vertical, 3)
+                            .background(
+                                Capsule()
+                                    .fill(Color.red)
+                            )
+                    }
                 }
-
+                .padding(.bottom, 8)
+                .transition(.scale.combined(with: .opacity))
+            }
+            
+            // Character sprite
             Image(mapSprite)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 90, height: 90)
-        }
-        .overlay(alignment: .top) {
-            if showSabotageInfo {
-                sabotageTooltip
-                    .offset(y: -100)
-                    .transition(.scale.combined(with: .opacity))
-                    .zIndex(999)
-            }
-
-            if showSyncInfo {
-                syncTooltip
-                    .offset(y: -70)
-                    .transition(.scale.combined(with: .opacity))
-                    .zIndex(1000)
-            }
-        }
-        .onChange(of: showSyncInfo) { _, newValue in
-            if newValue {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-                    withAnimation { showSyncInfo = false }
-                }
-            }
         }
         .offset(dragOffset)
         .animation(.spring(response: 0.25, dampingFraction: 0.8), value: dragOffset)
@@ -334,78 +336,162 @@ private struct MapPlayerMarker: View {
                     state = value.translation
                 }
         )
-        .onChange(of: showSabotageInfo) { _, newValue in
+        .onChange(of: showBubble) { _, newValue in
             if newValue {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                    withAnimation { showSabotageInfo = false }
+                    withAnimation { showBubble = false }
                 }
             }
         }
     }
-
-    private func syncText(from date: Date?) -> String {
-        guard let date else { return "Not synced yet" }
-
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return "\(formatter.string(from: date))"
+    
+    // MARK: - Helper Functions
+    
+    private func timeRemainingString(until date: Date) -> String {
+        let remaining = Int(date.timeIntervalSince(Date()))
+        if remaining <= 0 { return "0m" }
+        let hours = remaining / 3600
+        let minutes = (remaining % 3600) / 60
+        return hours > 0 ? "\(hours)h\(minutes)m" : "\(minutes)m"
     }
     
-    private var syncTooltip: some View {
-        VStack(spacing: 6) {
-            
-            HStack (spacing: 3) {
-                Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
-                    .foregroundStyle(.light1)
-                    .font(.system(size: 12))
-                    .bold(true)
-                
-                Text("Last Sync:")
-                    .font(.custom("RussoOne-Regular", size: 12))
-                    .foregroundStyle(.light1)
-            }
-            
-
-            Text(syncText(from: lastSyncedAt))
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.light2)
+    private func placeAssetName(_ place: Int) -> String {
+        switch place {
+        case 1: return "Place1"
+        case 2: return "Place2"
+        case 3: return "Place3"
+        default: return "Place1"
         }
-        .font(.custom("RussoOne-Regular", size: 10))
-        .padding()
-        .frame(width: 120)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.white)
-        )
+    }
+}
+    // MARK: - Helper Functions
+    
+    private func timeRemainingString(until date: Date) -> String {
+        let remaining = Int(date.timeIntervalSince(Date()))
+        if remaining <= 0 { return "0m" }
+        let hours = remaining / 3600
+        let minutes = (remaining % 3600) / 60
+        return hours > 0 ? "\(hours)h\(minutes)m" : "\(minutes)m"
     }
     
-    private var sabotageTooltip: some View {
-        VStack(spacing: 6) {
-            if let attackedByName {
+    private func placeAssetName(_ place: Int) -> String {
+        switch place {
+        case 1: return "Place1"
+        case 2: return "Place2"
+        case 3: return "Place3"
+        default: return "Place1"
+        }
+    
+}
 
-                Text("Under Attack ⚔️")
+
+// MARK: - Player Info Bubble
+
+private struct PlayerInfoBubble: View {
+    let name: String
+    let steps: Int
+    let isMe: Bool
+    let isGroup: Bool
+    let place: Int?
+    let attackedByName: String?
+    let isUnderSabotage: Bool
+    let sabotageExpiresAt: Date?
+    let isAttackedByMe: Bool
+    let lastSyncedAt: Date?
+    let isChallengeEnded: Bool
+    
+    var body: some View {
+        VStack(spacing: 10) {
+            // Name and Place
+            HStack(spacing: 4) {
+                Text(isMe ? "Me" : name)
                     .font(.custom("RussoOne-Regular", size: 14))
                     .foregroundStyle(.light1)
 
-                Text(isAttackedByMe ? "Attacked by you!" : "Attacked by \(attackedByName)!")
-                    .multilineTextAlignment(.center)
+                if isGroup, let place, (1...3).contains(place) {
+                    Image(placeAssetName(place))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 18, height: 18)
+                }
+            }
+            
+           
+            HStack(spacing: 4) {
+                Image(systemName: "figure.walk")
+                    .font(.system(size: 12))
                     .foregroundStyle(.light1)
+                
+                Text("\(steps.formatted()) Steps")
                     .font(.custom("RussoOne-Regular", size: 12))
-
-                Text(isMe ? "Your character is in lazy mode for 3 hours" : "Their character is in lazy mode for 3 hours")
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.light2)
-                    .font(.custom("RussoOne-Regular", size: 10))
+                    .foregroundStyle(.light1)
+            }
+            
+            // Last Sync
+            if !isChallengeEnded {
+                HStack(alignment: .top, spacing: 4) {
+                    Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
+                        .font(.system(size: 11))
+                        .bold()
+                        .foregroundStyle(.light2)
+                       
+                    
+                    Text(formatSyncDate(lastSyncedAt))
+                        .font(.custom("RussoOne-Regular", size: 10))
+                        .foregroundStyle(.light2)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                
+            }
+            
+            // Sabotage Info
+            if isUnderSabotage, let attackedByName, let expires = sabotageExpiresAt {
+                Divider()
+                    .background(Color.red.opacity(0.3))
+                
+                VStack(spacing: 6) {
+                    Text("⚔️ Under Attack")
+                        .font(.custom("RussoOne-Regular", size: 12))
+                        .foregroundStyle(.red)
+                    
+                    Text(isAttackedByMe ? "Attacked by you!" : "By \(attackedByName)")
+                        .font(.custom("RussoOne-Regular", size: 10))
+                        .foregroundStyle(.red)
+                    
+                }
             }
         }
-        .padding()
-        .frame(width: 190)
+        .padding(12)
+        .frame(minWidth: 140)
         .background(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 16)
                 .fill(Color.white)
         )
     }
-
+    
+    private func formatSyncDate(_ date: Date?) -> String {
+        guard let date else { return "Not synced" }
+        
+        let calendar = Calendar.current
+        let now = Date()
+        
+        if calendar.isDateInToday(date) {
+            let formatter = DateFormatter()
+            formatter.timeStyle = .short
+            return "Today \(formatter.string(from: date))"
+        } else if calendar.isDateInYesterday(date) {
+            let formatter = DateFormatter()
+            formatter.timeStyle = .short
+            return "Yesterday \(formatter.string(from: date))"
+        } else {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .short
+            formatter.timeStyle = .short
+            return formatter.string(from: date)
+        }
+    }
+    
     private func timeRemainingString(until date: Date) -> String {
         let remaining = Int(date.timeIntervalSince(Date()))
         if remaining <= 0 { return "0m" }
@@ -571,7 +657,7 @@ private struct ProfileAvatarButton: View {
 
 #Preview("MapPlayerMarker - Under Attack") {
     ZStack {
-        Color.light2.ignoresSafeArea()
+         Image("Map")
 
         MapPlayerMarker(
             mapSprite: "character1_lazy",

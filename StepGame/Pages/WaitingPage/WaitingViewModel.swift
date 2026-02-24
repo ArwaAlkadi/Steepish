@@ -47,6 +47,19 @@ final class WaitingRoomViewModel: ObservableObject {
         return "\(ch.goalSteps.formatted()) Steps"
     }
 
+    var durationText: String {
+        guard let ch = challenge else { return "" }
+        let days = ch.durationDays
+        let word = days == 1 ? "Day" : "Days"
+        return "\(days) \(word)"
+    }
+
+    var goalAndDurationText: String {
+        guard let ch = challenge else { return "" }
+        let steps = "\(ch.goalSteps.formatted()) Steps"
+        let days = durationText
+        return "\(steps) in \(days)"
+    }
     var joinCodeText: String { (challenge?.joinCode ?? "").uppercased() }
 
     var footerTextForPlayer: String {

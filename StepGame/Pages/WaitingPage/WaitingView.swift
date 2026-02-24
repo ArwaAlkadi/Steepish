@@ -43,7 +43,7 @@ struct WaitingRoomView: View {
                     .font(.custom("RussoOne-Regular", size: 34))
                     .foregroundStyle(Color.light1)
 
-                StepsPill(text: vm.goalStepsText)
+                StepsPill(text: vm.goalAndDurationText)
 
                 // MARK: - Join Code Actions
                 HStack(spacing: 14) {

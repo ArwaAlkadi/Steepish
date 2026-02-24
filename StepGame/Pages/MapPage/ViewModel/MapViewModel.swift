@@ -590,6 +590,9 @@ final class MapViewModel: ObservableObject {
         return "\(days) \(dayWord)"
     }
     
+    var goalSteps: Int {
+        challenge?.goalSteps ?? 0
+    }
 
     func positionForPlayer(_ player: MapPlayerVM, mapSize: CGSize) -> CGPoint {
         let base = positionForProgress(progress: CGFloat(player.progress), mapSize: mapSize)
@@ -605,7 +608,7 @@ final class MapViewModel: ObservableObject {
         }
 
         let count = grouped.count
-        let spacing: CGFloat = 100 // Horizontal spacing between players
+        let spacing: CGFloat = 90 // Horizontal spacing between players
 
         // Calculate offset from center (side by side arrangement)
         let totalWidth = CGFloat(count - 1) * spacing

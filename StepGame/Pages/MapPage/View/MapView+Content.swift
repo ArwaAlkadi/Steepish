@@ -62,6 +62,7 @@ extension MapView {
             avatars: vm.hudAvatars,
             myAvatar: vm.myHudAvatar,
             durationText: vm.durationText,
+            goalSteps: vm.goalSteps,
             stepsLeftText: vm.stepsLeftText,
             daysLeftText: vm.daysLeftText,
             isChallengeEnded: vm.isChallengeEnded,
@@ -172,6 +173,7 @@ private struct MapHUDLayer: View {
     var avatars: [String]
     var myAvatar: String
     var durationText: String
+    var goalSteps: Int
     var stepsLeftText: String
     var daysLeftText: String
     var isChallengeEnded: Bool
@@ -182,12 +184,13 @@ private struct MapHUDLayer: View {
             Rectangle()
                 .frame(height: 185)
                 .cornerRadius(20)
-                .foregroundStyle(Color.light1.opacity(0.3))
+                .foregroundStyle(Color.light1.opacity(0.5))
                 .overlay(
                     VStack(alignment: .leading, spacing: 6) {
                         MapTopHUD(
                             title: title,
                             durationText: durationText,
+                            goalSteps: goalSteps,
                             isGroup: isGroup,
                             avatars: avatars,
                             myAvatar: myAvatar,
@@ -534,10 +537,10 @@ private struct FlagMarker: View {
 }
 
 // MARK: - HUD Components
-
 private struct MapTopHUD: View {
     var title: String
     var durationText: String
+    var goalSteps: Int
     var isGroup: Bool
     var avatars: [String]
     var myAvatar: String
@@ -548,15 +551,14 @@ private struct MapTopHUD: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 12) {
                 
-                VStack (alignment: .leading, spacing: 2) {
+                VStack (alignment: .leading, spacing: 6) {
                     Text(title)
                         .font(.custom("RussoOne-Regular", size: 28))
                         .foregroundStyle(.white)
 
-                    Text("Period: \(durationText)")
-                            .font(.custom("RussoOne-Regular", size: 16))
-                            .foregroundStyle(.white)
-                            
+                    Text("Goal: \(goalSteps.formatted()) steps in \(durationText)")
+                        .font(.custom("RussoOne-Regular", size: 14))
+                        .foregroundStyle(.white)
                 }
               
                 if isGroup {

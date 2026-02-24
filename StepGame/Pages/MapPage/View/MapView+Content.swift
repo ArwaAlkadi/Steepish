@@ -47,9 +47,13 @@ extension MapView {
                     sabotageExpiresAt: p.sabotageExpiresAt,
                     isAttackedByMe: p.isAttackedByMe,
                     lastSyncedAt: p.lastSyncedAt,
-                    isChallengeEnded: vm.isChallengeEnded
+                    isChallengeEnded: vm.isChallengeEnded,
+                    onTap: {
+                        vm.bringToFront(playerId: p.id)
+                    }
                 )
                 .position(vm.positionForPlayer(p, mapSize: size))
+                .zIndex(vm.zIndexForPlayer(p.id)) 
                 .animation(.easeInOut(duration: 0.35), value: p.progress)
             }
         }
@@ -232,6 +236,7 @@ private struct MapPlayerMarker: View {
     let isAttackedByMe: Bool
     let lastSyncedAt: Date?
     let isChallengeEnded: Bool
+    let onTap: () -> Void
     
     @State private var showBubble = false
     @State private var showInfoIcon = true
@@ -267,6 +272,7 @@ private struct MapPlayerMarker: View {
                 VStack(spacing: 4) {
                     // Player name button
                     Button {
+                        onTap()
                         withAnimation(.spring(response: 0.3)) {
                             showBubble.toggle()
                         }
@@ -328,7 +334,7 @@ private struct MapPlayerMarker: View {
             Image(mapSprite)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 90, height: 90)
+                .frame(width: 85, height: 85)
         }
         .offset(dragOffset)
         .animation(.spring(response: 0.25, dampingFraction: 0.8), value: dragOffset)
@@ -453,12 +459,12 @@ private struct PlayerInfoBubble: View {
                 Divider()
                     .background(Color.red.opacity(0.3))
                 
-                VStack(spacing: 6) {
-                    Text("⚔️ Under Attack")
+                VStack(spacing: 4) {
+                    Text("Under Attack!")
                         .font(.custom("RussoOne-Regular", size: 12))
                         .foregroundStyle(.red)
                     
-                    Text(isAttackedByMe ? "Attacked by you!" : "By \(attackedByName)")
+                    Text(isAttackedByMe ? "Attacked by you" : "By \(attackedByName)")
                         .font(.custom("RussoOne-Regular", size: 10))
                         .foregroundStyle(.red)
                     
@@ -631,50 +637,5 @@ private struct ProfileAvatarButton: View {
                 .contentShape(Circle())
         }
         .buttonStyle(.plain)
-    }
-}
-
-
-#Preview("MapPlayerMarker - Not Synced Yet") {
-    ZStack {
-        Color.light2.ignoresSafeArea()
-
-        MapPlayerMarker(
-            mapSprite: "character2_normal",
-            name: "Noura",
-            steps: 100000,
-            isMe: false,
-            isGroup: true,
-            place: nil,
-            attackedByName: nil,
-            isUnderSabotage: false,
-            sabotageExpiresAt: nil,
-            isAttackedByMe: false,
-            lastSyncedAt: nil,
-            isChallengeEnded: false
-        )
-        .padding()
-    }
-}
-
-#Preview("MapPlayerMarker - Under Attack") {
-    ZStack {
-         Image("Map")
-
-        MapPlayerMarker(
-            mapSprite: "character1_lazy",
-            name: "Noura",
-            steps: 5400,
-            isMe: false,
-            isGroup: true,
-            place: 1,
-            attackedByName: "Arwa",
-            isUnderSabotage: true,
-            sabotageExpiresAt: Date().addingTimeInterval(60 * 60 * 2),
-            isAttackedByMe: false,
-            lastSyncedAt: Date().addingTimeInterval(-60 * 5),
-            isChallengeEnded: false
-        )
-        .padding()
     }
 }

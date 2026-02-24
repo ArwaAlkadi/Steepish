@@ -46,6 +46,19 @@ final class MapViewModel: ObservableObject {
 
     @Published private(set) var mapPlayers: [MapPlayerVM] = []
 
+    @Published private(set) var activePlayerId: String? = nil
+
+    func bringToFront(playerId: String) {
+        activePlayerId = playerId
+    }
+
+    func zIndexForPlayer(_ playerId: String) -> Double {
+        if playerId == activePlayerId {
+            return 1000
+        }
+        return 0 
+    }
+    
     // MARK: - Dependencies
 
     private let firebase = FirebaseService.shared

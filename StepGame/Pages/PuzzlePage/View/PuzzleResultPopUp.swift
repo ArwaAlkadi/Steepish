@@ -56,6 +56,7 @@ struct PuzzleResultPopup: View {
             .padding(.bottom, 6)
         }
         .padding(18)
+        .padding(.bottom, 25)
         .frame(maxWidth: 360)
         .background(
             RoundedRectangle(cornerRadius: 22)

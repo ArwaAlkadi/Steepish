@@ -74,6 +74,7 @@ struct SoloLatePopupView: View {
 // MARK: - Group Attack Popup
 
 struct GroupAttackPopupView: View {
+    var targetPlayerName: String
     var onClose: () -> Void
     var onConfirm: () -> Void
 
@@ -99,7 +100,7 @@ struct GroupAttackPopupView: View {
                     .foregroundStyle(Color.light1)
                     .multilineTextAlignment(.center)
 
-                Text("Win this puzzle to sabotage your friend's character for 3 hours")
+                Text("Win this puzzle to sabotage \(targetPlayerName)'s character for 3 hours")
                     .font(.custom("RussoOne-Regular", size: 16))
                     .foregroundStyle(Color.light1)
                     .multilineTextAlignment(.center)

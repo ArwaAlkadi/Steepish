@@ -92,6 +92,15 @@ final class MapViewModel: ObservableObject {
         maxStepsAcrossParticipants > 0
     }
 
+   var leadingPlayerName: String {
+        guard let leader = leadingParticipant() else { return "Leader" }
+        let myId = session?.uid ?? ""
+        if leader.playerId == myId {
+            return "You"
+        }
+        return playersById[leader.playerId]?.name ?? "Leader"
+    }
+    
     private func shouldAllowPuzzlePopups(
         checkSteps: Bool = true,
         now: Date = Date()

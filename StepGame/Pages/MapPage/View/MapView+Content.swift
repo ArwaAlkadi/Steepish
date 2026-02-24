@@ -145,6 +145,7 @@ extension MapView {
 
                 case .groupAttacker:
                     GroupAttackPopupView(
+                        targetPlayerName: vm.leadingPlayerName, 
                         onClose: {
                             recordDismiss(for: .groupAttacker)
                             activeMapPopup = nil

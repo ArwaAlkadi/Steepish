@@ -516,7 +516,7 @@ final class MapViewModel: ObservableObject {
                 return others.first
             }
             
-            return others.max(by: { player1, player2 in
+            return others.min(by: { player1, player2 in
                 let diff1 = abs(me.steps - player1.steps)
                 let diff2 = abs(me.steps - player2.steps)
                 return diff1 < diff2

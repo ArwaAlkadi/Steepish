@@ -264,48 +264,34 @@ private struct MapPlayerMarker: View {
                 .fixedSize()
                 .padding(.bottom, 8)
                 .transition(.scale.combined(with: .opacity))
-                .onTapGesture {
-                    withAnimation(.spring(response: 0.3)) {
-                        showBubble = false
-                    }
-                }
             } else {
                 VStack(spacing: 4) {
-                    // Player name button
-                    Button {
-                        onTap()
-                        withAnimation(.spring(response: 0.3)) {
-                            showBubble.toggle()
-                        }
-                    } label: {
-                        // Name and Place
-                        HStack(spacing: 6) {
-                            Text(isMe ? "Me" : name)
-                                .font(.custom("RussoOne-Regular", size: 12))
-                                .foregroundStyle(.light1)
+                    // Player name badge (not a button anymore)
+                    HStack(spacing: 6) {
+                        Text(isMe ? "Me" : name)
+                            .font(.custom("RussoOne-Regular", size: 12))
+                            .foregroundStyle(.light1)
 
-                            if isGroup, let place, (1...3).contains(place) {
-                                Image(placeAssetName(place))
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 16, height: 16)
-                            }
-                            
-                            if showInfoIcon {
-                                Image(systemName: "info.circle.fill")
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(.light1)
-                                    .transition(.opacity)
-                            }
+                        if isGroup, let place, (1...3).contains(place) {
+                            Image(placeAssetName(place))
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 16, height: 16)
                         }
-                        .padding(.horizontal, 15)
-                        .padding(.vertical, 3)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.light3)
-                        )
+                        
+                        if showInfoIcon {
+                            Image(systemName: "info.circle.fill")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.light1)
+                                .transition(.opacity)
+                        }
                     }
-                    .buttonStyle(.plain)
+                    .padding(.horizontal, 15)
+                    .padding(.vertical, 3)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.light3)
+                    )
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                             withAnimation(.easeOut(duration: 0.5)) {
@@ -337,9 +323,21 @@ private struct MapPlayerMarker: View {
                 .scaledToFit()
                 .frame(width: 85, height: 85)
         }
+        .contentShape(Rectangle())
+        .onTapGesture { 
+            if showBubble {
+                withAnimation(.spring(response: 0.3)) {
+                    showBubble = false
+                }
+            } else {
+                onTap()
+                withAnimation(.spring(response: 0.3)) {
+                    showBubble.toggle()
+                }
+            }
+        }
         .offset(dragOffset)
         .animation(.spring(response: 0.25, dampingFraction: 0.8), value: dragOffset)
-        .contentShape(Rectangle())
         .gesture(
             DragGesture(minimumDistance: 0)
                 .updating($dragOffset) { value, state, _ in

@@ -103,16 +103,18 @@ private struct GroupPlayerRow: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Image(p.avatarImage)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 50, height: 50)
-                .background(Circle().fill(Color.light2.opacity(0.3)))
+           
+                Image(p.avatarImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 50, height: 50)
+                    .background(Circle().fill(Color.light2.opacity(0.3)))
+
+               
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
-
-                    if let place = p.place, (1...3).contains(place) {
+                    if let place = p.place, (1...3).contains(place), !p.hasLeft {
                         Image(placeAssetName(place))
                             .resizable()
                             .scaledToFit()
@@ -128,13 +130,26 @@ private struct GroupPlayerRow: View {
                 Text(p.stepsText)
                     .font(.custom("RussoOne-Regular", size: 11))
                     .foregroundStyle(Color.light1.opacity(0.75))
+                
+                // Show left date
+                if p.hasLeft, let leftDate = p.leftAt {
+                    Text("Left at \(formatLeftDate(leftDate))")
+                        .font(.custom("RussoOne-Regular", size: 9))
+                        .foregroundStyle(.red)
+                }
             }
 
             Spacer()
         }
         .padding(.horizontal, 6)
     }
-
+    
+    private func formatLeftDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        return formatter.string(from: date)
+    }
+    
     private func placeAssetName(_ place: Int) -> String {
         switch place {
         case 1: return "Place1"
@@ -174,6 +189,64 @@ final class ChallengeResultPopupViewModel: ObservableObject {
         let stepsText: String
         let place: Int?
         let didFinish: Bool
+        let hasLeft: Bool
+        let leftAt: Date?
+    }
+
+    private func buildGroupRows() -> [Row] {
+        let myId = me.id ?? ""
+        let winnerId = challenge.winnerId
+        
+        let finishers = participants
+            .filter { $0.finishedAt != nil && $0.leftAt == nil }  // Exclude left players
+            .sorted { a, b in
+                let ap = a.place ?? ((winnerId != nil && a.playerId == winnerId) ? 1 : Int.max)
+                let bp = b.place ?? ((winnerId != nil && b.playerId == winnerId) ? 1 : Int.max)
+                if ap != bp { return ap < bp }
+                return a.steps > b.steps
+            }
+        
+        let nonFinishers = participants
+            .filter { $0.finishedAt == nil && $0.leftAt == nil }  // Exclude left players
+            .sorted { $0.steps > $1.steps }
+        
+        let leftPlayers = participants
+            .filter { $0.leftAt != nil }  // Left players at the end
+            .sorted { ($0.leftAt ?? Date.distantPast) > ($1.leftAt ?? Date.distantPast) }
+        
+        let combined = finishers + nonFinishers + leftPlayers
+        
+        return combined.map { part in
+            let isMeRow = (part.playerId == myId)
+            let player = playersById[part.playerId] ?? (isMeRow ? me : nil)
+            
+            let displayName = player?.name ?? (isMeRow ? me.name : shortId(part.playerId))
+            let avatar = avatarAsset(for: player?.characterType ?? .character1)
+            
+            let place: Int? = {
+                if let p = part.place { return p }
+                if let w = winnerId, part.playerId == w { return 1 }
+                return nil
+            }()
+            
+            let stepsDisplay: String = {
+                if part.leftAt != nil { 
+                    return "\(part.steps.formatted()) Steps (Left)"
+                }
+                return "\(part.steps.formatted()) Steps"
+            }()
+            
+            return Row(
+                name: displayName,
+                isMe: isMeRow,
+                avatarImage: avatar,
+                stepsText: stepsDisplay,
+                place: place,
+                didFinish: (part.finishedAt != nil),
+                hasLeft: part.leftAt != nil,
+                leftAt: part.leftAt
+            )
+        }
     }
 
     private let challenge: Challenge
@@ -271,50 +344,7 @@ final class ChallengeResultPopupViewModel: ObservableObject {
         return max(1, diff)
     }
 
-    // MARK: - Group Rows
-    private func buildGroupRows() -> [Row] {
-        let myId = me.id ?? ""
-        let winnerId = challenge.winnerId
-
-        let finishers = participants
-            .filter { $0.finishedAt != nil }
-            .sorted { a, b in
-                let ap = a.place ?? ((winnerId != nil && a.playerId == winnerId) ? 1 : Int.max)
-                let bp = b.place ?? ((winnerId != nil && b.playerId == winnerId) ? 1 : Int.max)
-                if ap != bp { return ap < bp }
-                return a.steps > b.steps
-            }
-
-        let nonFinishers = participants
-            .filter { $0.finishedAt == nil }
-            .sorted { $0.steps > $1.steps }
-
-        let combined = finishers + nonFinishers
-
-        return combined.map { part in
-            let isMeRow = (part.playerId == myId)
-            let player = playersById[part.playerId] ?? (isMeRow ? me : nil)
-
-            let displayName = player?.name ?? (isMeRow ? me.name : shortId(part.playerId))
-            let avatar = avatarAsset(for: player?.characterType ?? .character1)
-
-            let place: Int? = {
-                if let p = part.place { return p }
-                if let w = winnerId, part.playerId == w { return 1 }
-                return nil
-            }()
-
-            return Row(
-                name: displayName,
-                isMe: isMeRow,
-                avatarImage: avatar,
-                stepsText: "\(part.steps.formatted()) Steps",
-                place: place,
-                didFinish: (part.finishedAt != nil)
-            )
-        }
-    }
-
+   
     private func avatarAsset(for type: CharacterType) -> String {
         "\(type.rawValue)_avatar"
     }

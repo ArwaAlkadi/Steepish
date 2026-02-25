@@ -383,13 +383,39 @@ final class FirebaseService {
     // MARK: - Leave Challenge (Player)
     func leaveChallenge(challengeId: String, uid: String) async throws {
         let ref = db.collection("challenges").document(challengeId)
-
+        
+        // Check if user is host
+        let doc = try await ref.getDocument()
+        let createdBy = doc.data()?["createdBy"] as? String
+        
+        // Prevent host from leaving
+        guard createdBy != uid else {
+            throw NSError(
+                domain: "Leave",
+                code: 403,
+                userInfo: [NSLocalizedDescriptionKey: "Host cannot leave. Delete the challenge instead."]
+            )
+        }
+        
+        let now = Date()
+        let partRef = ref.collection("participants").document(uid)
+        
+        // Get current steps before marking as left
+        let partDoc = try await partRef.getDocument()
+        let currentSteps = partDoc.data()?["steps"] as? Int ?? 0
+        
+        // Mark participant as left (don't delete)
+        try await partRef.setData([
+            "leftAt": Timestamp(date: now),
+            "leftAtSteps": currentSteps
+        ], merge: true)
+        
+        // Remove from active players list
         try await ref.updateData([
             "playerIds": FieldValue.arrayRemove([uid])
         ])
-
-        try await ref.collection("participants").document(uid).delete()
     }
+    
 
     // MARK: - Helpers
     static func generateJoinCode() -> String {

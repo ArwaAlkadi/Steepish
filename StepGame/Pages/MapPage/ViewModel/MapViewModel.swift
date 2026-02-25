@@ -34,14 +34,16 @@ final class MapViewModel: ObservableObject {
         let progress: Double
         let isMe: Bool
         let place: Int?
-
+        
         let attackedByName: String?
         let isUnderSabotage: Bool
         let sabotageExpiresAt: Date?
         let isAttackedByMe: Bool
         let lastSyncedAt: Date?
         let isChallengeEnded: Bool
-      
+        
+        let hasLeft: Bool
+        let leftAt: Date?
     }
 
     @Published private(set) var mapPlayers: [MapPlayerVM] = []
@@ -445,45 +447,46 @@ final class MapViewModel: ObservableObject {
     private func rebuildAllUI() {
         guard let session else { return }
         guard let ch = challenge else { return }
-
+        
         let myId = session.uid ?? session.player?.id ?? ""
         let now = Date()
-
+        
         let vms: [MapPlayerVM] = participants.map { part in
             let isMe = (part.playerId == myId)
             let p = isMe ? session.player : playersById[part.playerId]
             let type = p?.characterType ?? .character1
-
+            
             let name = p?.name ?? (isMe ? "Me" : shortId(part.playerId))
             let hudAvatar = type.avatarKey()
-
+            
             let mapped = mappedProgressForSteps(part.steps, goalSteps: ch.goalSteps)
             let progress = Double(mapped)
-
+            
             let isUnderSabotage: Bool = {
                 guard let exp = part.sabotageExpiresAt else { return false }
                 return now < exp
             }()
-
+            
             let attackerId = part.sabotageByPlayerId
-
+            
             let isAttackedByMe = {
                 guard isUnderSabotage else { return false }
                 guard let attackerId else { return false }
                 return attackerId == myId
             }()
-
+            
             let attackedByName: String? = {
                 guard isUnderSabotage, let attackerId else { return nil }
-                if attackerId == myId {
-                    return "You"
-                }
+                if attackerId == myId { return "You" }
                 return playersById[attackerId]?.name ?? shortId(attackerId)
             }()
-
+            
             let state = computedCharacterState(challenge: ch, participant: part)
             let mapSprite = type.imageKey(state: state)
-
+            
+            // Check if player left
+            let hasLeft = part.leftAt != nil
+            
             return MapPlayerVM(
                 id: part.playerId,
                 name: name,
@@ -498,13 +501,15 @@ final class MapViewModel: ObservableObject {
                 sabotageExpiresAt: part.sabotageExpiresAt,
                 isAttackedByMe: isAttackedByMe,
                 lastSyncedAt: part.lastSyncedAt,
-                isChallengeEnded: isChallengeEnded
+                isChallengeEnded: isChallengeEnded,
+                hasLeft: hasLeft,
+                leftAt: part.leftAt
             )
-            
         }
-
+        
         mapPlayers = vms.sorted { a, b in
             if a.isMe != b.isMe { return a.isMe }
+            if a.hasLeft != b.hasLeft { return !a.hasLeft }  // Active players first
             return a.steps > b.steps
         }
         
@@ -572,7 +577,9 @@ final class MapViewModel: ObservableObject {
 
     var hudAvatars: [String] {
         guard isGroupChallenge else { return [] }
-        return mapPlayers.map { $0.hudAvatar }
+        return mapPlayers
+            .filter { !$0.hasLeft } 
+            .map { $0.hudAvatar }
     }
 
     var myHudAvatar: String {
@@ -709,6 +716,11 @@ final class MapViewModel: ObservableObject {
         guard let ch = session.challenge, let chId = ch.id else { return }
         guard let uid = session.uid else { return }
         guard health.isAuthorized else { return }
+
+        if let me = myParticipant, me.leftAt != nil {
+            stopStepsSync()
+            return
+        }
 
         if isChallengeEnded || ch.status != .active {
             stopStepsSync()
@@ -913,6 +925,8 @@ final class MapViewModel: ObservableObject {
     private var isEffectivelySolo: Bool {
         guard let ch = challenge else { return false }
         if ch.originalMode == .solo { return true }
-        return ch.originalMode == .social && participants.count <= 1
+        
+        let activePlayers = participants.filter { $0.leftAt == nil }
+        return ch.originalMode == .social && activePlayers.count <= 1
     }
 }

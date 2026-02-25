@@ -213,30 +213,40 @@ struct ChallengeParticipant: Identifiable, Codable {
     var lastUpdated: Date
     var createdAt: Date
 
-    /// Sabotage (existing / keep)
+    // Sabotage
     var sabotageState: CharacterState?
     var sabotageExpiresAt: Date?
     var sabotageByPlayerId: String?
-
-
-    /// Attack metadata (to compare with defense time)
     var sabotageAttackTimeSeconds: Double?
     var sabotageAppliedAt: Date?
-    var groupAttackSucceededAt: Date?
-    /// Result tracking per participant
-    var finishedAt: Date? = nil
-    var place: Int? = nil
-    var didShowResultPopup: Bool? = nil
+    
+    // Result tracking
+    var finishedAt: Date?
+    var place: Int?
+    var didShowResultPopup: Bool?
 
     var lastSyncedAt: Date?
     
+    // Puzzle attempts
     var soloAttemptedAt: Date?
     var groupAttackAttemptedAt: Date?
     var groupDefenseAttemptedAt: Date?
 
+    // Puzzle dismissals
     var soloDismissedAt: Date?
     var groupAttackDismissedAt: Date?
     var groupDefenseDismissedAt: Date?
+    
+    // Puzzle failures
+    var soloPuzzleFailedAt: Date?
+    var groupAttackPuzzleFailedAt: Date?
+    
+    // Attack success
+    var groupAttackSucceededAt: Date?
+    
+    // Track when player left
+    var leftAt: Date?
+    var leftAtSteps: Int?
     
     init(
         id: String? = nil,
@@ -247,28 +257,26 @@ struct ChallengeParticipant: Identifiable, Codable {
         characterState: CharacterState = .normal,
         lastUpdated: Date = Date(),
         createdAt: Date = Date(),
-
         sabotageState: CharacterState? = nil,
         sabotageExpiresAt: Date? = nil,
         sabotageByPlayerId: String? = nil,
-
-        soloPuzzleFailedAt: Date? = nil,
-        groupAttackPuzzleFailedAt: Date? = nil,
-
         sabotageAttackTimeSeconds: Double? = nil,
         sabotageAppliedAt: Date? = nil,
-        groupAttackSucceededAt: Date? = nil,
         finishedAt: Date? = nil,
         place: Int? = nil,
         didShowResultPopup: Bool? = nil,
         lastSyncedAt: Date? = nil,
-        soloAttemptedAt: Date?  = nil,
-        groupAttackAttemptedAt: Date?  = nil,
-        groupDefenseAttemptedAt: Date?  = nil,
-
+        soloAttemptedAt: Date? = nil,
+        groupAttackAttemptedAt: Date? = nil,
+        groupDefenseAttemptedAt: Date? = nil,
         soloDismissedAt: Date? = nil,
         groupAttackDismissedAt: Date? = nil,
-        groupDefenseDismissedAt: Date? = nil
+        groupDefenseDismissedAt: Date? = nil,
+        soloPuzzleFailedAt: Date? = nil,
+        groupAttackPuzzleFailedAt: Date? = nil,
+        groupAttackSucceededAt: Date? = nil,
+        leftAt: Date? = nil,
+        leftAtSteps: Int? = nil
     ) {
         self.id = id
         self.challengeId = challengeId
@@ -278,15 +286,11 @@ struct ChallengeParticipant: Identifiable, Codable {
         self.characterState = characterState
         self.lastUpdated = lastUpdated
         self.createdAt = createdAt
-
         self.sabotageState = sabotageState
         self.sabotageExpiresAt = sabotageExpiresAt
         self.sabotageByPlayerId = sabotageByPlayerId
-
         self.sabotageAttackTimeSeconds = sabotageAttackTimeSeconds
         self.sabotageAppliedAt = sabotageAppliedAt
-        self.groupAttackSucceededAt = groupAttackSucceededAt
-
         self.finishedAt = finishedAt
         self.place = place
         self.didShowResultPopup = didShowResultPopup
@@ -294,20 +298,25 @@ struct ChallengeParticipant: Identifiable, Codable {
         self.soloAttemptedAt = soloAttemptedAt
         self.groupAttackAttemptedAt = groupAttackAttemptedAt
         self.groupDefenseAttemptedAt = groupDefenseAttemptedAt
-
         self.soloDismissedAt = soloDismissedAt
         self.groupAttackDismissedAt = groupAttackDismissedAt
         self.groupDefenseDismissedAt = groupDefenseDismissedAt
+        self.soloPuzzleFailedAt = soloPuzzleFailedAt
+        self.groupAttackPuzzleFailedAt = groupAttackPuzzleFailedAt
+        self.groupAttackSucceededAt = groupAttackSucceededAt
+        self.leftAt = leftAt
+        self.leftAtSteps = leftAtSteps
     }
 
-    /// Effective character state considering sabotage
     func effectiveState(now: Date = Date()) -> CharacterState {
         if let s = sabotageState,
            let exp = sabotageExpiresAt,
-           now < exp { return s }
+           now < exp {
+            return s
+        }
         return characterState
     }
-
+    
     var hasShownResultPopup: Bool {
         didShowResultPopup ?? false
     }

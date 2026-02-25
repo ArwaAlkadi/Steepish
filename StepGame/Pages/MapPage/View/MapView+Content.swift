@@ -48,6 +48,8 @@ extension MapView {
                     isAttackedByMe: p.isAttackedByMe,
                     lastSyncedAt: p.lastSyncedAt,
                     isChallengeEnded: vm.isChallengeEnded,
+                    hasLeft: p.hasLeft,      // ✅ أضيفي هذا
+                            leftAt: p.leftAt,   
                     onTap: {
                         vm.bringToFront(playerId: p.id)
                     }
@@ -237,6 +239,8 @@ private struct MapPlayerMarker: View {
     let isAttackedByMe: Bool
     let lastSyncedAt: Date?
     let isChallengeEnded: Bool
+    let hasLeft: Bool
+    let leftAt: Date?
     let onTap: () -> Void
     
     @State private var showBubble = false
@@ -246,7 +250,6 @@ private struct MapPlayerMarker: View {
     var body: some View {
         VStack(spacing: 0) {
             
-            // Show either bubble OR name badge
             if showBubble {
                 PlayerInfoBubble(
                     name: name,
@@ -259,18 +262,19 @@ private struct MapPlayerMarker: View {
                     sabotageExpiresAt: sabotageExpiresAt,
                     isAttackedByMe: isAttackedByMe,
                     lastSyncedAt: lastSyncedAt,
-                    isChallengeEnded: isChallengeEnded
+                    isChallengeEnded: isChallengeEnded,
+                    hasLeft: hasLeft,
+                    leftAt: leftAt
                 )
                 .fixedSize()
                 .padding(.bottom, 8)
                 .transition(.scale.combined(with: .opacity))
             } else {
                 VStack(spacing: 4) {
-                    // Player name badge (not a button anymore)
                     HStack(spacing: 6) {
                         Text(isMe ? "Me" : name)
                             .font(.custom("RussoOne-Regular", size: 12))
-                            .foregroundStyle(.light1)
+                            .foregroundStyle(hasLeft ? .white : .light1)
 
                         if isGroup, let place, (1...3).contains(place) {
                             Image(placeAssetName(place))
@@ -279,29 +283,28 @@ private struct MapPlayerMarker: View {
                                 .frame(width: 16, height: 16)
                         }
                         
-                        if showInfoIcon {
+                        if showInfoIcon && !hasLeft {
                             Image(systemName: "info.circle.fill")
                                 .font(.system(size: 12))
                                 .foregroundStyle(.light1)
                                 .transition(.opacity)
+                        }
+                        
+                        if hasLeft {
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(.white)
                         }
                     }
                     .padding(.horizontal, 15)
                     .padding(.vertical, 3)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.light3)
+                            .fill(hasLeft ? Color.red : Color.light3)
                     )
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                            withAnimation(.easeOut(duration: 0.5)) {
-                                showInfoIcon = false
-                            }
-                        }
-                    }
                     
-                    // Timer badge if under attack
-                    if isUnderSabotage, let expires = sabotageExpiresAt {
+                    // Timer badge if under attack (only if NOT left)
+                    if !hasLeft && isUnderSabotage, let expires = sabotageExpiresAt {
                         HStack(spacing: 4) {
                             Image(systemName: "clock.fill")
                                 .font(.system(size: 9))
@@ -313,24 +316,22 @@ private struct MapPlayerMarker: View {
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 3)
-                        .background(
-                            Capsule()
-                                .fill(Color.red)
-                        )
+                        .background(Capsule().fill(Color.red))
                     }
                 }
                 .padding(.bottom, 8)
                 .transition(.scale.combined(with: .opacity))
             }
             
-            // Character sprite
-            Image(mapSprite)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 85, height: 85)
+            // Character sprite with red overlay if left
+                Image(mapSprite)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 85, height: 85)
+           
         }
         .contentShape(Rectangle())
-        .onTapGesture { 
+        .onTapGesture {
             if showBubble {
                 withAnimation(.spring(response: 0.3)) {
                     showBubble = false
@@ -393,6 +394,8 @@ private struct PlayerInfoBubble: View {
     let isAttackedByMe: Bool
     let lastSyncedAt: Date?
     let isChallengeEnded: Bool
+    let hasLeft: Bool
+    let leftAt: Date?
     
     var body: some View {
         VStack(spacing: 10) {
@@ -410,7 +413,7 @@ private struct PlayerInfoBubble: View {
                 }
             }
             
-           
+            // Steps
             HStack(spacing: 4) {
                 Image(systemName: "figure.walk")
                     .font(.system(size: 12))
@@ -421,28 +424,40 @@ private struct PlayerInfoBubble: View {
                     .foregroundStyle(.light1)
             }
             
-            // Last Sync
-            if !isChallengeEnded {
+            // NEW: Left info (replaces last sync)
+            if hasLeft, let leftDate = leftAt {
+                Divider().background(Color.red.opacity(0.3))
+                
+               
+                    HStack(spacing: 4) {
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.red)
+                        
+                        Text("Left \(leftText(leftDate))")
+                            .font(.custom("RussoOne-Regular", size: 12))
+                            .foregroundStyle(.red)
+                    }
+                    
+            } else if !isChallengeEnded {
+                // Last Sync (only if NOT left)
                 HStack(alignment: .top, spacing: 4) {
                     Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
                         .font(.system(size: 11))
                         .bold()
                         .foregroundStyle(.light2)
-                       
                     
-                    Text("Steps updated: \(formatSyncDate(lastSyncedAt))")
+                    Text("Steps updated: \(formatDisplayDate(lastSyncedAt))")
                         .font(.custom("RussoOne-Regular", size: 10))
                         .foregroundStyle(.light2)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
                 }
-                
             }
             
-            // Sabotage Info
-            if isUnderSabotage, let attackedByName, let expires = sabotageExpiresAt {
-                Divider()
-                    .background(Color.red.opacity(0.3))
+            // Sabotage Info (only if NOT left)
+            if !hasLeft && isUnderSabotage, let attackedByName {
+                Divider().background(Color.red.opacity(0.3))
                 
                 VStack(spacing: 4) {
                     Text("Under Attack!")
@@ -452,7 +467,6 @@ private struct PlayerInfoBubble: View {
                     Text(isAttackedByMe ? "Turned lazy by you" : "Turned lazy by \(attackedByName)")
                         .font(.custom("RussoOne-Regular", size: 10))
                         .foregroundStyle(.red)
-                    
                 }
             }
         }
@@ -464,8 +478,18 @@ private struct PlayerInfoBubble: View {
         )
     }
     
-    private func formatSyncDate(_ date: Date?) -> String {
-        guard let date else { return "Not synced" }
+    private func leftText(_ date: Date) -> String {
+        let formatted = formatDisplayDate(date)
+
+        if formatted == "Today" || formatted == "Yesterday" {
+            return formatted.lowercased()
+        } else {
+            return "on \(formatted)"
+        }
+    }
+    
+    private func formatDisplayDate (_ date: Date?) -> String {
+        guard let date else { return "No Data" }
         
         let calendar = Calendar.current
         let now = Date()

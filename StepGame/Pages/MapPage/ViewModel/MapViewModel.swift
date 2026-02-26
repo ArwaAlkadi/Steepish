@@ -908,18 +908,21 @@ final class MapViewModel: ObservableObject {
     func leadingParticipant() -> ChallengeParticipant? {
         guard isGroupChallenge else { return nil }
         return participants
-            .sorted { $0.steps > $1.steps }
-            .first
+            .filter { $0.leftAt == nil }
+            .max(by: { $0.steps < $1.steps })
     }
 
     private func lastParticipant() -> ChallengeParticipant? {
         participants
-            .sorted { $0.steps < $1.steps }
-            .first
+            .filter { $0.leftAt == nil }
+            .min(by: { $0.steps < $1.steps })
     }
 
     var leadingPlayerId: String? {
-        participants.sorted { $0.steps > $1.steps }.first?.playerId
+        participants
+            .filter { $0.leftAt == nil }
+            .max(by: { $0.steps < $1.steps })?
+            .playerId
     }
     
     private var isEffectivelySolo: Bool {

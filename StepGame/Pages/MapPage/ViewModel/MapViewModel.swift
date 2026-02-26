@@ -637,7 +637,7 @@ final class MapViewModel: ObservableObject {
         }
 
         let count = grouped.count
-        let spacing: CGFloat = 85 // Horizontal spacing between players
+        let spacing: CGFloat = 78 // Horizontal spacing between players
 
         // Calculate offset from center (side by side arrangement)
         let totalWidth = CGFloat(count - 1) * spacing

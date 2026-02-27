@@ -374,7 +374,7 @@ final class MapViewModel: ObservableObject {
             guard hoursElapsed >= 3 else { return }
         }
 
-        if isLockedToday(myPart.soloAttemptedAt, now: now) { return }
+        if isLockedForThreeDays(myPart.soloAttemptedAt, now: now) { return }
         if isCooldownActive(myPart.soloDismissedAt, seconds: dismissCooldown, now: now) { return }
 
         let expected = expectedProgressByTime(challenge: ch, now: now)
@@ -382,6 +382,12 @@ final class MapViewModel: ObservableObject {
 
         guard actual < expected else { return }
         tryPresentPopup(.soloLate, cooldownSeconds: 2 * 60 * 60, now: now)
+    }
+
+    private func isLockedForThreeDays(_ date: Date?, now: Date) -> Bool {
+        guard let date else { return false }
+        let daysPassed = Calendar.current.dateComponents([.day], from: date, to: now).day ?? 0
+        return daysPassed < 3
     }
 
     func evaluateGroupDefender(now: Date = Date()) {

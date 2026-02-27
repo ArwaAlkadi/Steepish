@@ -626,10 +626,9 @@ final class MapViewModel: ObservableObject {
     func positionForPlayer(_ player: MapPlayerVM, mapSize: CGSize) -> CGPoint {
         let base = positionForProgress(progress: CGFloat(player.progress), mapSize: mapSize)
 
-        // Group players with similar progress
         let grouped = mapPlayers
             .sorted { $0.id < $1.id }
-            .filter { abs($0.progress - player.progress) < 0.01 }
+            .filter { abs($0.progress - player.progress) < 0.03 }
 
         guard grouped.count > 1,
               let idx = grouped.firstIndex(where: { $0.id == player.id }) else {
@@ -637,16 +636,17 @@ final class MapViewModel: ObservableObject {
         }
 
         let count = grouped.count
-        let spacing: CGFloat = 78 // Horizontal spacing between players
+        let spacing: CGFloat = 85
 
-        // Calculate offset from center (side by side arrangement)
         let totalWidth = CGFloat(count - 1) * spacing
         let startX = -totalWidth / 2
         let offsetX = startX + CGFloat(idx) * spacing
+        
+        let offsetY: CGFloat = (idx % 2 == 0) ? -8 : 8
 
         let shifted = CGPoint(
             x: base.x + offsetX,
-            y: base.y  // Keep same Y position (players side by side)
+            y: base.y + offsetY
         )
 
         return clampToBounds(shifted, mapSize: mapSize)

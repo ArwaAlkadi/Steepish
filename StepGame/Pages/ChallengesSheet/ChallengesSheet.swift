@@ -37,8 +37,7 @@ struct ChallengesSheet: View {
                                     } label: {
                                         ChallengesCard(
                                             challenge: ch,
-                                            badgeText: badgeForChallenge(ch),
-                                            showMenu: true
+                                            badgeText: badgeForChallenge(ch)
                                         )
                                         .environmentObject(session)
                                     }
@@ -66,8 +65,7 @@ struct ChallengesSheet: View {
                                     } label: {
                                         ChallengesCard(
                                             challenge: ch,
-                                            badgeText: badgeForChallenge(ch),
-                                            showMenu: false
+                                            badgeText: badgeForChallenge(ch)
                                         )
                                         .environmentObject(session)
                                     }
@@ -131,7 +129,6 @@ struct ChallengesCard: View {
 
     let challenge: Challenge
     var badgeText: String? = nil
-    var showMenu: Bool = true
 
     @State private var showConfirmAlert = false
 
@@ -208,7 +205,7 @@ struct ChallengesCard: View {
 
             VStack {
 
-                if showMenu {
+              
                     Menu {
                         Button(role: .destructive) {
                             showConfirmAlert = true
@@ -224,7 +221,7 @@ struct ChallengesCard: View {
                             .rotationEffect(.degrees(90))
                             .foregroundStyle(.light1)
                     }
-                }
+               
 
                 Spacer()
 

@@ -272,11 +272,15 @@ private struct MapPlayerMarker: View {
             } else {
                 VStack(spacing: 4) {
                     HStack(spacing: 6) {
-                        Text(isMe ? "Me" : name)
+                        // Show only first 5 characters in badge
+                        Text(isMe ? "Me" : truncatedName)
                             .font(.custom("RussoOne-Regular", size: 12))
                             .foregroundStyle(hasLeft ? .white : .light1)
 
-                        if isGroup, let place, (1...3).contains(place) {
+                        if let place,
+                           (isGroup && (1...3).contains(place)) ||
+                           (!isGroup && place == 1) {
+                            
                             Image(placeAssetName(place))
                                 .resizable()
                                 .scaledToFit()
@@ -296,7 +300,7 @@ private struct MapPlayerMarker: View {
                                 .foregroundStyle(.white)
                         }
                     }
-                    .padding(.horizontal, 15)
+                    .padding(.horizontal, 10)
                     .padding(.vertical, 3)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
@@ -358,9 +362,24 @@ private struct MapPlayerMarker: View {
                 }
             }
         }
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                withAnimation(.easeOut(duration: 0.3)) {
+                    showInfoIcon = false
+                }
+            }
+        }
     }
     
     // MARK: - Helper Functions
+    
+    // Truncate name to first 5 characters
+    private var truncatedName: String {
+        if name.count <= 5 {
+            return name
+        }
+        return String(name.prefix(5))
+    }
     
     private func timeRemainingString(until date: Date) -> String {
         let remaining = Int(date.timeIntervalSince(Date()))
@@ -371,6 +390,10 @@ private struct MapPlayerMarker: View {
     }
     
     private func placeAssetName(_ place: Int) -> String {
+        if !isGroup {
+            return "PlaceSolo"  // Solo place badge
+        }
+        
         switch place {
         case 1: return "Place1"
         case 2: return "Place2"
@@ -401,11 +424,16 @@ private struct PlayerInfoBubble: View {
         VStack(spacing: 10) {
             // Name and Place
             HStack(spacing: 4) {
+                // Full name in bubble
                 Text(isMe ? "Me" : name)
                     .font(.custom("RussoOne-Regular", size: 14))
                     .foregroundStyle(.light1)
 
-                if isGroup, let place, (1...3).contains(place) {
+                // Show place badge for both solo (place 1) and group (1-3)
+                if let place,
+                   (isGroup && (1...3).contains(place)) ||
+                   (!isGroup && place == 1) {
+                    
                     Image(placeAssetName(place))
                         .resizable()
                         .scaledToFit()
@@ -424,20 +452,19 @@ private struct PlayerInfoBubble: View {
                     .foregroundStyle(.light1)
             }
             
-            // NEW: Left info (replaces last sync)
+            // Left info (replaces last sync)
             if hasLeft, let leftDate = leftAt {
                 Divider().background(Color.red.opacity(0.3))
                 
-               
-                    HStack(spacing: 4) {
-                        Image(systemName: "rectangle.portrait.and.arrow.right")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundStyle(.red)
-                        
-                        Text("Left \(leftText(leftDate))")
-                            .font(.custom("RussoOne-Regular", size: 12))
-                            .foregroundStyle(.red)
-                    }
+                HStack(spacing: 4) {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(.red)
+                    
+                    Text("Left \(leftText(leftDate))")
+                        .font(.custom("RussoOne-Regular", size: 12))
+                        .foregroundStyle(.red)
+                }
                     
             } else if !isChallengeEnded {
                 // Last Sync (only if NOT left)
@@ -527,6 +554,10 @@ private struct PlayerInfoBubble: View {
     }
     
     private func placeAssetName(_ place: Int) -> String {
+        if !isGroup {
+            return "PlaceSolo"
+        }
+        
         switch place {
         case 1: return "Place1"
         case 2: return "Place2"

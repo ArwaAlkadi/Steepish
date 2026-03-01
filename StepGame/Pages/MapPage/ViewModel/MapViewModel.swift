@@ -146,30 +146,30 @@ final class MapViewModel: ObservableObject {
     // MARK: - Map Points
 
     private let pathPoints: [CGPoint] = [
-        .init(x: 0.714, y: 0.867),
-        .init(x: 0.705, y: 0.746),
-        .init(x: 0.596, y: 0.660),
-        .init(x: 0.696, y: 0.594),
-        .init(x: 0.554, y: 0.509),
-        .init(x: 0.670, y: 0.433),
-        .init(x: 0.546, y: 0.357),
-        .init(x: 0.690, y: 0.293),
-        .init(x: 0.573, y: 0.199),
-        .init(x: 0.693, y: 0.121),
-        .init(x: 0.770, y: 0.053),
+        .init(x: 0.714, y: 0.872),
+        .init(x: 0.705, y: 0.751),
+        .init(x: 0.544, y: 0.665),
+        .init(x: 0.696, y: 0.599),
+        .init(x: 0.554, y: 0.514),
+        .init(x: 0.670, y: 0.438),
+        .init(x: 0.546, y: 0.362),
+        .init(x: 0.690, y: 0.298),
+        .init(x: 0.573, y: 0.204),
+        .init(x: 0.693, y: 0.126),
+        .init(x: 0.770, y: 0.058),
     ]
 
     private let flagAnchors: [CGPoint] = [
-        .init(x: 0.604, y: 0.847),
-        .init(x: 0.595, y: 0.726),
-        .init(x: 0.486, y: 0.640),
-        .init(x: 0.586, y: 0.574),
-        .init(x: 0.444, y: 0.489),
-        .init(x: 0.560, y: 0.413),
-        .init(x: 0.436, y: 0.337),
-        .init(x: 0.580, y: 0.273),
-        .init(x: 0.463, y: 0.179),
-        .init(x: 0.583, y: 0.101),
+        .init(x: 0.604, y: 0.852),
+        .init(x: 0.595, y: 0.731),
+        .init(x: 0.486, y: 0.645),
+        .init(x: 0.586, y: 0.579),
+        .init(x: 0.444, y: 0.494),
+        .init(x: 0.560, y: 0.418),
+        .init(x: 0.436, y: 0.342),
+        .init(x: 0.580, y: 0.278),
+        .init(x: 0.463, y: 0.184),
+        .init(x: 0.583, y: 0.106),
     ]
 
     var isChallengeEnded: Bool {
@@ -632,9 +632,13 @@ final class MapViewModel: ObservableObject {
     func positionForPlayer(_ player: MapPlayerVM, mapSize: CGSize) -> CGPoint {
         let base = positionForProgress(progress: CGFloat(player.progress), mapSize: mapSize)
 
+        // Group players who are very close in progress, then sort so "closest to goal" comes first.
         let grouped = mapPlayers
-            .sorted { $0.id < $1.id }
-            .filter { abs($0.progress - player.progress) < 0.03 }
+            .filter { abs($0.progress - player.progress) < 0.05 }
+            .sorted {
+                if $0.progress != $1.progress { return $0.progress > $1.progress } // closer to goal first
+                return $0.id < $1.id                                               // stable tie-breaker
+            }
 
         guard grouped.count > 1,
               let idx = grouped.firstIndex(where: { $0.id == player.id }) else {
@@ -642,13 +646,17 @@ final class MapViewModel: ObservableObject {
         }
 
         let count = grouped.count
-        let spacing: CGFloat = 85
 
-        let totalWidth = CGFloat(count - 1) * spacing
+        // Horizontal spread so they don't overlap
+        let spacingX: CGFloat = 60
+        let totalWidth = CGFloat(count - 1) * spacingX
         let startX = -totalWidth / 2
-        let offsetX = startX + CGFloat(idx) * spacing
-        
-        let offsetY: CGFloat = (idx % 2 == 0) ? -8 : 8
+        let offsetX = startX + CGFloat(idx) * spacingX
+
+        // Vertical spread: closest-to-goal (idx = 0) appears highest
+        let stepY: CGFloat = 10
+        let center = (CGFloat(count) - 1) / 2
+        let offsetY = (center - CGFloat(idx)) * stepY
 
         let shifted = CGPoint(
             x: base.x + offsetX,
@@ -828,6 +836,8 @@ final class MapViewModel: ObservableObject {
 
         if diff >= activeThreshold { return .active }
         if diff <= lazyThreshold { return .lazy }
+        if participant.steps >= goal || participant.finishedAt != nil { return .win }
+           
         return .normal
     }
 

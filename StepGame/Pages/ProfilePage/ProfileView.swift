@@ -166,7 +166,18 @@ struct ProfileView: View {
                 .foregroundStyle(Color.light1)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 14)
+                .onChange(of: vm.draftName) { _, newValue in
+                    if newValue.count > 15 {
+                        vm.draftName = String(newValue.prefix(15))
+                    }
+                }
             }
+            
+            Text("\(vm.draftName.count)/15")
+                .font(.custom("RussoOne-Regular", size: 12))
+                .foregroundStyle(vm.draftName.count > 15 ? .red : Color.light2)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
         }
         .frame(maxWidth: 320)
     }

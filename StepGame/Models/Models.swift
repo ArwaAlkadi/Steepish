@@ -49,6 +49,7 @@ enum CharacterState: String, Codable, CaseIterable {
     case active
     case normal
     case lazy
+    case win
 }
 
 

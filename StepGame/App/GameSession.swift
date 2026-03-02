@@ -338,7 +338,7 @@ final class GameSession: ObservableObject {
         }
     }
 
-    // MARK: - Delete / Leave / Waiting Logic
+    // MARK: - Delete / Leave / Waiting Logic/ Rename
     func deleteChallenge(_ ch: Challenge) async {
         guard let uid else {
             errorMessage = "Missing user session."
@@ -407,6 +407,22 @@ final class GameSession: ObservableObject {
             self.errorMessage = mapGenericError(error)
         }
     }
+    
+    func renameChallenge(_ challenge: Challenge, newName: String) async {
+        guard let id = challenge.id else { return }
+        do {
+            try await FirebaseService.shared.renameChallenge(
+                challengeId: id,
+                newName: newName
+            )
+            // The realtime listener on "challenges" will automatically
+            // push the updated Challenge model back to activeChallenges /
+            // endedChallenges, so no manual local mutation is needed.
+        } catch {
+            print("❌ renameChallenge error: \(error.localizedDescription)")
+        }
+    }
+
 
     // MARK: - Convenience
     func clearError() {
@@ -470,4 +486,5 @@ final class GameSession: ObservableObject {
 
         return ns.localizedDescription
     }
+    
 }

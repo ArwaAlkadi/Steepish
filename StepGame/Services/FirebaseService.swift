@@ -574,4 +574,11 @@ final class FirebaseService {
                 kind.dismissedField: Timestamp(date: Date())
             ], merge: true)
         }
+    
+    func renameChallenge(challengeId: String, newName: String) async throws {
+        let db = Firestore.firestore()
+        try await db.collection("challenges").document(challengeId).updateData([
+            "name": newName
+        ])
+    }
 }

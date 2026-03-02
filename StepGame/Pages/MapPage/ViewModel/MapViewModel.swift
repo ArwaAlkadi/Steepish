@@ -58,7 +58,7 @@ final class MapViewModel: ObservableObject {
         if playerId == activePlayerId {
             return 1000
         }
-        return 0 
+        return 0
     }
     
     // MARK: - Dependencies
@@ -146,124 +146,148 @@ final class MapViewModel: ObservableObject {
     // MARK: - Map Points
 
     private let pathPoints: [CGPoint] = [
-        .init(x: 0.714, y: 0.872),
-        .init(x: 0.705, y: 0.751),
-        .init(x: 0.544, y: 0.665),
-        .init(x: 0.696, y: 0.599),
-        .init(x: 0.554, y: 0.514),
-        .init(x: 0.670, y: 0.438),
-        .init(x: 0.546, y: 0.362),
-        .init(x: 0.690, y: 0.298),
-        .init(x: 0.573, y: 0.204),
-        .init(x: 0.693, y: 0.126),
-        .init(x: 0.770, y: 0.058),
+        .init(x: 0.714, y: 0.890), // 0
+        .init(x: 0.726, y: 0.851), // 1
+        .init(x: 0.735, y: 0.812), // 2
+        .init(x: 0.722, y: 0.773), // 3
+        .init(x: 0.685, y: 0.734), // 4
+        .init(x: 0.635, y: 0.695), // 5
+        .init(x: 0.600, y: 0.656), // 6
+        .init(x: 0.560, y: 0.617), // 7
+        .init(x: 0.520, y: 0.578), // 8
+        .init(x: 0.470, y: 0.539), // 9
+        .init(x: 0.430, y: 0.500), // 10
+        .init(x: 0.400, y: 0.461), // 11
+        .init(x: 0.420, y: 0.422), // 12
+        .init(x: 0.450, y: 0.383), // 13
+        .init(x: 0.480, y: 0.344), // 14
+        .init(x: 0.520, y: 0.305), // 15
+        .init(x: 0.580, y: 0.266), // 16
+        .init(x: 0.650, y: 0.227), // 17
+        .init(x: 0.720, y: 0.188), // 18
+        .init(x: 0.790, y: 0.150), // 19
     ]
-
-    private let flagAnchors: [CGPoint] = [
-        .init(x: 0.604, y: 0.852),
-        .init(x: 0.595, y: 0.731),
-        .init(x: 0.486, y: 0.645),
-        .init(x: 0.586, y: 0.579),
-        .init(x: 0.444, y: 0.494),
-        .init(x: 0.560, y: 0.418),
-        .init(x: 0.436, y: 0.342),
-        .init(x: 0.580, y: 0.278),
-        .init(x: 0.463, y: 0.184),
-        .init(x: 0.583, y: 0.106),
-    ]
-
-    var isChallengeEnded: Bool {
-        guard let ch = challenge else { return false }
-        return ch.status == .ended || Date() >= ch.effectiveEndDate
-    }
-
-    private lazy var flagProgressesOnPath: [CGFloat] = {
-        computeFlagProgressesOnPath()
-    }()
-
-    private func lerp(_ a: CGFloat, _ b: CGFloat, _ t: CGFloat) -> CGFloat {
-        a + (b - a) * min(max(t, 0), 1)
-    }
-
-    private func mappedProgressForSteps(_ steps: Int, goalSteps: Int) -> CGFloat {
-        let goal = max(goalSteps, 1)
-
-        let ms = makeMilestones(goalSteps: goal, count: flagAnchors.count, unit: 100)
-        let fp = flagProgressesOnPath
-        guard ms.count == fp.count, !ms.isEmpty else {
-            return min(max(CGFloat(steps) / CGFloat(goal), 0), 1)
+    
+    var pathPointsForDrawing: [CGPoint] { pathPoints }
+    
+    var pathPointsForMyProgress: [CGPoint] {
+        guard let me = mapPlayers.first(where: { $0.isMe }) else {
+            return [pathPoints.first].compactMap { $0 }
         }
-
-        if steps <= 0 { return 0 }
-
-        if steps < ms[0] {
-            let t = CGFloat(steps) / CGFloat(ms[0])
-            return lerp(0, fp[0], t)
-        }
-
-        for i in 1..<ms.count {
-            let prevM = ms[i - 1]
-            let nextM = ms[i]
-
-            if steps < nextM {
-                let denom = max(nextM - prevM, 1)
-                var local = CGFloat(steps - prevM) / CGFloat(denom)
-                local = min(max(local, 0), 0.999)
-                return lerp(fp[i - 1], fp[i], local)
-            }
-        }
-
-        return 1
-    }
-
-    private func computeFlagProgressesOnPath() -> [CGFloat] {
+        
+        let myProgress = CGFloat(me.progress)
         let pts = pathPoints
-        guard pts.count >= 2 else { return Array(repeating: 0, count: flagAnchors.count) }
-
+        guard pts.count >= 2 else { return pts }
+        
         var segLens: [CGFloat] = []
-        segLens.reserveCapacity(pts.count - 1)
-
         var cum: [CGFloat] = [0]
-        cum.reserveCapacity(pts.count)
-
         var total: CGFloat = 0
+        
         for i in 0..<(pts.count - 1) {
             let d = hypot(pts[i + 1].x - pts[i].x, pts[i + 1].y - pts[i].y)
             segLens.append(d)
             total += d
             cum.append(total)
         }
-        if total <= 0 { return Array(repeating: 0, count: flagAnchors.count) }
-
-        func closestProgress(to p: CGPoint) -> CGFloat {
-            var bestDist = CGFloat.greatestFiniteMagnitude
-            var bestAlong: CGFloat = 0
-
-            for i in 0..<(pts.count - 1) {
-                let a = pts[i]
-                let b = pts[i + 1]
-                let ab = CGPoint(x: b.x - a.x, y: b.y - a.y)
-                let ap = CGPoint(x: p.x - a.x, y: p.y - a.y)
-
-                let ab2 = ab.x * ab.x + ab.y * ab.y
-                if ab2 == 0 { continue }
-
-                var t = (ap.x * ab.x + ap.y * ab.y) / ab2
-                t = min(max(t, 0), 1)
-
-                let proj = CGPoint(x: a.x + ab.x * t, y: a.y + ab.y * t)
-                let dist = hypot(proj.x - p.x, proj.y - p.y)
-
-                if dist < bestDist {
-                    bestDist = dist
-                    bestAlong = cum[i] + segLens[i] * t
-                }
-            }
-
-            return bestAlong / total
+        
+        guard total > 0 else { return pts }
+        
+        let target = myProgress * total
+        
+        var i = 0
+        while i < segLens.count - 1, cum[i + 1] < target {
+            i += 1
         }
+        
+        var result = Array(pts[0...i])
+        
+        let segStart = cum[i]
+        let segLen = max(segLens[i], 0.000001)
+        let localT = (target - segStart) / segLen
+        
+        let a = pts[i]
+        let b = pts[i + 1]
+        
+        let finalPoint = CGPoint(
+            x: a.x + (b.x - a.x) * localT,
+            y: a.y + (b.y - a.y) * localT
+        )
+        
+        result.append(finalPoint)
+        
+        return result
+    }
+    
+    private var flagAnchors: [CGPoint] {
+        let pts = pathPoints
+        guard pts.count >= 2 else { return [] }
+        
+        // Calculate segment lengths
+        var segLens: [CGFloat] = []
+        var total: CGFloat = 0
+        
+        for i in 0..<(pts.count - 1) {
+            let d = hypot(pts[i + 1].x - pts[i].x, pts[i + 1].y - pts[i].y)
+            segLens.append(d)
+            total += d
+        }
+        
+        guard total > 0 else { return [] }
+        
+        // Calculate cumulative lengths
+        var cum: [CGFloat] = [0]
+        for len in segLens {
+            cum.append(cum.last! + len)
+        }
+        
+        let flagCount = 8
+        var anchors: [CGPoint] = []
+        
+        for i in 1...flagCount {
+            let targetLength = (CGFloat(i) / CGFloat(flagCount)) * total
+            
+            // Find segment
+            var segIndex = 0
+            while segIndex < segLens.count - 1, cum[segIndex + 1] < targetLength {
+                segIndex += 1
+            }
+            
+            let segStart = cum[segIndex]
+            let segLen = max(segLens[segIndex], 0.000001)
+            let localT = (targetLength - segStart) / segLen
+            
+            let a = pts[segIndex]
+            let b = pts[segIndex + 1]
+            
+            let point = CGPoint(
+                x: a.x + (b.x - a.x) * localT,
+                y: a.y + (b.y - a.y) * localT
+            )
+            
+            anchors.append(point)
+        }
+        
+        return anchors
+    }
+    
+    var isChallengeEnded: Bool {
+        guard let ch = challenge else { return false }
+        return ch.status == .ended || Date() >= ch.effectiveEndDate
+    }
 
-        return flagAnchors.map { closestProgress(to: $0) }
+    private var flagProgressesOnPath: [CGFloat] {
+        let count = flagAnchors.count
+        return (1...count).map { CGFloat($0) / CGFloat(count) }
+    }
+    
+    private func lerp(_ a: CGFloat, _ b: CGFloat, _ t: CGFloat) -> CGFloat {
+        a + (b - a) * min(max(t, 0), 1)
+    }
+
+    private func mappedProgressForSteps(_ steps: Int, goalSteps: Int) -> CGFloat {
+        let goal = max(goalSteps, 1)
+        let rawProgress = CGFloat(steps) / CGFloat(goal)
+        return min(max(rawProgress, 0), 1)
     }
 
     // MARK: - Bind / Unbind
@@ -515,8 +539,12 @@ final class MapViewModel: ObservableObject {
         
         mapPlayers = vms.sorted { a, b in
             if a.isMe != b.isMe { return a.isMe }
-            if a.hasLeft != b.hasLeft { return !a.hasLeft }  // Active players first
+            if a.hasLeft != b.hasLeft { return !a.hasLeft }
             return a.steps > b.steps
+        }
+        
+        if let me = mapPlayers.first(where: { $0.isMe }) {
+            bringToFront(playerId: me.id)
         }
         
         let me = mapPlayers.first(where: { $0.isMe })
@@ -584,7 +612,7 @@ final class MapViewModel: ObservableObject {
     var hudAvatars: [String] {
         guard isGroupChallenge else { return [] }
         return mapPlayers
-            .filter { !$0.hasLeft } 
+            .filter { !$0.hasLeft }
             .map { $0.hudAvatar }
     }
 
@@ -632,12 +660,36 @@ final class MapViewModel: ObservableObject {
     func positionForPlayer(_ player: MapPlayerVM, mapSize: CGSize) -> CGPoint {
         let base = positionForProgress(progress: CGFloat(player.progress), mapSize: mapSize)
 
-        // Group players who are very close in progress, then sort so "closest to goal" comes first.
+        let fp = flagProgressesOnPath
+        let t = CGFloat(player.progress)
+
+        func segmentIndex(for progress: CGFloat) -> Int {
+            guard !fp.isEmpty else { return 0 }
+            if progress <= fp[0] { return 0 }
+            for i in 1..<fp.count {
+                if progress <= fp[i] { return i }
+            }
+            return fp.count - 1
+        }
+
+        let seg = segmentIndex(for: t)
+
+        let prev = (seg == 0) ? 0 : fp[seg - 1]
+        let next = fp[seg]
+        let segmentSpan = max(next - prev, 0.0001)
+
+        let threshold = segmentSpan * 0.30
+
         let grouped = mapPlayers
-            .filter { abs($0.progress - player.progress) < 0.05 }
+            .filter {
+                let p = CGFloat($0.progress)
+                return segmentIndex(for: p) == seg && abs(p - t) < threshold
+            }
             .sorted {
-                if $0.progress != $1.progress { return $0.progress > $1.progress } // closer to goal first
-                return $0.id < $1.id                                               // stable tie-breaker
+                if $0.progress != $1.progress { return $0.progress > $1.progress }
+                let d0 = $0.lastSyncedAt ?? .distantFuture
+                let d1 = $1.lastSyncedAt ?? .distantFuture
+                return d0 < d1
             }
 
         guard grouped.count > 1,
@@ -646,21 +698,23 @@ final class MapViewModel: ObservableObject {
         }
 
         let count = grouped.count
+        let spacingX: CGFloat = 45
 
-        // Horizontal spread so they don't overlap
-        let spacingX: CGFloat = 60
-        let totalWidth = CGFloat(count - 1) * spacingX
-        let startX = -totalWidth / 2
-        let offsetX = startX + CGFloat(idx) * spacingX
-
-        // Vertical spread: closest-to-goal (idx = 0) appears highest
-        let stepY: CGFloat = 10
-        let center = (CGFloat(count) - 1) / 2
-        let offsetY = (center - CGFloat(idx)) * stepY
+    
+        let offsetX: CGFloat
+        
+        if idx == 0 {
+            offsetX = 0
+        } else {
+            
+            let side = (idx % 2 == 1) ? -1 : 1 
+            let distance = CGFloat((idx + 1) / 2) * spacingX
+            offsetX = CGFloat(side) * distance
+        }
 
         let shifted = CGPoint(
             x: base.x + offsetX,
-            y: base.y + offsetY
+            y: base.y
         )
 
         return clampToBounds(shifted, mapSize: mapSize)
@@ -686,14 +740,25 @@ final class MapViewModel: ObservableObject {
 
     var milestones: [Int] {
         guard let ch = challenge else { return [] }
-        return makeMilestones(goalSteps: ch.goalSteps, count: flagAnchors.count, unit: 100)
+        let goal = ch.goalSteps
+        let count = flagAnchors.count
+        
+        return (1...count).map { i in
+            (goal * i) / count
+        }
     }
 
     func isFlagReached(_ milestone: Int) -> Bool { mySteps >= milestone }
 
     func flagPosition(index: Int, mapSize: CGSize) -> CGPoint {
         let a = flagAnchors[index]
-        return CGPoint(x: mapSize.width * a.x, y: mapSize.height * a.y)
+        
+        let rightOffsetPx: CGFloat = 10
+        
+        return CGPoint(
+            x: mapSize.width * a.x + rightOffsetPx,
+            y: mapSize.height * a.y
+        )
     }
 
     // MARK: - Steps Sync
@@ -857,22 +922,38 @@ final class MapViewModel: ObservableObject {
     }
 
     private func positionForProgress(progress: CGFloat, mapSize: CGSize) -> CGPoint {
-        guard pathPoints.count >= 2 else { return .zero }
-
         let clamped = min(max(progress, 0), 1)
-        let maxIndex = pathPoints.count - 1
+        let pts = pathPoints
+        guard pts.count >= 2 else { return .zero }
 
-        let exactIndex = clamped * CGFloat(maxIndex)
-        let lowerIndex = Int(floor(exactIndex))
-        let upperIndex = min(lowerIndex + 1, maxIndex)
+        var segLens: [CGFloat] = []
+        var cum: [CGFloat] = [0]
+        var total: CGFloat = 0
+        
+        for i in 0..<(pts.count - 1) {
+            let d = hypot(pts[i + 1].x - pts[i].x, pts[i + 1].y - pts[i].y)
+            segLens.append(d)
+            total += d
+            cum.append(total)
+        }
+        guard total > 0 else { return .zero }
 
-        let t = exactIndex - CGFloat(lowerIndex)
+        let target = clamped * total
 
-        let p1 = pathPoints[lowerIndex]
-        let p2 = pathPoints[upperIndex]
+        var i = 0
+        while i < segLens.count - 1, cum[i + 1] < target {
+            i += 1
+        }
 
-        let xNorm = p1.x + (p2.x - p1.x) * t
-        let yNorm = p1.y + (p2.y - p1.y) * t
+        let segStart = cum[i]
+        let segLen = max(segLens[i], 0.000001)
+        let localT = (target - segStart) / segLen
+
+        let a = pts[i]
+        let b = pts[i + 1]
+
+        let xNorm = a.x + (b.x - a.x) * localT
+        let yNorm = a.y + (b.y - a.y) * localT
 
         return CGPoint(x: xNorm * mapSize.width, y: yNorm * mapSize.height)
     }
@@ -901,31 +982,7 @@ final class MapViewModel: ObservableObject {
         Task { try? await firebase.markChallengeEnded(challengeId: chId, now: now) }
     }
 
-    // MARK: - Milestones
-
-    private func makeMilestones(goalSteps: Int, count: Int, unit: Int) -> [Int] {
-        guard count > 0 else { return [] }
-
-        let goal = max(goalSteps, unit)
-        let rawStep = Double(goal) / Double(count)
-
-        var ms: [Int] = []
-        for i in 1...count {
-            let rawValue = Double(i) * rawStep
-            let roundedUp = Int(ceil(rawValue / Double(unit))) * unit
-            ms.append(roundedUp)
-        }
-
-        for i in 1..<ms.count where ms[i] <= ms[i - 1] {
-            ms[i] = ms[i - 1] + unit
-        }
-
-        if let last = ms.last, last < goal {
-            ms[ms.count - 1] = Int(ceil(Double(goal) / Double(unit))) * unit
-        }
-
-        return ms
-    }
+    // MARK: - Helpers
 
     private func shortId(_ id: String) -> String {
         if id.count <= 6 { return id }

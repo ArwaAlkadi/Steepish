@@ -819,6 +819,7 @@ final class MapViewModel: ObservableObject {
         now: Date = Date()
     ) -> CharacterState {
 
+        // sabotage overrides everything while active
         if let exp = participant.sabotageExpiresAt,
            now < exp,
            let s = participant.sabotageState {
@@ -826,6 +827,10 @@ final class MapViewModel: ObservableObject {
         }
 
         let goal = max(challenge.goalSteps, 1)
+
+        if participant.steps >= goal || participant.finishedAt != nil {
+            return .win
+        }
 
         let stepsProgress = CGFloat(participant.steps) / CGFloat(goal)
         let expected = expectedProgressByTime(challenge: challenge, now: now)
@@ -836,8 +841,6 @@ final class MapViewModel: ObservableObject {
 
         if diff >= activeThreshold { return .active }
         if diff <= lazyThreshold { return .lazy }
-        if participant.steps >= goal || participant.finishedAt != nil { return .win }
-           
         return .normal
     }
 
@@ -881,9 +884,19 @@ final class MapViewModel: ObservableObject {
         guard ch.status != .ended else { return }
 
         let timeEnded = (now >= ch.effectiveEndDate)
-        let allFinished = !participants.isEmpty && participants.allSatisfy { $0.finishedAt != nil }
 
-        guard timeEnded || allFinished else { return }
+        let activeParticipants = participants.filter { $0.leftAt == nil }
+
+        let goal = max(ch.goalSteps, 1)
+        let allActiveFinished = !activeParticipants.isEmpty && activeParticipants.allSatisfy {
+            $0.finishedAt != nil || $0.steps >= goal
+        }
+
+        let onlyOneActiveAndFinished = (activeParticipants.count == 1) && (
+            (activeParticipants.first?.finishedAt != nil) || ((activeParticipants.first?.steps ?? 0) >= goal)
+        )
+
+        guard timeEnded || allActiveFinished || onlyOneActiveAndFinished else { return }
 
         Task { try? await firebase.markChallengeEnded(challengeId: chId, now: now) }
     }

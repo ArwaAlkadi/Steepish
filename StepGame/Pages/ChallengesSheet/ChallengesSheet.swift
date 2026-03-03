@@ -7,6 +7,8 @@ import SwiftUI
 import Combine
 import FirebaseFirestore
 
+// MARK: - Challenges Sheet
+
 struct ChallengesSheet: View {
 
     @EnvironmentObject private var session: GameSession
@@ -15,10 +17,14 @@ struct ChallengesSheet: View {
     var onTapJoin: () -> Void = {}
     var onTapChallenge: (Challenge) -> Void = { _ in }
 
-    // MARK: Rename state — lives here so popup covers the whole sheet
+    // Rename state
     @State private var showRenamePopup = false
     @State private var challengeToRename: Challenge? = nil
     @State private var pendingNewName = ""
+
+    // Confirm delete/leave state
+    @State private var showConfirmPopup = false
+    @State private var challengeToConfirm: Challenge? = nil
 
     var body: some View {
         NavigationStack {
@@ -26,7 +32,6 @@ struct ChallengesSheet: View {
                 Color.light3.ignoresSafeArea(edges: .all)
 
                 VStack(spacing: 16) {
-
                     header
 
                     ScrollView(showsIndicators: false) {
@@ -36,9 +41,7 @@ struct ChallengesSheet: View {
 
                             if !activeChallenges.isEmpty {
                                 ForEach(activeChallenges) { ch in
-                                    Button {
-                                        onTapChallenge(ch)
-                                    } label: {
+                                    Button { onTapChallenge(ch) } label: {
                                         ChallengesCard(
                                             challenge: ch,
                                             badgeText: badgeForChallenge(ch),
@@ -48,6 +51,12 @@ struct ChallengesSheet: View {
                                                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                                                     showRenamePopup = true
                                                 }
+                                            },
+                                            onConfirmAction: { challenge in
+                                                challengeToConfirm = challenge
+                                                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                                    showConfirmPopup = true
+                                                }
                                             }
                                         )
                                         .environmentObject(session)
@@ -55,8 +64,7 @@ struct ChallengesSheet: View {
                                     .buttonStyle(.plain)
                                 }
                             } else {
-                                emptyState
-                                    .padding(.top, 40)
+                                emptyState.padding(.top, 40)
                             }
 
                             let endedChallenges = session.endedChallenges
@@ -71,9 +79,7 @@ struct ChallengesSheet: View {
                                 Divider()
 
                                 ForEach(endedChallenges) { ch in
-                                    Button {
-                                        onTapChallenge(ch)
-                                    } label: {
+                                    Button { onTapChallenge(ch) } label: {
                                         ChallengesCard(
                                             challenge: ch,
                                             badgeText: badgeForChallenge(ch),
@@ -82,6 +88,12 @@ struct ChallengesSheet: View {
                                                 challengeToRename = challenge
                                                 withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                                                     showRenamePopup = true
+                                                }
+                                            },
+                                            onConfirmAction: { challenge in
+                                                challengeToConfirm = challenge
+                                                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                                    showConfirmPopup = true
                                                 }
                                             }
                                         )
@@ -96,7 +108,7 @@ struct ChallengesSheet: View {
                 }
                 .padding()
 
-                // Rename popup — floats over the entire sheet
+                // Rename popup
                 if showRenamePopup {
                     RenamePopup(
                         isPresented: $showRenamePopup,
@@ -105,6 +117,29 @@ struct ChallengesSheet: View {
                         let trimmed = pendingNewName.trimmingCharacters(in: .whitespaces)
                         guard !trimmed.isEmpty, let ch = challengeToRename else { return }
                         Task { await session.renameChallenge(ch, newName: trimmed) }
+                    }
+                    .zIndex(10)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                }
+
+                // Confirm delete/leave popup
+                if showConfirmPopup, let ch = challengeToConfirm {
+                    let isHost = ch.createdBy == session.uid
+                    ConfirmPopup(
+                        isPresented: $showConfirmPopup,
+                        title: isHost ? "Delete Challenge?" : "Leave Challenge?",
+                        message: isHost
+                            ? "This will permanently delete the challenge for everyone."
+                            : "You will leave this challenge.",
+                        actionTitle: isHost ? "Delete" : "Leave"
+                    ) {
+                        Task {
+                            if isHost {
+                                await session.deleteChallenge(ch)
+                            } else {
+                                await session.leaveChallenge(ch)
+                            }
+                        }
                     }
                     .zIndex(10)
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
@@ -166,7 +201,7 @@ struct RenamePopup: View {
 
             VStack(spacing: 16) {
 
-                // X button pinned to top-right corner
+                // X button top-right
                 HStack {
                     Spacer()
                     Button { dismiss() } label: {
@@ -181,7 +216,7 @@ struct RenamePopup: View {
 
                 // Title
                 Text("Enter new challenge name")
-                    .font(.custom("RussoOne-Regular", size: 20))
+                    .font(.custom("RussoOne-Regular", size: 18))
                     .foregroundStyle(Color.light1)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 16)
@@ -199,7 +234,7 @@ struct RenamePopup: View {
                     )
                     .padding(.horizontal, 16)
 
-                // Done button — fixed width, centered
+                // Done button
                 Button {
                     let trimmed = name.trimmingCharacters(in: .whitespaces)
                     guard !trimmed.isEmpty else { return }
@@ -233,64 +268,129 @@ struct RenamePopup: View {
     }
 }
 
+// MARK: - Confirm Popup (Delete / Leave)
 
+struct ConfirmPopup: View {
+    @Binding var isPresented: Bool
+    let title: String
+    let message: String
+    let actionTitle: String
+    var onConfirm: () -> Void
 
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+                .onTapGesture { dismiss() }
+
+            VStack(spacing: 16) {
+
+                // X button top-right
+                HStack {
+                    Spacer()
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundStyle(Color.light1)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.top, 16)
+                .padding(.horizontal, 16)
+
+                // Title
+                Text(title)
+                    .font(.custom("RussoOne-Regular", size: 18))
+                    .foregroundStyle(Color.light1)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
+
+                // Message
+                Text(message)
+                    .font(.custom("RussoOne-Regular", size: 14))
+                    .foregroundStyle(Color.light1.opacity(0.7))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 16)
+
+                // Confirm button
+                Button {
+                    onConfirm()
+                    dismiss()
+                } label: {
+                    Text(actionTitle)
+                        .font(.custom("RussoOne-Regular", size: 18))
+                        .foregroundStyle(.light3)
+                        .frame(width: 160)
+                        .padding(.vertical, 14)
+                        .background(
+                            Capsule()
+                                .fill(Color.light1)
+                        )
+                }
+                .padding(.bottom, 20)
+            }
+            .frame(width: 320)
+            .background(
+                RoundedRectangle(cornerRadius: 28)
+                    .fill(Color.light3)
+            )
+        }
+    }
+
+    private func dismiss() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+            isPresented = false
+        }
+    }
+}
 
 // MARK: - Challenges Card
 
 struct ChallengesCard: View {
-    
+
     @EnvironmentObject private var session: GameSession
-    
+
     let challenge: Challenge
     var badgeText: String? = nil
-    var onRename: (Challenge) -> Void = { _ in }  // bubbles up to ChallengesSheet
-    
-    @State private var showConfirmAlert = false
+    var onRename: (Challenge) -> Void = { _ in }
+    var onConfirmAction: (Challenge) -> Void = { _ in }
+
     @State private var myPlaceForThisChallenge: Int? = nil
     @State private var placeListener: ListenerRegistration? = nil
-    
+
     private let firebase = FirebaseService.shared
-    
+
     private var isHost: Bool {
         guard let uid = session.uid else { return false }
         return challenge.createdBy == uid
     }
-    
+
     private var actionTitle: String { isHost ? "Delete" : "Leave" }
-    private var alertTitle: String { isHost ? "Delete Challenge?" : "Leave Challenge?" }
-    
-    private var alertMessage: String {
-        isHost
-        ? "This will permanently delete the challenge for everyone."
-        : "You will leave this challenge."
-    }
-    
+
     var body: some View {
         HStack {
-            
+
             VStack(alignment: .leading, spacing: 10) {
-                
+
                 VStack(alignment: .leading, spacing: 4) {
-                    
                     Text(challenge.name)
                         .font(.custom("RussoOne-Regular", size: 20))
                         .foregroundStyle(.light1)
-                    
+
                     Text(dateRangeText())
                         .font(.custom("RussoOne-Regular", size: 12))
                         .foregroundStyle(.light1.opacity(0.7))
                 }
-                
+
                 HStack(spacing: 10) {
-                    
+
                     HStack(spacing: 4) {
                         Image("Target")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 16, height: 16)
                             .padding(.horizontal, 3)
-                        
+
                         Text("\(challenge.goalSteps.formatted())")
                             .font(.custom("RussoOne-Regular", size: 14))
                     }
@@ -298,39 +398,38 @@ struct ChallengesCard: View {
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(Capsule().fill(Color.light2))
-                    
+
                     Text(statusTitle(challenge.status))
                         .font(.custom("RussoOne-Regular", size: 14))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
                         .background(Capsule().fill(statusColor(challenge.status)))
-                    
+
                     if let crown = crownImageName {
                         Image(crown)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 35, height: 35)
                     }
-                    
+
                     Spacer()
                 }
             }
             .padding()
-            
+
             VStack {
-                
                 Menu {
                     if isHost {
                         Button {
-                            onRename(challenge)  // tell the sheet to show the popup
+                            onRename(challenge)
                         } label: {
                             Text("Rename")
                         }
                     }
-                    
+
                     Button(role: .destructive) {
-                        showConfirmAlert = true
+                        onConfirmAction(challenge)
                     } label: {
                         Text(actionTitle)
                     }
@@ -343,13 +442,12 @@ struct ChallengesCard: View {
                         .rotationEffect(.degrees(90))
                         .foregroundStyle(.light1)
                 }
-                
+
                 Spacer()
-                
+
                 HStack(spacing: 4) {
                     Text("\(challenge.playerIds.count)")
                         .font(.custom("RussoOne-Regular", size: 14))
-                    
                     Image(systemName: systemIconName(for: challenge.playerIds.count))
                 }
                 .foregroundStyle(.light1)
@@ -363,27 +461,13 @@ struct ChallengesCard: View {
                 .fill(Color.light4)
         )
         .contentShape(RoundedRectangle(cornerRadius: 22))
-        .alert(alertTitle, isPresented: $showConfirmAlert) {
-            Button("Cancel", role: .cancel) {}
-            Button(actionTitle, role: .destructive) {
-                Task {
-                    if isHost {
-                        await session.deleteChallenge(challenge)
-                    } else {
-                        await session.leaveChallenge(challenge)
-                    }
-                }
-            }
-        } message: {
-            Text(alertMessage)
-        }
         .onAppear { attachPlaceListenerIfNeeded() }
         .onDisappear {
             placeListener?.remove()
             placeListener = nil
         }
     }
-    
+
     private func attachPlaceListenerIfNeeded() {
         guard challenge.status == .ended else {
             myPlaceForThisChallenge = nil
@@ -391,10 +475,9 @@ struct ChallengesCard: View {
             placeListener = nil
             return
         }
-        
-        guard let chId = challenge.id else { return }
-        guard let uid = session.uid else { return }
-        
+
+        guard let chId = challenge.id, let uid = session.uid else { return }
+
         placeListener?.remove()
         placeListener = firebase.listenMyParticipant(challengeId: chId, uid: uid) { part in
             DispatchQueue.main.async {
@@ -402,7 +485,7 @@ struct ChallengesCard: View {
             }
         }
     }
-    
+
     private func statusTitle(_ s: ChallengeStatus) -> String {
         switch s {
         case .waiting: return "Waiting"
@@ -410,7 +493,7 @@ struct ChallengesCard: View {
         case .ended:   return "Ended"
         }
     }
-    
+
     private func statusColor(_ s: ChallengeStatus) -> Color {
         switch s {
         case .waiting: return .orange
@@ -418,36 +501,36 @@ struct ChallengesCard: View {
         case .ended:   return Color("Red1")
         }
     }
-    
+
     private func systemIconName(for count: Int) -> String {
         count <= 1 ? "person.fill" : "person.2.fill"
     }
-    
+
     private func dateRangeText() -> String {
         let calendar = Calendar.current
         let currentYear = calendar.component(.year, from: Date())
         let startYear = calendar.component(.year, from: challenge.startDate)
         let endYear = calendar.component(.year, from: challenge.effectiveEndDate)
-        
+
         let formatter = DateFormatter()
         if startYear == currentYear && endYear == currentYear {
             formatter.dateFormat = "MMM d"
         } else {
             formatter.dateFormat = "MMM d, yyyy"
         }
-        
+
         let start = formatter.string(from: challenge.startDate)
         let end = formatter.string(from: challenge.effectiveEndDate)
         return "\(start) - \(end)"
     }
-    
+
     private var crownImageName: String? {
         guard challenge.status == .ended else { return nil }
         guard let place = myPlaceForThisChallenge else { return nil }
-        
+
         let playerCount = challenge.playerIds.count
         if playerCount == 1 { return "PlaceSolo" }
-        
+
         switch place {
         case 1: return "Place1"
         case 2: return "Place2"

@@ -112,12 +112,13 @@ struct ChallengesSheet: View {
                 if showRenamePopup {
                     RenamePopup(
                         isPresented: $showRenamePopup,
-                        name: $pendingNewName
-                    ) {
-                        let trimmed = pendingNewName.trimmingCharacters(in: .whitespaces)
-                        guard !trimmed.isEmpty, let ch = challengeToRename else { return }
-                        Task { await session.renameChallenge(ch, newName: trimmed) }
-                    }
+                        name: $pendingNewName,
+                        onDone: {
+                            let trimmed = pendingNewName.trimmingCharacters(in: .whitespaces)
+                            guard !trimmed.isEmpty, let ch = challengeToRename else { return }
+                            await session.renameChallenge(ch, newName: trimmed)
+                        }
+                    )
                     .zIndex(10)
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 }
@@ -127,20 +128,20 @@ struct ChallengesSheet: View {
                     let isHost = ch.createdBy == session.uid
                     ConfirmPopup(
                         isPresented: $showConfirmPopup,
-                        title: isHost ? "Delete Challenge?" : "Leave Challenge?",
+                        title: isHost ? "Delete \"\(ch.name)\"?" : "Leave \"\(ch.name)\"?",
                         message: isHost
-                            ? "This will permanently delete the challenge for everyone."
-                            : "You will leave this challenge.",
-                        actionTitle: isHost ? "Delete" : "Leave"
-                    ) {
-                        Task {
+                            ? "This will remove the challenge for everyone. This can't be undone."
+                            : "You'll leave this challenge and stop syncing steps for it.",
+                        actionTitle: isHost ? "Delete" : "Leave",
+                        cancelTitle: "Cancel",
+                        onConfirm: {
                             if isHost {
                                 await session.deleteChallenge(ch)
                             } else {
                                 await session.leaveChallenge(ch)
                             }
                         }
-                    }
+                    )
                     .zIndex(10)
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 }
@@ -191,57 +192,110 @@ struct ChallengesSheet: View {
 struct RenamePopup: View {
     @Binding var isPresented: Bool
     @Binding var name: String
-    var onDone: () -> Void
+    var onDone: () async -> Void
+    
+    @State private var isProcessing = false
+    @State private var errorMessage: String? = nil
 
     var body: some View {
         ZStack {
             Color.black.opacity(0.4)
                 .ignoresSafeArea()
-                .onTapGesture { dismiss() }
+                .onTapGesture {
+                    if !isProcessing {
+                        dismiss()
+                    }
+                }
 
-            VStack(spacing: 16) {
+            VStack(spacing: 18) {
 
                 // X button top-right
                 HStack {
                     Spacer()
-                    Button { dismiss() } label: {
+                    Button {
+                        if !isProcessing {
+                            dismiss()
+                        }
+                    } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 24, weight: .bold))
                             .foregroundStyle(Color.light1)
                     }
                     .buttonStyle(.plain)
                 }
-                .padding(.top, 16)
-                .padding(.horizontal, 16)
+               
 
                 // Title
                 Text("Enter new challenge name")
                     .font(.custom("RussoOne-Regular", size: 18))
                     .foregroundStyle(Color.light1)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, 16)
+                   
 
-                // Text field
-                TextField("", text: $name)
-                    .font(.custom("RussoOne-Regular", size: 16))
-                    .foregroundStyle(Color.light1)
-                    .tint(Color.light1)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 13)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.light4)
-                    )
-                    .padding(.horizontal, 16)
+                // Text field + Counter
+                VStack(spacing: 8) {
+                    TextField("", text: $name)
+                        .font(.custom("RussoOne-Regular", size: 16))
+                        .foregroundStyle(Color.light1)
+                        .tint(Color.light1)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 13)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.light4)
+                        )
+                        .padding(.horizontal, 16)
+                        .disabled(isProcessing)
+                        .opacity(isProcessing ? 0.5 : 1)
+                        .onChange(of: name) { _, newValue in
+                            if newValue.count > 15 {
+                                name = String(newValue.prefix(15))
+                            }
+                            errorMessage = nil
+                        }
+                    
+                    // ✅ Character counter
+                    HStack {
+                        Text("\(name.count)/15")
+                            .font(.custom("RussoOne-Regular", size: 12))
+                            .foregroundStyle(Color.light2)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 32)
+                }
+                
+                // Error message
+                if let errorMessage {
+                    Text(errorMessage)
+                        .font(.custom("RussoOne-Regular", size: 12))
+                        .foregroundStyle(.red)
+                        .multilineTextAlignment(.center)
+                }
 
                 // Done button
                 Button {
+                    guard !isProcessing else { return }
+                    
                     let trimmed = name.trimmingCharacters(in: .whitespaces)
-                    guard !trimmed.isEmpty else { return }
-                    onDone()
-                    dismiss()
+                    
+                    guard !trimmed.isEmpty else {
+                        errorMessage = "Name cannot be empty"
+                        return
+                    }
+                    
+                    guard trimmed.count <= 15 else {
+                        errorMessage = "Name must be 15 characters or less"
+                        return
+                    }
+                    
+                    Task {
+                        isProcessing = true
+                        await onDone()
+                        isProcessing = false
+                        dismiss()
+                    }
                 } label: {
-                    Text("Done")
+                    Text(isProcessing ? "Saving..." : "Done")
                         .font(.custom("RussoOne-Regular", size: 18))
                         .foregroundStyle(.light3)
                         .frame(width: 160)
@@ -251,17 +305,22 @@ struct RenamePopup: View {
                                 .fill(Color.light1)
                         )
                 }
-                .padding(.bottom, 20)
+                .disabled(isProcessing)
+                .opacity(isProcessing ? 0.5 : 1)
+                .padding(.top, 10)
             }
-            .frame(width: 320)
+            .padding(20)
+            .padding(.bottom, 25)
+            .frame(maxWidth: 360)
             .background(
-                RoundedRectangle(cornerRadius: 28)
-                    .fill(Color.light3)
+                RoundedRectangle(cornerRadius: 22)
+                    .fill(.light3)
             )
         }
     }
 
     private func dismiss() {
+        errorMessage = nil
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             isPresented = false
         }
@@ -275,64 +334,97 @@ struct ConfirmPopup: View {
     let title: String
     let message: String
     let actionTitle: String
-    var onConfirm: () -> Void
+    let cancelTitle: String
+    var onConfirm: () async -> Void
+    
+    @State private var isProcessing = false
 
     var body: some View {
         ZStack {
             Color.black.opacity(0.4)
                 .ignoresSafeArea()
-                .onTapGesture { dismiss() }
+                .onTapGesture {
+                    dismiss()
+                }
 
-            VStack(spacing: 16) {
+            VStack(spacing: 18) {
 
                 // X button top-right
                 HStack {
                     Spacer()
-                    Button { dismiss() } label: {
+                    Button {
+                        dismiss()
+                    } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 24, weight: .bold))
                             .foregroundStyle(Color.light1)
                     }
                     .buttonStyle(.plain)
                 }
-                .padding(.top, 16)
-                .padding(.horizontal, 16)
+              
 
                 // Title
                 Text(title)
                     .font(.custom("RussoOne-Regular", size: 18))
                     .foregroundStyle(Color.light1)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, 16)
+                
 
                 // Message
                 Text(message)
                     .font(.custom("RussoOne-Regular", size: 14))
-                    .foregroundStyle(Color.light1.opacity(0.7))
+                    .foregroundStyle(Color.light2)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, 16)
-
-                // Confirm button
-                Button {
-                    onConfirm()
-                    dismiss()
-                } label: {
-                    Text(actionTitle)
-                        .font(.custom("RussoOne-Regular", size: 18))
-                        .foregroundStyle(.light3)
-                        .frame(width: 160)
-                        .padding(.vertical, 14)
-                        .background(
-                            Capsule()
-                                .fill(Color.light1)
-                        )
+                   
+                HStack(spacing: 12) {
+                    // Cancel button
+                    Button {
+                        dismiss()
+                    } label: {
+                        Text(cancelTitle)
+                            .font(.custom("RussoOne-Regular", size: 16))
+                            .foregroundStyle(.white)
+                            .frame(width: 130)
+                            .padding(.vertical, 14)
+                            .background(
+                                Capsule()
+                                    .foregroundStyle(.light1)
+                            )
+                    }
+                    
+                    // Confirm button
+                    Button {
+                        guard !isProcessing else { return }
+                        
+                        Task {
+                            isProcessing = true
+                            await onConfirm()
+                            isProcessing = false
+                            dismiss()
+                        }
+                    } label: {
+                        Text(isProcessing ? "\(actionTitle)ing..." : actionTitle)
+                            .font(.custom("RussoOne-Regular", size: 16))
+                            .foregroundStyle(.white)
+                            .frame(width: 130)
+                            .padding(.vertical, 14)
+                            .background(
+                                Capsule()
+                                    .fill(Color.red)
+                            )
+                    }
+                    .disabled(isProcessing)
+                    .opacity(isProcessing ? 0.7 : 1)
+                    .padding(.top, 10)
                 }
-                .padding(.bottom, 20)
+               
             }
-            .frame(width: 320)
+            .padding(20)
+            .padding(.bottom, 25)
+            .frame(maxWidth: 360)
             .background(
-                RoundedRectangle(cornerRadius: 28)
-                    .fill(Color.light3)
+                RoundedRectangle(cornerRadius: 22)
+                    .fill(.light3)
             )
         }
     }
@@ -498,7 +590,7 @@ struct ChallengesCard: View {
         switch s {
         case .waiting: return .orange
         case .active:  return Color("Green1")
-        case .ended:   return Color("Red1")
+        case .ended:   return .red
         }
     }
 

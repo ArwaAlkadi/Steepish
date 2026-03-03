@@ -118,7 +118,8 @@ struct WaitingRoomView: View {
                     isPresented: $showLeavePopup,
                     title: "Leave Challenge?",
                     message: "Are you sure you want to leave? The challenge will be cancelled if you're the host.",
-                    actionTitle: "Leave"
+                    actionTitle: "Leave",
+                    cancelTitle: "Cancel"
                 ) {
                     Task { await vm.leaveOrDeleteChallenge() }
                 }

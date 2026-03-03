@@ -469,9 +469,17 @@ private struct PlayerInfoBubble: View {
                         .foregroundStyle(.light1)
                 }
                 
-                Text("≈ \(estimatedKmString(from: steps))")
-                    .font(.custom("RussoOne-Regular", size: 10))
-                    .foregroundStyle(.light1)
+                HStack(spacing: 4) {
+                    Image("km")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 14, height: 14)
+                        
+                    Text("≈ \(estimatedKmString(from: steps))")
+                        .font(.custom("RussoOne-Regular", size: 10))
+                        .foregroundStyle(.light1)
+                    
+                }
                 
             }
 

@@ -29,33 +29,38 @@ extension MapView {
 
     func mapOverlay(size: CGSize) -> some View {
         ZStack {
+
+           
             ForEach(Array(vm.milestones.enumerated()), id: \.offset) { index, value in
                 FlagMarker(number: value, reached: vm.isFlagReached(value))
                     .position(vm.flagPosition(index: index, mapSize: size))
             }
 
             ForEach(vm.mapPlayers) { p in
-                MapPlayerMarker(
-                    mapSprite: p.mapSprite,
-                    name: p.name,
-                    steps: p.steps,
-                    isMe: p.isMe,
-                    isGroup: vm.isGroupChallenge,
-                    place: p.place,
-                    attackedByName: p.attackedByName,
-                    isUnderSabotage: p.isUnderSabotage,
-                    sabotageExpiresAt: p.sabotageExpiresAt,
-                    isAttackedByMe: p.isAttackedByMe,
-                    lastSyncedAt: p.lastSyncedAt,
-                    isChallengeEnded: vm.isChallengeEnded,
-                    hasLeft: p.hasLeft,      // ✅ أضيفي هذا
-                            leftAt: p.leftAt,   
-                    onTap: {
-                        vm.bringToFront(playerId: p.id)
-                    }
-                )
-                .position(vm.positionForPlayer(p, mapSize: size))
-                .zIndex(vm.zIndexForPlayer(p.id)) 
+                let pos = vm.positionForPlayer(p, mapSize: size)
+
+
+                    MapPlayerMarker(
+                        mapSprite: p.mapSprite,
+                        name: p.name,
+                        steps: p.steps,
+                        isMe: p.isMe,
+                        isGroup: vm.isGroupChallenge,
+                        place: p.place,
+                        attackedByName: p.attackedByName,
+                        isUnderSabotage: p.isUnderSabotage,
+                        sabotageExpiresAt: p.sabotageExpiresAt,
+                        isAttackedByMe: p.isAttackedByMe,
+                        lastSyncedAt: p.lastSyncedAt,
+                        isChallengeEnded: vm.isChallengeEnded,
+                        hasLeft: p.hasLeft,
+                        leftAt: p.leftAt,
+                        onTap: { vm.bringToFront(playerId: p.id) }
+                    )
+                    .offset(y: -10)
+                
+                .position(pos)
+                .zIndex(vm.zIndexForPlayer(p.id))
                 .animation(.easeInOut(duration: 0.35), value: p.progress)
             }
         }
@@ -264,7 +269,8 @@ private struct MapPlayerMarker: View {
                     lastSyncedAt: lastSyncedAt,
                     isChallengeEnded: isChallengeEnded,
                     hasLeft: hasLeft,
-                    leftAt: leftAt
+                    leftAt: leftAt,
+                    stepLengthMeters: 0.75
                 )
                 .fixedSize()
                 .padding(.bottom, 8)
@@ -331,8 +337,15 @@ private struct MapPlayerMarker: View {
                 Image(mapSprite)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 85, height: 85)
+                    .frame(width: 80, height: 80)
            
+            Ellipse()
+                .fill(Color.black.opacity(0.18))
+                .frame(width: 44, height: 14)
+                .blur(radius: 1)
+                .offset(y: -10)
+               
+               
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -346,6 +359,7 @@ private struct MapPlayerMarker: View {
                     showBubble.toggle()
                 }
             }
+            onTap()  // Bring to front
         }
         .offset(dragOffset)
         .animation(.spring(response: 0.25, dampingFraction: 0.8), value: dragOffset)
@@ -357,13 +371,13 @@ private struct MapPlayerMarker: View {
         )
         .onChange(of: showBubble) { _, newValue in
             if newValue {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     withAnimation { showBubble = false }
                 }
             }
         }
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                 withAnimation(.easeOut(duration: 0.3)) {
                     showInfoIcon = false
                 }
@@ -419,53 +433,62 @@ private struct PlayerInfoBubble: View {
     let isChallengeEnded: Bool
     let hasLeft: Bool
     let leftAt: Date?
+
     
+    let stepLengthMeters: Double
+
     var body: some View {
         VStack(spacing: 10) {
+
             // Name and Place
             HStack(spacing: 4) {
-                // Full name in bubble
                 Text(isMe ? "Me" : name)
                     .font(.custom("RussoOne-Regular", size: 14))
                     .foregroundStyle(.light1)
 
-                // Show place badge for both solo (place 1) and group (1-3)
                 if let place,
                    (isGroup && (1...3).contains(place)) ||
                    (!isGroup && place == 1) {
-                    
+
                     Image(placeAssetName(place))
                         .resizable()
                         .scaledToFit()
                         .frame(width: 18, height: 18)
                 }
             }
-            
-            // Steps
-            HStack(spacing: 4) {
-                Image(systemName: "figure.walk")
-                    .font(.system(size: 12))
+
+            // Steps + (optional) KM
+            VStack(spacing: 4) {
+                HStack(spacing: 4) {
+                    Image(systemName: "figure.walk")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.light1)
+
+                    Text("\(steps.formatted()) Steps")
+                        .font(.custom("RussoOne-Regular", size: 12))
+                        .foregroundStyle(.light1)
+                }
+                
+                Text("≈ \(estimatedKmString(from: steps))")
+                    .font(.custom("RussoOne-Regular", size: 10))
                     .foregroundStyle(.light1)
                 
-                Text("\(steps.formatted()) Steps")
-                    .font(.custom("RussoOne-Regular", size: 12))
-                    .foregroundStyle(.light1)
             }
-            
+
             // Left info (replaces last sync)
             if hasLeft, let leftDate = leftAt {
                 Divider().background(Color.red.opacity(0.3))
-                
+
                 HStack(spacing: 4) {
                     Image(systemName: "rectangle.portrait.and.arrow.right")
                         .font(.system(size: 12, weight: .bold))
                         .foregroundStyle(.red)
-                    
+
                     Text("Left \(leftText(leftDate))")
                         .font(.custom("RussoOne-Regular", size: 12))
                         .foregroundStyle(.red)
                 }
-                    
+
             } else if !isChallengeEnded {
                 // Last Sync (only if NOT left)
                 HStack(alignment: .top, spacing: 4) {
@@ -473,7 +496,7 @@ private struct PlayerInfoBubble: View {
                         .font(.system(size: 11))
                         .bold()
                         .foregroundStyle(.light2)
-                    
+
                     Text("Steps updated: \(formatDisplayDate(lastSyncedAt))")
                         .font(.custom("RussoOne-Regular", size: 10))
                         .foregroundStyle(.light2)
@@ -481,16 +504,16 @@ private struct PlayerInfoBubble: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            
+
             // Sabotage Info (only if NOT left)
             if !hasLeft && isUnderSabotage, let attackedByName {
                 Divider().background(Color.red.opacity(0.3))
-                
+
                 VStack(spacing: 4) {
                     Text("Under Attack!")
                         .font(.custom("RussoOne-Regular", size: 12))
                         .foregroundStyle(.red)
-                    
+
                     Text(isAttackedByMe ? "Turned lazy by you" : "Turned lazy by \(attackedByName)")
                         .font(.custom("RussoOne-Regular", size: 10))
                         .foregroundStyle(.red)
@@ -504,60 +527,63 @@ private struct PlayerInfoBubble: View {
                 .fill(Color.white)
         )
     }
-    
+
+    // MARK: - KM Estimation
+
+    private func estimatedKilometers(from steps: Int) -> Double {
+        let averageStepLength: Double = 0.75  
+        return (Double(steps) * averageStepLength) / 1000.0
+    }
+
+    private func estimatedKmString(from steps: Int) -> String {
+        let km = estimatedKilometers(from: steps)
+        return String(format: "%.2f km", km)
+    }
+
+    // MARK: - Existing Helpers
+
     private func leftText(_ date: Date) -> String {
         let formatted = formatDisplayDate(date)
-
         if formatted == "Today" || formatted == "Yesterday" {
             return formatted.lowercased()
         } else {
             return "on \(formatted)"
         }
     }
-    
+
     private func formatDisplayDate (_ date: Date?) -> String {
         guard let date else { return "No Data" }
-        
+
         let calendar = Calendar.current
         let now = Date()
-        
-        // Today
-        if calendar.isDateInToday(date) {
-            return "Today"
-        }
-        
-        // Yesterday
-        if calendar.isDateInYesterday(date) {
-            return "Yesterday"
-        }
-        
-        // Last 7 days (show day name)
-        let daysDiff = calendar.dateComponents([.day], from: calendar.startOfDay(for: date), to: calendar.startOfDay(for: now)).day ?? 0
-        
+
+        if calendar.isDateInToday(date) { return "Today" }
+        if calendar.isDateInYesterday(date) { return "Yesterday" }
+
+        let daysDiff = calendar.dateComponents([.day],
+                                              from: calendar.startOfDay(for: date),
+                                              to: calendar.startOfDay(for: now)).day ?? 0
+
         if daysDiff > 0 && daysDiff < 7 {
             let formatter = DateFormatter()
-            formatter.dateFormat = "EEEE"  // "Monday", "Tuesday", etc.
+            formatter.dateFormat = "EEEE"
             return formatter.string(from: date)
         }
-        
-        // This year (show date without year)
+
         if calendar.component(.year, from: date) == calendar.component(.year, from: now) {
             let formatter = DateFormatter()
-            formatter.dateFormat = "MMM d"  // "Feb 15"
+            formatter.dateFormat = "MMM d"
             return formatter.string(from: date)
         }
-        
-        // Previous years (show full date)
+
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, yyyy"  // "Feb 15, 2025"
+        formatter.dateFormat = "MMM d, yyyy"
         return formatter.string(from: date)
     }
-    
+
     private func placeAssetName(_ place: Int) -> String {
-        if !isGroup {
-            return "PlaceSolo"
-        }
-        
+        if !isGroup { return "PlaceSolo" }
+
         switch place {
         case 1: return "Place1"
         case 2: return "Place2"

@@ -141,7 +141,7 @@ extension OnboardingView {
             Image(imageName)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 330, height: 350)
+                .frame(width: 300, height: 300)
                 .offset(y: -10)
         }
     }
@@ -152,9 +152,9 @@ extension OnboardingView {
                 .fill(Color.light2.opacity(0.1))
                 .frame(width: 260, height: 260)
 
-            avatar("rosyavatar", x: -70, y: -60)
-            avatar("rayavatar", x: 70, y: -60)
-            avatar("lunaavatar", x: 0, y: 60)
+            avatar("character2_avatar", x: -70, y: -60)
+            avatar("character3_avatar", x: 70, y: -60)
+            avatar("character1_avatar", x: 0, y: 60)
         }
     }
 
@@ -193,7 +193,7 @@ extension OnboardingView {
     func characterImage(for page: Int) -> String {
         switch page {
         case 0: return "lunawalk"
-        case 1: return "lunawin"
+        case 1: return "character3_win"
         case 3: return "wid"
         default: return ""
         }

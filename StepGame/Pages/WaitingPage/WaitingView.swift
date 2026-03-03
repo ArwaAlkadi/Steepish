@@ -2,7 +2,6 @@
 //  WaitingView.swift
 //  StepGame
 //
-//
 
 import SwiftUI
 import Combine
@@ -13,12 +12,11 @@ struct WaitingRoomView: View {
     @EnvironmentObject private var session: GameSession
     @StateObject private var vm = WaitingRoomViewModel()
 
-    @State private var showLeaveAlert = false
+    @State private var showLeavePopup = false
     @State private var showShareSheet = false
     @State private var didCopy = false
-
     @State private var showOfflineBanner: Bool = true
-    
+
     var body: some View {
         ZStack {
             Color.light3.ignoresSafeArea()
@@ -29,7 +27,9 @@ struct WaitingRoomView: View {
                 HStack {
                     Spacer()
                     Button {
-                        showLeaveAlert = true
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                            showLeavePopup = true
+                        }
                     } label: {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 25, weight: .bold))
@@ -54,7 +54,6 @@ struct WaitingRoomView: View {
                     ) {
                         UIPasteboard.general.string = vm.joinCodeText
                         withAnimation { didCopy = true }
-
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
                             withAnimation { didCopy = false }
                         }
@@ -75,7 +74,7 @@ struct WaitingRoomView: View {
                     .font(.custom("RussoOne-Regular", size: 14))
                     .foregroundStyle(Color.light1.opacity(0.9))
                     .padding(.top, -6)
-                
+
                 Spacer(minLength: 10)
 
                 LobbyCenter(players: vm.lobbyPlayers)
@@ -108,11 +107,24 @@ struct WaitingRoomView: View {
                 }
             }
             .padding(.horizontal, 20)
-            
+
             if !connectivity.isOnline {
                 OfflineBanner(isVisible: $showOfflineBanner)
             }
-            
+
+            // MARK: - Leave Confirmation Popup
+            if showLeavePopup {
+                ConfirmPopup(
+                    isPresented: $showLeavePopup,
+                    title: "Leave Challenge?",
+                    message: "Are you sure you want to leave? The challenge will be cancelled if you're the host.",
+                    actionTitle: "Leave"
+                ) {
+                    Task { await vm.leaveOrDeleteChallenge() }
+                }
+                .zIndex(10)
+                .transition(.opacity.combined(with: .scale(scale: 0.95)))
+            }
         }
         .navigationBarBackButtonHidden(true)
 
@@ -123,16 +135,6 @@ struct WaitingRoomView: View {
                     "🔥 Steepish Challenge!\n\n🎟 Code: \(vm.joinCodeText)\n\nJoin the challenge — think you can beat me? 🏆"
                 ]
             )
-        }
-
-        // MARK: - Leave Confirmation
-        .alert("Leave Challenge?", isPresented: $showLeaveAlert) {
-            Button("Cancel", role: .cancel) {}
-            Button("Leave", role: .destructive) {
-                Task { await vm.leaveOrDeleteChallenge() }
-            }
-        } message: {
-            Text("Are you sure you want to leave? The challenge will be cancelled if you're the host.")
         }
 
         .onAppear {
@@ -224,7 +226,6 @@ private struct LobbyCenter: View {
         .frame(height: 360)
     }
 
-    /// Lobby avatar positions
     private func slotPositions() -> [CGPoint] {
         [
             CGPoint(x: 90,  y: 120),

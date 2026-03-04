@@ -90,35 +90,19 @@ struct SetupChallengeView: View {
                         }
 
                         HStack {
-                            Text("\(vm.challengeName.count)/\(vm.maxNameCount)")
-                            Spacer()
                             if let err = vm.errorMessage {
                                 Text(err).foregroundStyle(.red)
                             }
+                            Spacer()
+                            Text("\(vm.challengeName.count)/\(vm.maxNameCount)")
                         }
                         .font(.custom("RussoOne-Regular", size: 12))
                         .foregroundStyle(Color.light2)
-                        .padding(.leading, 6)
+                        .padding(.trailing, 6)
                     }
 
-                    // Period Selection
-                    VStack(alignment: .leading, spacing: 10) {
-
-                        Text("Period")
-                            .font(.custom("RussoOne-Regular", size: 18))
-                            .foregroundStyle(Color.light1)
-
-                        HStack(spacing: 12) {
-                            ForEach(PeriodOption.allCases, id: \.title) { option in
-                                PeriodChip(
-                                    title: option.title,
-                                    isSelected: vm.selectedPeriod == option
-                                ) {
-                                    vm.selectedPeriod = option
-                                }
-                            }
-                        }
-                    }
+                    // CHANGED: Date Range Picker instead of Period chips
+                    DateRangePicker(startDate: $vm.startDate, endDate: $vm.endDate)
 
                     // Step Goal
                     VStack(alignment: .leading, spacing: 10) {
@@ -128,20 +112,20 @@ struct SetupChallengeView: View {
                             .foregroundStyle(Color.light1)
 
                         CustomStepSlider(
-                           value: $vm.steps,
+                            value: $vm.steps,
                             min: 1000,
-                           max: 500_000,
-                            step: 5000,
+                            max: 1_000_000,
+                            step: 100,
                             fillColor: Color.light2,
                             trackColor: Color.white
                         )
                         .onChange(of: vm.steps) { _, newValue in
-                            vm.steps = (newValue / 5000).rounded() * 5000  
+                            vm.steps = (newValue / 100).rounded() * 100
                         }
                         .frame(height: 34)
-                        
+
                         HStack {
-                            Text("5000")
+                            Text("1000")
 
                             Spacer()
 
@@ -151,7 +135,7 @@ struct SetupChallengeView: View {
 
                             Spacer()
 
-                            Text("500,000")
+                            Text("1,000,000")
                         }
                         .font(.custom("RussoOne-Regular", size: 12))
                         .foregroundStyle(Color.light2)
@@ -205,7 +189,7 @@ struct SetupChallengeView: View {
                             )
                     }
                     .buttonStyle(.plain)
-                    .disabled(session.isLoading || !connectivity.isOnline || vm.steps <= 0) 
+                    .disabled(session.isLoading || !connectivity.isOnline)
                     .opacity((session.isLoading || !connectivity.isOnline) ? 0.6 : 1.0)
                     .padding(.top, 8)
                 }
@@ -224,30 +208,7 @@ struct SetupChallengeView: View {
 
 // MARK: - Components
 
-private struct PeriodChip: View {
-    let title: String
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.custom("RussoOne-Regular", size: 14))
-                .foregroundStyle(isSelected ? Color.white : Color.light1)
-                .frame(maxWidth: .infinity)
-                .frame(height: 44)
-                .background(
-                    Capsule()
-                        .fill(isSelected ? Color.light2 : Color.white)
-                        .overlay(
-                            Capsule()
-                                .stroke(Color.light4.opacity(0.35), lineWidth: 1)
-                        )
-                )
-        }
-        .buttonStyle(.plain)
-    }
-}
+// REMOVED: PeriodChip - not needed anymore
 
 private struct ModeChip: View {
     let title: String
@@ -314,7 +275,7 @@ private struct SetupChallengePreviewHost: View {
 }
 
 
-// MARK: - Custom flat slider 
+// MARK: - Custom flat slider
 private struct CustomStepSlider: View {
 
     @Binding var value: Double

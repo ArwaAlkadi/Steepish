@@ -13,8 +13,14 @@ final class SetupChallengeViewModel: ObservableObject {
 
     // MARK: - Inputs
     @Published var challengeName: String = ""
-    @Published var selectedPeriod: PeriodOption = .threeDays
-    @Published var steps: Double = 5000
+    
+    // NEW: Date picker instead of fixed periods
+    @Published var startDate: Date = Date()
+    @Published var endDate: Date = {
+        Calendar.current.date(byAdding: .day, value: 3, to: Date()) ?? Date()
+    }()
+    
+    @Published var steps: Double = 6000
     @Published var mode: ModeOption = .solo
 
     // MARK: - Validation
@@ -34,6 +40,14 @@ final class SetupChallengeViewModel: ObservableObject {
             challengeName = String(challengeName.prefix(maxNameCount))
         }
     }
+    
+    /// Calculate duration in days from selected date range
+    /// This function returns the duration WITHOUT changing the models
+    private func calculateDuration() -> Int {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.day], from: startDate, to: endDate)
+        return max(components.day ?? 1, 1) // At least 1 day
+    }
 
     // MARK: - Create Challenge
     func createChallenge(session: GameSession) async -> Outcome {
@@ -44,11 +58,18 @@ final class SetupChallengeViewModel: ObservableObject {
             errorMessage = "Please enter a challenge name."
             return .failed
         }
+        
+        // Validate dates
+        guard endDate > startDate else {
+            errorMessage = "End date must be after start date."
+            return .failed
+        }
 
         let goalSteps = max(Int(steps), 1)
-        let durationDays = selectedPeriod.days
+        let durationDays = calculateDuration() // Calculate from dates
         let challengeMode: ChallengeMode = (mode == .group) ? .social : .solo
 
+        // Call existing GameSession function - NO CHANGES to it
         await session.createNewChallenge(
             name: trimmed,
             mode: challengeMode,
@@ -75,30 +96,7 @@ final class SetupChallengeViewModel: ObservableObject {
     }
 }
 
-// MARK: - Period Option
-
-enum PeriodOption: CaseIterable, Equatable {
-    case threeDays, week, month
-
-    var title: String {
-        switch self {
-        case .threeDays: return "3 Days"
-        case .week: return "Week"
-        case .month: return "Month"
-        }
-    }
-
-    var days: Int {
-        switch self {
-        case .threeDays: return 3
-        case .week: return 7
-        case .month: return 30
-        }
-    }
-}
-
 // MARK: - Mode Option
-
 enum ModeOption: Equatable {
     case solo, group
 }

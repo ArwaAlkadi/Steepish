@@ -254,12 +254,12 @@ struct RenamePopup: View {
                             errorMessage = nil
                         }
                     
-                    // ✅ Character counter
+                    // Character counter
                     HStack {
+                        Spacer()
                         Text("\(name.count)/15")
                             .font(.custom("RussoOne-Regular", size: 12))
                             .foregroundStyle(Color.light2)
-                        Spacer()
                     }
                     .padding(.horizontal, 32)
                 }
@@ -423,7 +423,7 @@ struct ConfirmPopup: View {
             .padding(.bottom, 25)
             .frame(maxWidth: 360)
             .background(
-                RoundedRectangle(cornerRadius: 22)
+                RoundedRectangle(cornerRadius: 26)
                     .fill(.light3)
             )
         }
@@ -549,7 +549,7 @@ struct ChallengesCard: View {
         }
         .frame(height: 110)
         .background(
-            RoundedRectangle(cornerRadius: 22)
+            RoundedRectangle(cornerRadius: 26)
                 .fill(Color.light4)
         )
         .contentShape(RoundedRectangle(cornerRadius: 22))

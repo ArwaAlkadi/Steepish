@@ -55,7 +55,7 @@ struct EnterNameView: View {
                                 .foregroundStyle(.light3)
                                
 
-                            VStack(alignment: .leading, spacing: 8) {
+                            VStack(alignment: .trailing, spacing: 8) {
 
                                 // MARK: - Name Input
                                 ZStack {
@@ -80,7 +80,7 @@ struct EnterNameView: View {
                                 // \\ Character Count
                                 Text("\(vm.name.count)/\(vm.maxNameCount)")
                                     .font(.custom("RussoOne-Regular", size: 14))
-                                    .foregroundStyle(.light3.opacity(0.9))
+                                    .foregroundStyle(.light3)
                                     .padding(.horizontal, 8)
                             }
                             .padding(.horizontal, 24)

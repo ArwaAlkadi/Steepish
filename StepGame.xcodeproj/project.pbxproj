@@ -21,6 +21,7 @@
 		EC80F3CF2F3FB01200544443 /* ChallengeResultPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3CC2F3FB01200544443 /* ChallengeResultPopup.swift */; };
 		EC80F3D02F3FB01200544443 /* ChallengesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3CD2F3FB01200544443 /* ChallengesSheet.swift */; };
 		EC80F3D22F3FB44900544443 /* PuzzleWiringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3D12F3FB44900544443 /* PuzzleWiringView.swift */; };
+		EC9F96CB2F57B61F0046AE33 /* DateRangePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9F96CA2F57B61F0046AE33 /* DateRangePicker.swift */; };
 		ECCAEE3A2F218A8B0047C5DF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE392F218A8B0047C5DF /* FirebaseAuth */; };
 		ECCAEE3C2F218A8B0047C5DF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE3B2F218A8B0047C5DF /* FirebaseFirestore */; };
 		ECCAEE422F218AAA0047C5DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */; };
@@ -95,6 +96,7 @@
 		EC80F3CC2F3FB01200544443 /* ChallengeResultPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeResultPopup.swift; sourceTree = "<group>"; };
 		EC80F3CD2F3FB01200544443 /* ChallengesSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengesSheet.swift; sourceTree = "<group>"; };
 		EC80F3D12F3FB44900544443 /* PuzzleWiringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleWiringView.swift; sourceTree = "<group>"; };
+		EC9F96CA2F57B61F0046AE33 /* DateRangePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateRangePicker.swift; sourceTree = "<group>"; };
 		ECCAEE282F21888B0047C5DF /* StepGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StepGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ECCAEE3F2F218AAA0047C5DF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -300,6 +302,7 @@
 				ECCB95EA2F294CA700DBC1F5 /*  SetupChallengeView.swift */,
 				ECCB95EC2F294CAE00DBC1F5 /*  SetupChallengeViewModel.swift */,
 				ECCB96022F294DFF00DBC1F5 /* JoinWithCodePopup.swift */,
+				EC9F96CA2F57B61F0046AE33 /* DateRangePicker.swift */,
 			);
 			path = SetupChallengePage;
 			sourceTree = "<group>";
@@ -524,6 +527,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC9F96CB2F57B61F0046AE33 /* DateRangePicker.swift in Sources */,
 				ECCB95D52F29483B00DBC1F5 /* FirebaseService.swift in Sources */,
 				EC77AE8E2F3B9A320056D261 /* OfflineBanner.swift in Sources */,
 				EC80F3CF2F3FB01200544443 /* ChallengeResultPopup.swift in Sources */,

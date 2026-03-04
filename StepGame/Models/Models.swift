@@ -140,7 +140,7 @@ struct Challenge: Identifiable, Codable {
 
     /// End date including any extension
     var effectiveEndDate: Date {
-        endDate.addingTimeInterval(TimeInterval(extensionSeconds))
+        endDate.addingTimeInterval(TimeInterval(max(0, extensionSeconds)))
     }
 
     /// Dynamic mode resolution

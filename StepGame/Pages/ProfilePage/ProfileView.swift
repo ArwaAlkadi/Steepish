@@ -176,7 +176,7 @@ struct ProfileView: View {
             Text("\(vm.draftName.count)/15")
                 .font(.custom("RussoOne-Regular", size: 12))
                 .foregroundStyle(vm.draftName.count > 15 ? .red : Color.light2)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.horizontal)
         }
         .frame(maxWidth: 320)

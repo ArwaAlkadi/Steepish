@@ -648,8 +648,14 @@ final class MapViewModel: ObservableObject {
 
     var durationText: String {
         guard let ch = challenge else { return "0 Days" }
-        let days = ch.durationDays
+
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: ch.startDate)
+        let end = calendar.startOfDay(for: ch.effectiveEndDate)
+
+        let days = calendar.dateComponents([.day], from: start, to: end).day ?? 0
         let dayWord = days == 1 ? "Day" : "Days"
+
         return "\(days) \(dayWord)"
     }
     

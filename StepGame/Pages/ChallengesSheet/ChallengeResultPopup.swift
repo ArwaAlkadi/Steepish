@@ -135,7 +135,7 @@ private struct GroupPlayerRow: View {
                 if p.hasLeft, let leftDate = p.leftAt {
                     Text("Left at \(formatLeftDate(leftDate))")
                         .font(.custom("RussoOne-Regular", size: 9))
-                        .foregroundStyle(.red)
+                        .foregroundStyle(Color.red1)
                 }
             }
 

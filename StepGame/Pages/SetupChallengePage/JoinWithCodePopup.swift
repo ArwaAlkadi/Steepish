@@ -42,7 +42,7 @@ struct JoinCodePopup: View {
                     .opacity(isSubmitting ? 0.6 : 1)
                 }
 
-                Text("Join with a code")
+                Text("Join with code")
                     .font(.custom("RussoOne-Regular", size: 22))
                     .foregroundStyle(.light1)
 
@@ -73,11 +73,16 @@ struct JoinCodePopup: View {
                     }
 
                     if let errorText {
-                        Text(errorText)
-                            .font(.custom("RussoOne-Regular", size: 12))
-                            .foregroundStyle(.red)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 16)
+                        HStack(spacing: 4) {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .foregroundStyle(.red1)
+                                .font(.system(size: 12))
+                            Text(errorText)
+                                .font(.custom("RussoOne-Regular", size: 12))
+                                .foregroundStyle(.red1)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 10)
                     }
                 }
                

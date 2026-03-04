@@ -9,8 +9,9 @@ struct DateRangePicker: View {
     
     @Binding var startDate: Date
     @Binding var endDate: Date
+    @Binding var hasSelectedEndDate: Bool
+    @Binding var showError: Bool
     @State private var showEndPicker = false
-    @State private var hasSelectedEndDate = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -29,8 +30,7 @@ struct DateRangePicker: View {
                     // Display only - not clickable
                     Text(startDate.formatted(date: .abbreviated, time: .omitted))
                         .font(.custom("RussoOne-Regular", size: 14))
-                        .foregroundStyle(Color.light1
-                            .opacity(1.0))
+                        .foregroundStyle(Color.light1.opacity(1.0))
                         .frame(maxWidth: .infinity)
                         .frame(height: 44)
                         .background(
@@ -56,7 +56,11 @@ struct DateRangePicker: View {
                              ? endDate.formatted(date: .abbreviated, time: .omitted)
                              : "e.g: 6 Mar 2026")
                             .font(.custom("RussoOne-Regular", size: 14))
-                            .foregroundStyle(Color.light1.opacity(hasSelectedEndDate ? 1.0 : 0.6))
+                            .foregroundStyle(
+                                hasSelectedEndDate
+                                    ? Color.light1
+                                    : Color.light1.opacity(0.6) 
+                            )
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
                             .background(
@@ -82,6 +86,7 @@ struct DateRangePicker: View {
             .presentationDetents([.height(400)])
             .onDisappear {
                 hasSelectedEndDate = true
+                showError = false
             }
         }
         .onAppear {
@@ -147,12 +152,19 @@ private struct DatePickerSheet: View {
     struct PreviewWrapper: View {
         @State private var start = Date()
         @State private var end = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
+        @State private var hasSelected = false
+        @State private var showError = false
         
         var body: some View {
             ZStack {
                 Color.light3.ignoresSafeArea()
-                DateRangePicker(startDate: $start, endDate: $end)
-                    .padding()
+                DateRangePicker(
+                    startDate: $start,
+                    endDate: $end,
+                    hasSelectedEndDate: $hasSelected,
+                    showError: $showError
+                )
+                .padding()
             }
         }
     }

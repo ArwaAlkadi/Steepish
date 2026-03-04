@@ -19,6 +19,7 @@ final class ProfileViewModel: ObservableObject {
 
     @Published var showError: Bool = false
     @Published var errorMessage: String? = nil
+    @Published var nameError: String? = nil 
 
     private var originalName: String = ""
     private var originalCharacter: CharacterType = .character1
@@ -57,22 +58,24 @@ final class ProfileViewModel: ObservableObject {
         isEditing = true
         showError = false
         errorMessage = nil
+        nameError = nil
     }
 
     func exitEdit() {
         isEditing = false
         showError = false
         errorMessage = nil
+        nameError = nil
     }
 
     // MARK: - Validation
     func validateDraft() -> Bool {
         let trimmed = draftName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
-            errorMessage = "Please enter your name."
-            showError = true
+            nameError = "Please enter your name."
             return false
         }
+        nameError = nil
         draftName = trimmed
         return true
     }

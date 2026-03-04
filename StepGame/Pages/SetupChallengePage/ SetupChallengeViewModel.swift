@@ -20,6 +20,8 @@ final class SetupChallengeViewModel: ObservableObject {
         Calendar.current.date(byAdding: .day, value: 3, to: Date()) ?? Date()
     }()
     
+    @Published var hasSelectedEndDate: Bool = false
+    
     @Published var steps: Double = 6000
     @Published var mode: ModeOption = .solo
 

@@ -310,7 +310,7 @@ private struct MapPlayerMarker: View {
                     .padding(.vertical, 3)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(hasLeft ? Color.red : Color.light3)
+                            .fill(hasLeft ? Color.red1 : Color.light3)
                     )
                     
                     // Timer badge if under attack (only if NOT left)
@@ -326,7 +326,7 @@ private struct MapPlayerMarker: View {
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 3)
-                        .background(Capsule().fill(Color.red))
+                        .background(Capsule().fill(Color.red1))
                     }
                 }
                 .padding(.bottom, 8)
@@ -485,16 +485,16 @@ private struct PlayerInfoBubble: View {
 
             // Left info (replaces last sync)
             if hasLeft, let leftDate = leftAt {
-                Divider().background(Color.red.opacity(0.3))
+                Divider().background(Color.red1.opacity(0.3))
 
                 HStack(spacing: 4) {
                     Image(systemName: "rectangle.portrait.and.arrow.right")
                         .font(.system(size: 12, weight: .bold))
-                        .foregroundStyle(.red)
+                        .foregroundStyle(Color.red1)
 
                     Text("Left \(leftText(leftDate))")
                         .font(.custom("RussoOne-Regular", size: 12))
-                        .foregroundStyle(.red)
+                        .foregroundStyle(Color.red1)
                 }
 
             } else if !isChallengeEnded {
@@ -515,16 +515,16 @@ private struct PlayerInfoBubble: View {
 
             // Sabotage Info (only if NOT left)
             if !hasLeft && isUnderSabotage, let attackedByName {
-                Divider().background(Color.red.opacity(0.3))
+                Divider().background(Color.red1.opacity(0.3))
 
                 VStack(spacing: 4) {
                     Text("Under Attack!")
                         .font(.custom("RussoOne-Regular", size: 12))
-                        .foregroundStyle(.red)
+                        .foregroundStyle(Color.red1)
 
                     Text(isAttackedByMe ? "Turned lazy by you" : "Turned lazy by \(attackedByName)")
                         .font(.custom("RussoOne-Regular", size: 10))
-                        .foregroundStyle(.red)
+                        .foregroundStyle(Color.red1)
                 }
             }
         }

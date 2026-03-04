@@ -106,12 +106,17 @@ struct EnterNameView: View {
                             .disabled(!vm.isStartEnabled || session.isLoading || !connectivity.isOnline)
                             .opacity((!vm.isStartEnabled || session.isLoading || !connectivity.isOnline) ? 0.5 : 1)
 
-                            // \\ Error Message
+                            // Error Message
                             if let msg = session.errorMessage {
-                                Text(msg)
-                                    .font(.custom("RussoOne-Regular", size: 12))
-                                    .foregroundStyle(.red)
-                                    .padding(.top, 6)
+                                HStack(spacing: 4) {
+                                    Image(systemName: "exclamationmark.circle.fill")
+                                        .font(.system(size: 12))
+                                        .foregroundStyle(Color.red1)
+                                    Text(msg)
+                                        .font(.custom("RussoOne-Regular", size: 12))
+                                        .foregroundStyle(Color.red1)
+                                }
+                                .padding(.top, 6)
                             }
                         }
                         .padding(.top, 26)

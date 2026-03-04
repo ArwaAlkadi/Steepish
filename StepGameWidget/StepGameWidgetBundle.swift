@@ -47,6 +47,18 @@ extension Font {
     }
 }
 
+// MARK: - Steps Formatter
+
+private func formatSteps(_ steps: Int) -> String {
+    guard steps >= 1000 else { return "\(steps)" }
+    let k = Double(steps) / 1000.0
+    if k.truncatingRemainder(dividingBy: 1) == 0 {
+        return "\(Int(k))k"
+    } else {
+        return String(format: "%.1fk", k)
+    }
+}
+
 // MARK: - Provider
 
 struct StepGameWidgetProvider: TimelineProvider {
@@ -135,13 +147,18 @@ private struct PlayerCardView: View {
     let startDate: Date
     let effectiveEndDate: Date
 
+    private var isEnded: Bool {
+        Date() >= effectiveEndDate
+    }
+
     private var elapsedDays: Int {
         let calendar = Calendar.current
         let startDay = calendar.startOfDay(for: startDate)
         let today = calendar.startOfDay(for: Date())
         
         let diff = calendar.dateComponents([.day], from: startDay, to: today).day ?? 0
-        return max(1, diff + 1)
+        let elapsed = max(1, diff + 1)
+        return min(elapsed, totalDays)
     }
 
     private var totalDays: Int {
@@ -154,18 +171,31 @@ private struct PlayerCardView: View {
     }
 
     private var stepsDurationText: String {
-        "\(steps) steps in \(elapsedDays) of \(totalDays) days"
+        "\(formatSteps(steps)) steps in \(elapsedDays) of \(totalDays) days"
     }
 
     var body: some View {
         VStack(spacing: 6) {
 
-            Text(challengeName)
-                .font(.russo(11))
-                .foregroundColor(.light1)
-                .widgetAccentable()
-                .offset(y: 50)
+            HStack(spacing: 4) {
+                Text(challengeName)
+                    .font(.russo(11))
+                    .foregroundColor(.light1)
+                    .widgetAccentable()
+                    .lineLimit(1)
 
+                if isEnded {
+                    Text("Ended")
+                        .font(.russo(8))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(Capsule().fill(Color.red1))
+                }
+            }
+            .offset(y: 50)
+
+            // ✅ الهدف بـ k
             Text("\(goal)")
                 .font(.russo(28))
                 .foregroundColor(.light2.opacity(0.4))
@@ -265,7 +295,7 @@ struct StepGameWidgetEntryView: View {
                     displayName: entry.friendName,
                     isSolo: false,
                     startDate: entry.startDate,
-                    effectiveEndDate: entry.effectiveEndDate 
+                    effectiveEndDate: entry.effectiveEndDate
                 )
             }
         }

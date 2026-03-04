@@ -6,9 +6,6 @@
 import SwiftUI
 import Combine
 
-import SwiftUI
-import Combine
-
 struct SetupChallengeView: View {
 
     @Binding var isPresented: Bool
@@ -19,6 +16,7 @@ struct SetupChallengeView: View {
     @StateObject private var vm = SetupChallengeViewModel()
 
     @State private var showOfflineBanner: Bool = true
+    @State private var showDateError: Bool = false
 
     var body: some View {
         ZStack {
@@ -90,8 +88,12 @@ struct SetupChallengeView: View {
                         }
 
                         HStack {
-                            if let err = vm.errorMessage {
-                                Text(err).foregroundStyle(.red)
+                            HStack(spacing: 2) {
+                                if let err = vm.errorMessage {
+                                    Image(systemName: "exclamationmark.circle.fill")
+                                        .foregroundStyle(Color.red1)
+                                    Text(err).foregroundStyle(Color.red1)
+                                }
                             }
                             Spacer()
                             Text("\(vm.challengeName.count)/\(vm.maxNameCount)")
@@ -101,8 +103,26 @@ struct SetupChallengeView: View {
                         .padding(.trailing, 6)
                     }
 
-                    // CHANGED: Date Range Picker instead of Period chips
-                    DateRangePicker(startDate: $vm.startDate, endDate: $vm.endDate)
+                    // Date Range Picker
+                    DateRangePicker(
+                        startDate: $vm.startDate,
+                        endDate: $vm.endDate,
+                        hasSelectedEndDate: $vm.hasSelectedEndDate,
+                        showError: $showDateError
+                    )
+
+                    // Date error message
+                    if showDateError && !vm.hasSelectedEndDate {
+                        HStack(spacing: 2) {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .foregroundStyle(Color.red1)
+                            Text("Please select an end date.")
+                                .foregroundStyle(Color.red1)
+                        }
+                        .font(.custom("RussoOne-Regular", size: 12))
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top, -10)
+                    }
 
                     // Step Goal
                     VStack(alignment: .leading, spacing: 10) {
@@ -166,6 +186,25 @@ struct SetupChallengeView: View {
                     // Create Challenge
                     Button {
                         guard connectivity.isOnline else { return }
+
+                        var hasError = false
+
+                        let trimmed = vm.challengeName.trimmingCharacters(in: .whitespacesAndNewlines)
+                        if trimmed.isEmpty {
+                            vm.errorMessage = "Please enter a challenge name."
+                            hasError = true
+                        } else {
+                            vm.errorMessage = nil
+                        }
+
+                        if !vm.hasSelectedEndDate {
+                            showDateError = true
+                            hasError = true
+                        } else {
+                            showDateError = false
+                        }
+
+                        guard !hasError else { return }
 
                         Task {
                             let outcome = await vm.createChallenge(session: session)

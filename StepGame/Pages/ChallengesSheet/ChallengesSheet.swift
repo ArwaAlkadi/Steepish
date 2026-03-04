@@ -256,22 +256,26 @@ struct RenamePopup: View {
                     
                     // Character counter
                     HStack {
+                        // Error message
+                        if let errorMessage {
+                            HStack(spacing: 4) {
+                                Image(systemName: "exclamationmark.circle.fill")
+                                    .foregroundStyle(.red1)
+                                    .font(.system(size: 12))
+                                Text(errorMessage)
+                                    .font(.custom("RussoOne-Regular", size: 12))
+                                    .foregroundStyle(.red1)
+                                    .multilineTextAlignment(.center)
+                            }
+                        }
                         Spacer()
                         Text("\(name.count)/15")
                             .font(.custom("RussoOne-Regular", size: 12))
                             .foregroundStyle(Color.light2)
                     }
-                    .padding(.horizontal, 32)
+                    .padding(.horizontal, 18)
                 }
                 
-                // Error message
-                if let errorMessage {
-                    Text(errorMessage)
-                        .font(.custom("RussoOne-Regular", size: 12))
-                        .foregroundStyle(.red)
-                        .multilineTextAlignment(.center)
-                }
-
                 // Done button
                 Button {
                     guard !isProcessing else { return }
@@ -279,12 +283,12 @@ struct RenamePopup: View {
                     let trimmed = name.trimmingCharacters(in: .whitespaces)
                     
                     guard !trimmed.isEmpty else {
-                        errorMessage = "Name cannot be empty"
+                        errorMessage = "Name cannot be empty."
                         return
                     }
                     
                     guard trimmed.count <= 15 else {
-                        errorMessage = "Name must be 15 characters or less"
+                        errorMessage = "Name must be 15 characters or less."
                         return
                     }
                     
@@ -309,7 +313,7 @@ struct RenamePopup: View {
                 .opacity(isProcessing ? 0.5 : 1)
                 .padding(.top, 10)
             }
-            .padding(20)
+            .padding(10)
             .padding(.bottom, 25)
             .frame(maxWidth: 360)
             .background(
@@ -410,7 +414,7 @@ struct ConfirmPopup: View {
                             .padding(.vertical, 14)
                             .background(
                                 Capsule()
-                                    .fill(Color.red)
+                                    .fill(Color.red1)
                             )
                     }
                     .disabled(isProcessing)
@@ -589,8 +593,8 @@ struct ChallengesCard: View {
     private func statusColor(_ s: ChallengeStatus) -> Color {
         switch s {
         case .waiting: return .orange
-        case .active:  return Color("Green1")
-        case .ended:   return .red
+        case .active:  return Color.green1
+        case .ended:   return Color.red1
         }
     }
 

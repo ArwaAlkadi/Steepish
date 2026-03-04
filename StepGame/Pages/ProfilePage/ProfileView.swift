@@ -46,11 +46,6 @@ struct ProfileView: View {
         .onChange(of: session.player?.id) { _, _ in
             vm.loadFromSession(session.player)
         }
-        .alert("Error", isPresented: $vm.showError) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(vm.errorMessage ?? "Something went wrong.")
-        }
         .onChange(of: connectivity.isOnline) { _, online in
             if online {
                 withAnimation(.easeInOut) { showOfflineBanner = false }
@@ -170,14 +165,29 @@ struct ProfileView: View {
                     if newValue.count > 15 {
                         vm.draftName = String(newValue.prefix(15))
                     }
+                    if vm.nameError != nil {
+                        vm.nameError = nil
+                    }
                 }
             }
-            
-            Text("\(vm.draftName.count)/15")
-                .font(.custom("RussoOne-Regular", size: 12))
-                .foregroundStyle(vm.draftName.count > 15 ? .red : Color.light2)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                .padding(.horizontal)
+
+            HStack {
+                if let err = vm.nameError {
+                    HStack(spacing: 4) {
+                        Image(systemName: "exclamationmark.circle.fill")
+                            .font(.system(size: 12))
+                            .foregroundStyle(.red1)
+                        Text(err)
+                            .font(.custom("RussoOne-Regular", size: 12))
+                            .foregroundStyle(.red1)
+                    }
+                }
+                Spacer()
+                Text("\(vm.draftName.count)/15")
+                    .font(.custom("RussoOne-Regular", size: 12))
+                    .foregroundStyle(vm.draftName.count > 15 ? .red1 : Color.light2)
+            }
+            .padding(.horizontal, 8)
         }
         .frame(maxWidth: 320)
     }
@@ -196,10 +206,6 @@ struct ProfileView: View {
         guard ok else { return }
 
         await vm.save(session: session, currentPlayer: sessionPlayer)
-
-        if !vm.showError {
-            vm.exitEdit()
-        }
     }
 }
 

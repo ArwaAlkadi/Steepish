@@ -69,11 +69,11 @@ struct PuzzleWiringView: View {
             HStack(spacing: 8) {
                 Image(systemName: "timer")
                     .font(.system(size: 20, weight: .bold))
-                    .foregroundColor(viewModel.timeRemaining <= 3 ? .red : Color.light1)
+                    .foregroundColor(viewModel.timeRemaining <= 3 ? Color.red1 : Color.light1)
 
                 Text(String(format: "%.1f", max(0, viewModel.timeRemaining)))
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(viewModel.timeRemaining <= 3 ? .red : Color.light1)
+                    .foregroundColor(viewModel.timeRemaining <= 3 ? Color.red1 : Color.light1)
                     .monospacedDigit()
             }
             .padding(.horizontal, 16)

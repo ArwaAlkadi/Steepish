@@ -149,22 +149,22 @@ final class MapViewModel: ObservableObject {
         .init(x: 0.714, y: 0.890), // 0
         .init(x: 0.726, y: 0.851), // 1
         .init(x: 0.735, y: 0.812), // 2
-        .init(x: 0.722, y: 0.773), // 3
-        .init(x: 0.685, y: 0.734), // 4
-        .init(x: 0.635, y: 0.695), // 5
+        .init(x: 0.670, y: 0.773), // 3
+        .init(x: 0.500, y: 0.734), // 4
+        .init(x: 0.530, y: 0.695), // 5
         .init(x: 0.600, y: 0.656), // 6
         .init(x: 0.560, y: 0.617), // 7
         .init(x: 0.520, y: 0.578), // 8
-        .init(x: 0.470, y: 0.539), // 9
-        .init(x: 0.430, y: 0.500), // 10
-        .init(x: 0.400, y: 0.461), // 11
-        .init(x: 0.420, y: 0.422), // 12
-        .init(x: 0.450, y: 0.383), // 13
-        .init(x: 0.480, y: 0.344), // 14
-        .init(x: 0.520, y: 0.305), // 15
-        .init(x: 0.580, y: 0.266), // 16
+        .init(x: 0.410, y: 0.539), // 9
+        .init(x: 0.390, y: 0.500), // 10
+        .init(x: 0.450, y: 0.461), // 11
+        .init(x: 0.620, y: 0.422), // 12
+        .init(x: 0.700, y: 0.383), // 13
+        .init(x: 0.550, y: 0.344), // 14
+        .init(x: 0.500, y: 0.305), // 15
+        .init(x: 0.520, y: 0.266), // 16
         .init(x: 0.650, y: 0.227), // 17
-        .init(x: 0.720, y: 0.188), // 18
+        .init(x: 0.790, y: 0.188), // 18
         .init(x: 0.790, y: 0.150), // 19
     ]
     
@@ -759,7 +759,7 @@ final class MapViewModel: ObservableObject {
     func flagPosition(index: Int, mapSize: CGSize) -> CGPoint {
         let a = flagAnchors[index]
         
-        let rightOffsetPx: CGFloat = 10
+        let rightOffsetPx: CGFloat = 40
         
         return CGPoint(
             x: mapSize.width * a.x + rightOffsetPx,

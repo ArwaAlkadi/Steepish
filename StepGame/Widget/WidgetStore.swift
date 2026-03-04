@@ -28,7 +28,7 @@ enum WidgetStore {
         let isSoloChallenge: String?
 
         let startDate: Date
-        let durationDays: Int
+        let effectiveEndDate: Date
     }
 
     static func save(
@@ -43,7 +43,7 @@ enum WidgetStore {
         friendImage: String,
         isSoloChallenge: String?,
         startDate: Date,
-        durationDays: Int
+        effectiveEndDate: Date
     ) {
         let payload = Payload(
             challengeName: challengeName,
@@ -57,7 +57,7 @@ enum WidgetStore {
             friendImage: friendImage,
             isSoloChallenge: isSoloChallenge,
             startDate: startDate,
-            durationDays: durationDays
+            effectiveEndDate: effectiveEndDate 
         )
 
         guard let data = try? JSONEncoder().encode(payload) else { return }

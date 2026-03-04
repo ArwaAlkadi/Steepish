@@ -579,7 +579,7 @@ final class MapViewModel: ObservableObject {
             friendImage: friendImage,
             isSoloChallenge: ch.currentMode.rawValue,
             startDate: (ch.startedAt ?? ch.startDate),
-            durationDays: ch.durationDays
+            effectiveEndDate: ch.effectiveEndDate 
         )
         WidgetCenter.shared.reloadAllTimelines()
     }

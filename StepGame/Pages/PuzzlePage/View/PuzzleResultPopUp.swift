@@ -28,7 +28,7 @@ struct PuzzleResultPopup: View {
         VStack(spacing: 16) {
             headerRow
 
-            VStack(spacing: 10) {
+            VStack(spacing: 15) {
                 Text(result.title)
                     .font(.custom("RussoOne-Regular", size: 28))
                     .foregroundStyle(.light1)
@@ -37,23 +37,32 @@ struct PuzzleResultPopup: View {
                 characterPreview
                     .padding()
 
-                Text(result.message)
+                if let opp = result.opponentTime, result.context == .groupDefense {
+                    VStack(spacing: 4) {
+                        HStack(spacing: 4) {
+                            Text("Your time:")
+                            Text(fmt(result.myTime))
+                                .foregroundStyle(result.myTime < opp ? Color.green1 : Color.red1)
+                        }
+                        HStack(spacing: 4) {
+                            Text("Opponent time:")
+                            Text(fmt(opp))
+                                .foregroundStyle(result.myTime < opp ? Color.red1 : Color.green1)
+                        }
+                    }
                     .font(.custom("RussoOne-Regular", size: 14))
+                    .foregroundStyle(.light2)
+                    .padding(.top, 6)
+                }
+                
+                Text(result.message)
+                    .font(.custom("RussoOne-Regular", size: 18))
                     .foregroundStyle(.light1)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 10)
 
-                if let opp = result.opponentTime, result.context == .groupDefense {
-                    VStack(spacing: 6) {
-                        Text("Your time: \(fmt(result.myTime))")
-                        Text("Opponent time: \(fmt(opp))")
-                    }
-                    .font(.custom("RussoOne-Regular", size: 14))
-                    .foregroundStyle(.light1)
-                    .padding(.top, 6)
-                }
             }
-            .padding(.bottom, 6)
+            
         }
         .padding(18)
         .padding(.bottom, 25)

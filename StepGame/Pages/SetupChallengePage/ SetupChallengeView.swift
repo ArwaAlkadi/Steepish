@@ -135,12 +135,12 @@ struct SetupChallengeView: View {
                             value: $vm.steps,
                             min: 1000,
                             max: 1_000_000,
-                            step: 100,
+                            step: 1000,
                             fillColor: Color.light2,
                             trackColor: Color.white
                         )
                         .onChange(of: vm.steps) { _, newValue in
-                            vm.steps = (newValue / 100).rounded() * 100
+                            vm.steps = (newValue / 1000).rounded() * 1000 
                         }
                         .frame(height: 34)
 

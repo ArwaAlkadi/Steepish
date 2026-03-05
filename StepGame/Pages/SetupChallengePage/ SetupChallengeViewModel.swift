@@ -22,7 +22,7 @@ final class SetupChallengeViewModel: ObservableObject {
     
     @Published var hasSelectedEndDate: Bool = false
     
-    @Published var steps: Double = 6000
+    @Published var steps: Double = 10000
     @Published var mode: ModeOption = .solo
 
     // MARK: - Validation

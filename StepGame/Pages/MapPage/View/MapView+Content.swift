@@ -29,8 +29,7 @@ extension MapView {
 
     func mapOverlay(size: CGSize) -> some View {
         ZStack {
-
-           
+            
             ForEach(Array(vm.milestones.enumerated()), id: \.offset) { index, value in
                 FlagMarker(number: value, reached: vm.isFlagReached(value))
                     .position(vm.flagPosition(index: index, mapSize: size))
@@ -39,26 +38,26 @@ extension MapView {
             ForEach(vm.mapPlayers) { p in
                 let pos = vm.positionForPlayer(p, mapSize: size)
 
-
-                    MapPlayerMarker(
-                        mapSprite: p.mapSprite,
-                        name: p.name,
-                        steps: p.steps,
-                        isMe: p.isMe,
-                        isGroup: vm.isGroupChallenge,
-                        place: p.place,
-                        attackedByName: p.attackedByName,
-                        isUnderSabotage: p.isUnderSabotage,
-                        sabotageExpiresAt: p.sabotageExpiresAt,
-                        isAttackedByMe: p.isAttackedByMe,
-                        lastSyncedAt: p.lastSyncedAt,
-                        isChallengeEnded: vm.isChallengeEnded,
-                        hasLeft: p.hasLeft,
-                        leftAt: p.leftAt,
-                        onTap: { vm.bringToFront(playerId: p.id) }
-                    )
-                    .offset(y: -10)
-                
+                MapPlayerMarker(
+                    id: p.id,
+                    mapSprite: p.mapSprite,
+                    name: p.name,
+                    steps: p.steps,
+                    isMe: p.isMe,
+                    isGroup: vm.isGroupChallenge,
+                    place: p.place,
+                    attackedByName: p.attackedByName,
+                    isUnderSabotage: p.isUnderSabotage,
+                    sabotageExpiresAt: p.sabotageExpiresAt,
+                    isAttackedByMe: p.isAttackedByMe,
+                    lastSyncedAt: p.lastSyncedAt,
+                    isChallengeEnded: vm.isChallengeEnded,
+                    hasLeft: p.hasLeft,
+                    leftAt: p.leftAt,
+                    onTap: { vm.bringToFront(playerId: p.id) },
+                    activePlayerBubbleId: $activePlayerBubbleId
+                )
+                .offset(y: -10)
                 .position(pos)
                 .zIndex(vm.zIndexForPlayer(p.id))
                 .animation(.easeInOut(duration: 0.35), value: p.progress)
@@ -232,6 +231,8 @@ private struct MapHUDLayer: View {
 
 // MARK: - Player Marker
 private struct MapPlayerMarker: View {
+    
+    let id: String
     let mapSprite: String
     let name: String
     let steps: Int
@@ -248,10 +249,14 @@ private struct MapPlayerMarker: View {
     let leftAt: Date?
     let onTap: () -> Void
     
-    @State private var showBubble = false
+    @Binding var activePlayerBubbleId: String?
     @State private var showInfoIcon = true
     @GestureState private var dragOffset: CGSize = .zero
 
+    private var showBubble: Bool {
+           activePlayerBubbleId == id
+       }
+    
     var body: some View {
         VStack(spacing: 0) {
             
@@ -349,14 +354,11 @@ private struct MapPlayerMarker: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
-            if showBubble {
-                withAnimation(.spring(response: 0.3)) {
-                    showBubble = false
-                }
-            } else {
-                onTap()
-                withAnimation(.spring(response: 0.3)) {
-                    showBubble.toggle()
+            withAnimation(.spring(response: 0.3)) {
+                if showBubble {
+                    activePlayerBubbleId = nil
+                } else {
+                    activePlayerBubbleId = id
                 }
             }
             onTap()  // Bring to front
@@ -369,10 +371,14 @@ private struct MapPlayerMarker: View {
                     state = value.translation
                 }
         )
-        .onChange(of: showBubble) { _, newValue in
-            if newValue {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    withAnimation { showBubble = false }
+        .onChange(of: activePlayerBubbleId) { oldValue, newValue in
+            if newValue == id {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                    withAnimation {
+                        if activePlayerBubbleId == id {
+                            activePlayerBubbleId = nil
+                        }
+                    }
                 }
             }
         }

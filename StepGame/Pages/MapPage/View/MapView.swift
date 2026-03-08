@@ -25,7 +25,8 @@ struct MapView: View {
     @State var puzzleResult: PuzzleResult? = nil
     @State var activeMapPopup: MapPopupType? = nil
     @State var activePuzzle: PuzzleRequest? = nil
-
+    @State var activePlayerBubbleId: String? = nil
+    
     enum ActiveSheet: Identifiable {
         case challenges
         var id: Int { 1 }

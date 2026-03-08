@@ -437,39 +437,69 @@ final class MapViewModel: ObservableObject {
         guard shouldAllowPuzzlePopups(checkSteps: false, now: now) else { return }
         guard isGroupChallenge else { return }
         guard let myPart = myParticipant else { return }
+        guard let ch = challenge else { return }
 
-        if let ch = challenge, let startedAt = ch.startedAt ?? ch.startDate as Date? {
+        // Check if challenge started at least 3 hours ago
+        if let startedAt = ch.startedAt ?? ch.startDate as Date? {
             let hoursElapsed = now.timeIntervalSince(startedAt) / 3600
             guard hoursElapsed >= 3 else { return }
         }
 
+        // Check cooldowns
         if isLockedToday(myPart.groupAttackAttemptedAt, now: now) { return }
         if isCooldownActive(myPart.groupAttackDismissedAt, seconds: dismissCooldown, now: now) { return }
 
-        guard let last = lastParticipant(),
-              let leader = leadingParticipant() else { return }
-
-        guard last.playerId == myPart.playerId else { return }
-        guard leader.playerId != myPart.playerId else { return }
-
-        let stepsDifference = leader.steps - myPart.steps
-        guard stepsDifference > 0 else { return }
-
-        if let exp = leader.sabotageExpiresAt, now < exp { return }
-
-        guard let ch = challenge else { return }
+        let goal = max(ch.goalSteps, 1)
         
-        let leaderState = computedCharacterState(
+        // Don't suggest attack if I already finished the challenge
+        let iFinished = (myPart.finishedAt != nil) || (myPart.steps >= goal)
+        guard !iFinished else { return }
+
+        // Get the player directly above me
+        guard let playerAboveMe = playerDirectlyAboveMe() else { return }
+
+        // NEW: Don't attack if the target already finished the challenge
+        let targetFinished = (playerAboveMe.finishedAt != nil) || (playerAboveMe.steps >= goal)
+        guard !targetFinished else { return }
+
+        // Don't attack if already under sabotage
+        if let exp = playerAboveMe.sabotageExpiresAt, now < exp { return }
+
+        // Don't attack lazy players
+        let targetState = computedCharacterState(
             challenge: ch,
-            participant: leader,
+            participant: playerAboveMe,
             now: now
         )
-        
-        guard leaderState != .lazy else {
-            return
-        }
+        guard targetState != .lazy else { return }
 
+        // Show attack popup
         tryPresentPopup(.groupAttacker, cooldownSeconds: 2 * 60 * 60, now: now)
+    }
+
+    // Helper function to get the player directly above me
+    private func playerDirectlyAboveMe() -> ChallengeParticipant? {
+        guard let myPart = myParticipant else { return nil }
+        
+        // Get all active players sorted by steps (descending)
+        let activePlayers = participants
+            .filter { $0.leftAt == nil }
+            .sorted { $0.steps > $1.steps }
+        
+        // Find my position
+        guard let myIndex = activePlayers.firstIndex(where: { $0.playerId == myPart.playerId }) else {
+            return nil
+        }
+        
+        // Get the player directly above me (previous in sorted array)
+        guard myIndex > 0 else { return nil } // I'm already first
+        
+        let playerAbove = activePlayers[myIndex - 1]
+        
+        // Make sure they actually have more steps than me
+        guard playerAbove.steps > myPart.steps else { return nil }
+        
+        return playerAbove
     }
     
     // MARK: - UI Builders

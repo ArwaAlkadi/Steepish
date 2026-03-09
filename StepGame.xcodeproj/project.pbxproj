@@ -21,6 +21,7 @@
 		EC80F3CF2F3FB01200544443 /* ChallengeResultPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3CC2F3FB01200544443 /* ChallengeResultPopup.swift */; };
 		EC80F3D02F3FB01200544443 /* ChallengesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3CD2F3FB01200544443 /* ChallengesSheet.swift */; };
 		EC80F3D22F3FB44900544443 /* PuzzleWiringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3D12F3FB44900544443 /* PuzzleWiringView.swift */; };
+		EC9139FD2F5E5121008796CC /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9139FC2F5E5121008796CC /* AppConfig.swift */; };
 		EC9F96CB2F57B61F0046AE33 /* DateRangePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9F96CA2F57B61F0046AE33 /* DateRangePicker.swift */; };
 		ECCAEE3A2F218A8B0047C5DF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE392F218A8B0047C5DF /* FirebaseAuth */; };
 		ECCAEE3C2F218A8B0047C5DF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE3B2F218A8B0047C5DF /* FirebaseFirestore */; };
@@ -96,6 +97,7 @@
 		EC80F3CC2F3FB01200544443 /* ChallengeResultPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeResultPopup.swift; sourceTree = "<group>"; };
 		EC80F3CD2F3FB01200544443 /* ChallengesSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengesSheet.swift; sourceTree = "<group>"; };
 		EC80F3D12F3FB44900544443 /* PuzzleWiringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleWiringView.swift; sourceTree = "<group>"; };
+		EC9139FC2F5E5121008796CC /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		EC9F96CA2F57B61F0046AE33 /* DateRangePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateRangePicker.swift; sourceTree = "<group>"; };
 		ECCAEE282F21888B0047C5DF /* StepGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StepGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -356,6 +358,7 @@
 			children = (
 				ECCB95D42F29483B00DBC1F5 /* FirebaseService.swift */,
 				ECCB95D62F29484A00DBC1F5 /* HealthKitService.swift */,
+				EC9139FC2F5E5121008796CC /* AppConfig.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -534,6 +537,7 @@
 				EC80F3D02F3FB01200544443 /* ChallengesSheet.swift in Sources */,
 				ECCB97882F2C3DA100DBC1F5 /* WaitingView.swift in Sources */,
 				ECCB95E52F294C6100DBC1F5 /* EnterNameViewModel.swift in Sources */,
+				EC9139FD2F5E5121008796CC /* AppConfig.swift in Sources */,
 				EC80F3C62F3F810800544443 /* MapView+Content.swift in Sources */,
 				ECCB95EB2F294CA700DBC1F5 /*  SetupChallengeView.swift in Sources */,
 				EC2548B32F34194E0003414C /* MapPathEditorHelper.swift in Sources */,
@@ -735,7 +739,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3;
+				MARKETING_VERSION = 1.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.2026.StepGame;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -780,7 +784,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3;
+				MARKETING_VERSION = 1.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.2026.StepGame;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;

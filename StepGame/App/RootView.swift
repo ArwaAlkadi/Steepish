@@ -10,6 +10,8 @@ struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     @State private var didFinishBootstrap = false
+    @State private var showUpdateAlert = false
+    @State private var updateMessage = ""
 
     // MARK: - Onboarding (Shown Once)
     @AppStorage("didShowOnboarding") private var didShowOnboarding: Bool = false
@@ -27,63 +29,79 @@ struct RootView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Group {
+        ZStack {
+            NavigationStack {
+                Group {
 
-                // MARK: - Splash (Initial Bootstrap Loading)
+                    // MARK: - Splash (Initial Bootstrap Loading)
+                    if !didFinishBootstrap {
+                        SplashView()
+                    }
+
+                    // MARK: - Onboarding Flow
+                    else if showOnboardingNow && !didShowOnboarding {
+                        OnboardingView(onFinish: {
+                            didShowOnboarding = true
+                            showOnboardingNow = false
+                        })
+                    }
+
+                    // MARK: - Require Player Name
+                    else if session.player == nil {
+                        EnterNameView()
+                    }
+
+                    // MARK: - HealthKit Not Authorized
+                    else if !health.isAuthorized {
+                        StartView()
+                    }
+
+                    // MARK: - No Active or Available Challenges
+                    else if session.challenge == nil && session.challenges.isEmpty {
+                        StartView()
+                    }
+
+                    // MARK: - Challenge Routing
+                    else {
+                        challengeRouter
+                    }
+                }
+            }
+            .id(routerKey)
+            .task {
+
+                // MARK: - App Bootstrap
                 if !didFinishBootstrap {
-                    SplashView()
-                }
+                    await session.bootstrap()
+                    await health.refreshAuthorizationState()
 
-                // MARK: - Onboarding Flow
-                else if showOnboardingNow && !didShowOnboarding {
-                    OnboardingView(onFinish: {
-                        didShowOnboarding = true
-                        showOnboardingNow = false
-                    })
-                }
+                    didFinishBootstrap = true
 
-                // MARK: - Require Player Name
-                else if session.player == nil {
-                    EnterNameView()
+                    if !didShowOnboarding {
+                        showOnboardingNow = true
+                    }
                 }
-
-                // MARK: - HealthKit Not Authorized
-                else if !health.isAuthorized {
-                    StartView()
-                }
-
-                // MARK: - No Active or Available Challenges
-                else if session.challenge == nil && session.challenges.isEmpty {
-                    StartView()
-                }
-
-                // MARK: - Challenge Routing
-                else {
-                    challengeRouter
-                }
+                
+                await checkVersion()
             }
-        }
-        .id(routerKey)
-        .task {
 
-            // MARK: - App Bootstrap
-            if !didFinishBootstrap {
-                await session.bootstrap()
-                await health.refreshAuthorizationState()
-
-                didFinishBootstrap = true
-
-                if !didShowOnboarding {
-                    showOnboardingNow = true
-                }
+            // MARK: - Refresh Health Authorization On App Active
+            .onChange(of: scenePhase) { _, newPhase in
+                guard newPhase == .active else { return }
+                Task { await health.refreshAuthorizationState() }
             }
-        }
-
-        // MARK: - Refresh Health Authorization On App Active
-        .onChange(of: scenePhase) { _, newPhase in
-            guard newPhase == .active else { return }
-            Task { await health.refreshAuthorizationState() }
+            
+            // MARK: - Update Alert Overlay
+            if showUpdateAlert {
+                UpdateAlertView(
+                    message: updateMessage,
+                    onUpdate: {
+                        openAppStore()
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(9999)
+            }
         }
     }
 
@@ -100,4 +118,76 @@ struct RootView: View {
             SplashView()
         }
     }
-}
+    
+    // MARK: - Update Alert View
+
+    struct UpdateAlertView: View {
+        let message: String
+        let onUpdate: () -> Void
+        
+        var body: some View {
+            ZStack {
+                Color.black.opacity(0.35)
+                    .ignoresSafeArea()
+                
+                VStack(spacing: 15) {
+                    
+                    Text("Update Required")
+                        .font(.custom("RussoOne-Regular", size: 18))
+                        .foregroundStyle(.light1)
+                    
+                    Text(message)
+                        .font(.custom("RussoOne-Regular", size: 12))
+                        .foregroundStyle(.light2)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                    
+                    Button {
+                        onUpdate()
+                    } label: {
+                        Text("Update Now")
+                            .font(.custom("RussoOne-Regular", size: 16))
+                            .foregroundStyle(.light3)
+                            .frame(width: 160, height: 40)
+                            .background(RoundedRectangle(cornerRadius: 22).fill(Color.light1))
+                    }
+                }
+                .padding(.vertical)
+                .padding(20)
+                .frame(maxWidth: 320)
+                .background(RoundedRectangle(cornerRadius: 26).fill(Color.light3))
+            }
+        }
+    }
+
+    // MARK: - Version Check
+
+    private func checkVersion() async {
+        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+        
+        do {
+            let config = try await AppConfig.fetch()
+            
+            print("Current version: \(currentVersion)")
+            print("Minimum version from Firebase: \(config.minimumVersion)")
+            
+            if currentVersion.isOlderThan(config.minimumVersion) {
+                print("Update required")
+                await MainActor.run {
+                    updateMessage = config.message
+                    showUpdateAlert = true
+                }
+            } else {
+                print("App version is OK")
+            }
+        } catch {
+            print("Failed to check version: \(error)")
+        }
+    }
+
+    private func openAppStore() {
+        if let url = URL(string: "https://apps.apple.com/app/id6759177856") {
+            UIApplication.shared.open(url)
+        }
+    }
+    }

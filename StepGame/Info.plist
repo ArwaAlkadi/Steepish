@@ -11,5 +11,9 @@ Privacy - Health Update Usage Description
 	<array>
 		<string>RussoOne-Regular.ttf</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
 </dict>
 </plist>

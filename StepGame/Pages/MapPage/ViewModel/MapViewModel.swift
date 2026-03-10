@@ -789,7 +789,7 @@ final class MapViewModel: ObservableObject {
     func flagPosition(index: Int, mapSize: CGSize) -> CGPoint {
         let a = flagAnchors[index]
         
-        let rightOffsetPx: CGFloat = 40
+        let rightOffsetPx: CGFloat = 45
         
         return CGPoint(
             x: mapSize.width * a.x + rightOffsetPx,

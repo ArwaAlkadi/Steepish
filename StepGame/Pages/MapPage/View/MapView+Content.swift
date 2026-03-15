@@ -54,6 +54,7 @@ extension MapView {
                     isChallengeEnded: vm.isChallengeEnded,
                     hasLeft: p.hasLeft,
                     leftAt: p.leftAt,
+                    goalSteps: vm.goalSteps,
                     onTap: { vm.bringToFront(playerId: p.id) },
                     activePlayerBubbleId: $activePlayerBubbleId
                 )
@@ -151,7 +152,7 @@ extension MapView {
 
                 case .groupAttacker:
                     GroupAttackPopupView(
-                        targetPlayerName: vm.leadingPlayerName, 
+                        targetPlayerName: vm.leadingPlayerName,
                         onClose: {
                             recordDismiss(for: .groupAttacker)
                             activeMapPopup = nil
@@ -247,6 +248,7 @@ private struct MapPlayerMarker: View {
     let isChallengeEnded: Bool
     let hasLeft: Bool
     let leftAt: Date?
+    let goalSteps: Int
     let onTap: () -> Void
     
     @Binding var activePlayerBubbleId: String?
@@ -272,6 +274,7 @@ private struct MapPlayerMarker: View {
                     sabotageExpiresAt: sabotageExpiresAt,
                     isAttackedByMe: isAttackedByMe,
                     lastSyncedAt: lastSyncedAt,
+                    goalSteps: goalSteps,
                     isChallengeEnded: isChallengeEnded,
                     hasLeft: hasLeft,
                     leftAt: leftAt,
@@ -436,11 +439,10 @@ private struct PlayerInfoBubble: View {
     let sabotageExpiresAt: Date?
     let isAttackedByMe: Bool
     let lastSyncedAt: Date?
+    let goalSteps: Int
     let isChallengeEnded: Bool
     let hasLeft: Bool
     let leftAt: Date?
-
-    
     let stepLengthMeters: Double
 
     var body: some View {
@@ -503,7 +505,7 @@ private struct PlayerInfoBubble: View {
                         .foregroundStyle(Color.red1)
                 }
 
-            } else if !isChallengeEnded {
+            } else if !isChallengeEnded && steps < goalSteps {
                 // Last Sync (only if NOT left)
                 HStack(alignment: .top, spacing: 4) {
                     Image(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
@@ -545,7 +547,7 @@ private struct PlayerInfoBubble: View {
     // MARK: - KM Estimation
 
     private func estimatedKilometers(from steps: Int) -> Double {
-        let averageStepLength: Double = 0.75  
+        let averageStepLength: Double = 0.75
         return (Double(steps) * averageStepLength) / 1000.0
     }
 

@@ -285,7 +285,7 @@ private struct MapPlayerMarker: View {
                 .transition(.scale.combined(with: .opacity))
             } else {
                 VStack(spacing: 4) {
-                    HStack(spacing: 6) {
+                    HStack(spacing: 4) {
                         // Show only first 5 characters in badge
                         Text(isMe ? "Me" : truncatedName)
                             .font(.custom("RussoOne-Regular", size: 12))
@@ -310,7 +310,7 @@ private struct MapPlayerMarker: View {
                         
                         if hasLeft {
                             Image(systemName: "rectangle.portrait.and.arrow.right")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(.system(size: 10, weight: .bold))
                                 .foregroundStyle(.white)
                         }
                     }
@@ -495,13 +495,13 @@ private struct PlayerInfoBubble: View {
             if hasLeft, let leftDate = leftAt {
                 Divider().background(Color.red1.opacity(0.3))
 
-                HStack(spacing: 4) {
+                HStack(spacing: 3) {
                     Image(systemName: "rectangle.portrait.and.arrow.right")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(Color.red1)
 
                     Text("Left \(leftText(leftDate))")
-                        .font(.custom("RussoOne-Regular", size: 12))
+                        .font(.custom("RussoOne-Regular", size: 10))
                         .foregroundStyle(Color.red1)
                 }
 

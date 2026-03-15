@@ -69,6 +69,21 @@ struct ChallengeResultPopup: View {
                 ScrollView(showsIndicators: true) {
                     VStack(spacing: 10) {
                         ForEach(vm.rows) { p in
+                            if !p.didFinish && vm.rows.contains(where: { $0.didFinish }),
+                               p.id == vm.rows.first(where: { !$0.didFinish })?.id {
+                                VStack(spacing: 4) {
+                                    HStack {
+                                        Text(vm.isChallengeEnded ? "Goal not reached" : "Still in the race...")
+                                            .font(.custom("RussoOne-Regular", size: 10))
+                                            .foregroundStyle(Color.light2)
+                                        Spacer()
+                                    }
+                                    Divider()
+                                        .background(Color.light2.opacity(0.5))
+                                }
+                                .padding(.horizontal, 6)
+                                .padding(.top, 10)
+                            }
                             GroupPlayerRow(p: p)
                         }
                     }
@@ -103,18 +118,15 @@ private struct GroupPlayerRow: View {
 
     var body: some View {
         HStack(spacing: 10) {
-           
-                Image(p.avatarImage)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 50, height: 50)
-                    .background(Circle().fill(Color.light2.opacity(0.3)))
+            Image(p.avatarImage)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 50, height: 50)
+                .background(Circle().fill(Color.light2.opacity(0.3)))
 
-               
-
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
-                    if let place = p.place, (1...3).contains(place), !p.hasLeft {
+                    if let place = p.place, (1...3).contains(place), p.didFinish {
                         Image(placeAssetName(place))
                             .resizable()
                             .scaledToFit()
@@ -130,12 +142,16 @@ private struct GroupPlayerRow: View {
                 Text(p.stepsText)
                     .font(.custom("RussoOne-Regular", size: 11))
                     .foregroundStyle(Color.light1.opacity(0.75))
-                
-                // Show left date
+
                 if p.hasLeft, let leftDate = p.leftAt {
-                    Text("Left at \(formatLeftDate(leftDate))")
-                        .font(.custom("RussoOne-Regular", size: 9))
-                        .foregroundStyle(Color.red1)
+                    HStack(spacing: 3) {
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(Color.red1)
+                        Text("Left at \(formatLeftDate(leftDate))")
+                            .font(.custom("RussoOne-Regular", size: 9))
+                            .foregroundStyle(Color.red1)
+                    }
                 }
             }
 
@@ -143,13 +159,13 @@ private struct GroupPlayerRow: View {
         }
         .padding(.horizontal, 6)
     }
-    
+
     private func formatLeftDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         return formatter.string(from: date)
     }
-    
+
     private func placeAssetName(_ place: Int) -> String {
         switch place {
         case 1: return "Place1"
@@ -159,10 +175,6 @@ private struct GroupPlayerRow: View {
         }
     }
 }
-
-
-
-
 
 //
 //  ChallengeResultPopup.swift
@@ -196,53 +208,45 @@ final class ChallengeResultPopupViewModel: ObservableObject {
     private func buildGroupRows() -> [Row] {
         let myId = me.id ?? ""
         let winnerId = challenge.winnerId
-        
+        let goal = challenge.goalSteps
+
         let finishers = participants
-            .filter { $0.finishedAt != nil && $0.leftAt == nil }  // Exclude left players
+            .filter { $0.finishedAt != nil || $0.steps >= goal }
             .sorted { a, b in
                 let ap = a.place ?? ((winnerId != nil && a.playerId == winnerId) ? 1 : Int.max)
                 let bp = b.place ?? ((winnerId != nil && b.playerId == winnerId) ? 1 : Int.max)
                 if ap != bp { return ap < bp }
                 return a.steps > b.steps
             }
-        
+
         let nonFinishers = participants
-            .filter { $0.finishedAt == nil && $0.leftAt == nil }  // Exclude left players
+            .filter { $0.finishedAt == nil && $0.steps < goal }
             .sorted { $0.steps > $1.steps }
-        
-        let leftPlayers = participants
-            .filter { $0.leftAt != nil }  // Left players at the end
-            .sorted { ($0.leftAt ?? Date.distantPast) > ($1.leftAt ?? Date.distantPast) }
-        
-        let combined = finishers + nonFinishers + leftPlayers
-        
+
+        let combined = finishers + nonFinishers
+
         return combined.map { part in
             let isMeRow = (part.playerId == myId)
             let player = playersById[part.playerId] ?? (isMeRow ? me : nil)
-            
+
             let displayName = player?.name ?? (isMeRow ? me.name : shortId(part.playerId))
             let avatar = avatarAsset(for: player?.characterType ?? .character1)
-            
+
             let place: Int? = {
                 if let p = part.place { return p }
                 if let w = winnerId, part.playerId == w { return 1 }
                 return nil
             }()
-            
-            let stepsDisplay: String = {
-                if part.leftAt != nil { 
-                    return "\(part.steps.formatted()) Steps (Left)"
-                }
-                return "\(part.steps.formatted()) Steps"
-            }()
-            
+
+            let didFinish = part.finishedAt != nil || part.steps >= goal
+
             return Row(
                 name: displayName,
                 isMe: isMeRow,
                 avatarImage: avatar,
-                stepsText: stepsDisplay,
+                stepsText: "\(part.steps.formatted()) Steps",
                 place: place,
-                didFinish: (part.finishedAt != nil),
+                didFinish: didFinish,
                 hasLeft: part.leftAt != nil,
                 leftAt: part.leftAt
             )
@@ -254,6 +258,10 @@ final class ChallengeResultPopupViewModel: ObservableObject {
     private let myParticipant: ChallengeParticipant
     private let participants: [ChallengeParticipant]
     private let playersById: [String: Player]
+
+    var isChallengeEnded: Bool {
+        challenge.status == .ended || Date() >= challenge.effectiveEndDate
+    }
 
     @Published private(set) var mode: Mode
     @Published private(set) var state: State

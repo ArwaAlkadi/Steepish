@@ -21,8 +21,8 @@ struct OfflineBanner: View {
                     .frame(width: 60, height: 60)
                    
                 
-                Text("Uh-oh! You’re Offline..")
-                    .font(.custom("RussoOne-Regular", size: 16))
+                Text("Oh! You’re Offline..")
+                    .font(.custom("RussoOne-Regular", size: 14))
                     .foregroundStyle(.light3)
 
                 Spacer()
@@ -33,14 +33,14 @@ struct OfflineBanner: View {
                     }
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 25, weight: .bold))
+                        .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(.light3)
                         .padding(12)
                 }
                 .buttonStyle(.plain)
             }
             .foregroundStyle(.light3)
-            .padding(.horizontal, 14)
+            .padding(.horizontal, 10)
             .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: 14)
@@ -61,7 +61,6 @@ struct OfflineBanner: View {
     }
 }
 
-// Helper للـ Preview
 struct StatefulPreviewWrapper<Value, Content: View>: View {
     @State private var value: Value
     private let content: (Binding<Value>) -> Content

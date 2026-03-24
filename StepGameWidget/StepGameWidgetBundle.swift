@@ -195,7 +195,6 @@ private struct PlayerCardView: View {
             }
             .offset(y: 50)
 
-            // ✅ الهدف بـ k
             Text("\(goal)")
                 .font(.russo(28))
                 .foregroundColor(.light2.opacity(0.4))
@@ -203,7 +202,6 @@ private struct PlayerCardView: View {
                 .padding(.horizontal, 3)
                 .offset(y: 40)
 
-            // الشخصية تبقى Full Color
             Image(imageName)
                 .resizable()
                 .scaledToFit()

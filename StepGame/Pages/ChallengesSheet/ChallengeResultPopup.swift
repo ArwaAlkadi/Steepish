@@ -48,7 +48,7 @@ struct ChallengeResultPopup: View {
                     .multilineTextAlignment(.center)
                     .padding()
 
-                Spacer(minLength: 0)
+               
             }
             .padding(18)
             .frame(maxWidth: 350)
@@ -324,12 +324,11 @@ final class ChallengeResultPopupViewModel: ObservableObject {
                 let dayWord = usedDays == 1 ? "Day" : "Days"
                 footerText = "\(goal.formatted()) Steps in \(usedDays) \(dayWord)"
             } else {
-                let dayWord = originalDays == 1 ? "Day" : "Days"
+                let dayWord = originalDays == 1 ? "day" : "days"
                 if challenge.winnerId != nil {
-                    footerText = "\(goal.formatted()) Steps in \(originalDays) \(dayWord)"
+                    footerText = "You didn't complete the \(goal.formatted())\nsteps in \(originalDays) \(dayWord)."
                 } else if timeEnded {
-                    let dayWordLower = originalDays == 1 ? "day" : "days"
-                    footerText = "No one completed the \(goal.formatted())\nsteps in \(originalDays) \(dayWordLower)"
+                    footerText = "No one completed the \(goal.formatted())\nsteps in \(originalDays) \(dayWord)."
                 } else {
                     footerText = "\(goal.formatted()) Steps in \(originalDays) \(dayWord)"
                 }

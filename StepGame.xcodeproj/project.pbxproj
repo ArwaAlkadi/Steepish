@@ -23,6 +23,11 @@
 		EC80F3D22F3FB44900544443 /* PuzzleWiringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3D12F3FB44900544443 /* PuzzleWiringView.swift */; };
 		EC9139FD2F5E5121008796CC /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9139FC2F5E5121008796CC /* AppConfig.swift */; };
 		EC9F96CB2F57B61F0046AE33 /* DateRangePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9F96CA2F57B61F0046AE33 /* DateRangePicker.swift */; };
+		ECB380D62F75134600E18E4D /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = ECB380D52F75134600E18E4D /* Lottie */; };
+		ECB380E02F7519EB00E18E4D /* walkingshoes.json in Resources */ = {isa = PBXBuildFile; fileRef = ECB380DF2F7519EB00E18E4D /* walkingshoes.json */; };
+		ECB380E12F7519EB00E18E4D /* walkingshoes.json in Resources */ = {isa = PBXBuildFile; fileRef = ECB380DF2F7519EB00E18E4D /* walkingshoes.json */; };
+		ECB9E7282F74989500F36514 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = ECB9E7272F74989500F36514 /* FirebaseMessaging */; };
+		ECB9E72A2F74A06500F36514 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECB9E7292F74A06500F36514 /* NotificationService.swift */; };
 		ECCAEE3A2F218A8B0047C5DF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE392F218A8B0047C5DF /* FirebaseAuth */; };
 		ECCAEE3C2F218A8B0047C5DF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE3B2F218A8B0047C5DF /* FirebaseFirestore */; };
 		ECCAEE422F218AAA0047C5DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */; };
@@ -99,6 +104,8 @@
 		EC80F3D12F3FB44900544443 /* PuzzleWiringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleWiringView.swift; sourceTree = "<group>"; };
 		EC9139FC2F5E5121008796CC /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		EC9F96CA2F57B61F0046AE33 /* DateRangePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateRangePicker.swift; sourceTree = "<group>"; };
+		ECB380DF2F7519EB00E18E4D /* walkingshoes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = walkingshoes.json; sourceTree = "<group>"; };
+		ECB9E7292F74A06500F36514 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		ECCAEE282F21888B0047C5DF /* StepGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StepGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ECCAEE3F2F218AAA0047C5DF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -138,8 +145,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ECB9E7282F74989500F36514 /* FirebaseMessaging in Frameworks */,
 				ECCAEE3A2F218A8B0047C5DF /* FirebaseAuth in Frameworks */,
 				ECCAEE3C2F218A8B0047C5DF /* FirebaseFirestore in Frameworks */,
+				ECB380D62F75134600E18E4D /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,6 +300,7 @@
 		ECCB95C12F29472F00DBC1F5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				ECB380DF2F7519EB00E18E4D /* walkingshoes.json */,
 				ECCB978D2F2D89DE00DBC1F5 /* Fonts */,
 				ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */,
 				ECCAEE3F2F218AAA0047C5DF /* GoogleService-Info.plist */,
@@ -359,6 +369,7 @@
 				ECCB95D42F29483B00DBC1F5 /* FirebaseService.swift */,
 				ECCB95D62F29484A00DBC1F5 /* HealthKitService.swift */,
 				EC9139FC2F5E5121008796CC /* AppConfig.swift */,
+				ECB9E7292F74A06500F36514 /* NotificationService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -438,6 +449,8 @@
 			packageProductDependencies = (
 				ECCAEE392F218A8B0047C5DF /* FirebaseAuth */,
 				ECCAEE3B2F218A8B0047C5DF /* FirebaseFirestore */,
+				ECB9E7272F74989500F36514 /* FirebaseMessaging */,
+				ECB380D52F75134600E18E4D /* Lottie */,
 			);
 			productName = StepGame;
 			productReference = ECCAEE282F21888B0047C5DF /* StepGame.app */;
@@ -491,6 +504,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				ECCAEE382F218A8B0047C5DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				ECB380D42F75134600E18E4D /* XCRemoteSwiftPackageReference "lottie-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = ECCAEE292F21888B0047C5DF /* Products */;
@@ -508,6 +522,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ECB380E12F7519EB00E18E4D /* walkingshoes.json in Resources */,
 				ECCAEE422F218AAA0047C5DF /* Assets.xcassets in Resources */,
 				ECCB978F2F2D89E500DBC1F5 /* RussoOne-Regular.ttf in Resources */,
 				ECCAEE432F218AAA0047C5DF /* GoogleService-Info.plist in Resources */,
@@ -518,6 +533,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ECB380E02F7519EB00E18E4D /* walkingshoes.json in Resources */,
 				ECCF7E122F3A97380003F772 /* Assets.xcassets in Resources */,
 				ECCF7E072F3A8F600003F772 /* RussoOne-Regular.ttf in Resources */,
 			);
@@ -558,6 +574,7 @@
 				ECCF7E0C2F3A934B0003F772 /* WidgetStore.swift in Sources */,
 				ECCB95EF2F294CC900DBC1F5 /* MapView.swift in Sources */,
 				ECCB95ED2F294CAE00DBC1F5 /*  SetupChallengeViewModel.swift in Sources */,
+				ECB9E72A2F74A06500F36514 /* NotificationService.swift in Sources */,
 				EC26DE262F3D3873007DDE2B /* WiringGameViewModel.swift in Sources */,
 				ECCB95FF2F294DD900DBC1F5 /* ProfileViewModel.swift in Sources */,
 				ECCB95E12F294C4500DBC1F5 /* OnboardingViewModel.swift in Sources */,
@@ -898,6 +915,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		ECB380D42F75134600E18E4D /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.6.0;
+			};
+		};
 		ECCAEE382F218A8B0047C5DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -909,6 +934,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		ECB380D52F75134600E18E4D /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ECB380D42F75134600E18E4D /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+		ECB9E7272F74989500F36514 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ECCAEE382F218A8B0047C5DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
 		ECCAEE392F218A8B0047C5DF /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = ECCAEE382F218A8B0047C5DF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

@@ -858,8 +858,13 @@ final class MapViewModel: ObservableObject {
 
             let goal = max(ch.goalSteps, 1)
             let progress = min(max(Double(stepsTotal) / Double(goal), 0), 1)
-            let state: CharacterState = (progress >= 1) ? .active : .normal
-
+            let state: CharacterState = {
+                if let part = myParticipant {
+                    return computedCharacterState(challenge: ch, participant: part)
+                }
+                return (progress >= 1) ? .active : .normal
+            }()
+            
             try await firebase.updateParticipantSteps(
                 challengeId: chId,
                 uid: uid,

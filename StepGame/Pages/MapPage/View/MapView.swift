@@ -6,6 +6,7 @@
 import SwiftUI
 import UIKit
 import Combine
+import UserNotifications
 
 struct MapView: View {
 
@@ -82,6 +83,14 @@ struct MapView: View {
             showChallengesSheet()
             vm.bind(session: session)
             vm.startStepsSync(health: health)
+            
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, _ in
+                if granted {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
+                }
+            }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 scrollToPlayerPosition()

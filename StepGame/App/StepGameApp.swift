@@ -8,12 +8,29 @@ import SwiftUI
 import FirebaseCore
 import FirebaseAuth
 import FirebaseFirestore
+import FirebaseMessaging
+import UserNotifications
+import Foundation
+import Network
+import Combine
 
 // MARK: - App Delegate
 
-class AppDelegate: NSObject, UIApplicationDelegate {
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
     
     static var healthKitManager: HealthKitManager?
+    
+    func application(
+      _ application: UIApplication,
+      didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        print("📩 Silent push received")
+        Task {
+            let success = await syncStepsInBackground()
+            completionHandler(success ? .newData : .noData)
+        }
+    }
     
     func application(
         _ application: UIApplication,
@@ -23,15 +40,57 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         FirebaseApp.configure()
         application.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
         
+        UNUserNotificationCenter.current().delegate = self
+        Messaging.messaging().delegate = self
+        
         return true
     }
+    
+    // MARK: - APNs Registration
+    
+    func application(_ application: UIApplication,
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
+        let apnsToken = tokenParts.joined()
+        print("✅ APNs Token:", apnsToken)
+        Messaging.messaging().apnsToken = deviceToken
+    }
+    
+    func application(_ application: UIApplication,
+                     didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("❌ Failed to register for remote notifications:", error)
+    }
+    
+    // MARK: - FCM Token
+    
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        guard let token = fcmToken else {
+            print("❌ FCM token is nil")
+            return
+        }
+        print("✅ FCM Token:", token)
+        Task {
+            await NotificationService.shared.saveToken(token)
+        }
+    }
+    
+    // MARK: - Show notification when app is open
+    
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound])
+    }
+    
+    // MARK: - Background Fetch
     
     func application(
         _ application: UIApplication,
         performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
         UserDefaults.standard.set(Date(), forKey: "lastBackgroundFetch")
-        
         Task {
             let success = await syncStepsInBackground()
             completionHandler(success ? .newData : .noData)
@@ -140,9 +199,6 @@ struct StepGameApp: App {
 
 
 // MARK: - ConnectivityMonitor
-import Foundation
-import Network
-import Combine
 
 @MainActor
 final class ConnectivityMonitor: ObservableObject {

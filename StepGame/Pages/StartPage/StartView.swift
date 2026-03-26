@@ -3,7 +3,6 @@
 //  StepGame
 //
 
-
 import SwiftUI
 import UIKit
 import Combine
@@ -86,11 +85,11 @@ struct StartView: View {
 
                 VStack {
                     Text(vm.greetingText(playerName: session.player?.name))
-                        .font(.custom("RussoOne-Regular", size: 35))
+                        .font(.custom("RussoOne-Regular", size: 30))
                         .foregroundStyle(Color.light1)
 
                     Text(vm.subtitleText())
-                        .font(.custom("RussoOne-Regular", size: 28))
+                        .font(.custom("RussoOne-Regular", size: 25))
                         .foregroundStyle(Color.light1)
                 }
                 .padding(.bottom, 20)
@@ -150,8 +149,8 @@ struct StartView: View {
             await health.refreshAuthorizationState()
             hasCheckedHealth = true
             if !health.isAuthorized {
-                    await health.requestAuthorization()
-                }
+                await health.requestAuthorization()
+            }
         }
         .onReceive(
             NotificationCenter.default.publisher(
@@ -172,7 +171,7 @@ private struct BigButtonLabel: View {
 
     var body: some View {
         Text(title)
-            .font(.custom("RussoOne-Regular", size: 20))
+            .font(.custom("RussoOne-Regular", size: 18))
             .foregroundColor(.light3)
             .frame(width: 280, height: 55)
             .background(Color("Light1"))
@@ -186,8 +185,6 @@ private struct HealthPermissionGate: View {
 
     var body: some View {
         VStack(spacing: 10) {
-
-            // MARK: - Health Permission Gate
             Text("Steps Access Required")
                 .font(.custom("RussoOne-Regular", size: 16))
                 .foregroundStyle(Color.light1)
@@ -220,12 +217,14 @@ private struct HealthPermissionGate: View {
 private struct StartViewPreviewHost: View {
     @StateObject private var session = GameSession()
     @StateObject private var health = HealthKitManager()
+    @StateObject private var connectivity = ConnectivityMonitor()
 
     var body: some View {
         NavigationStack {
             StartView()
                 .environmentObject(session)
                 .environmentObject(health)
+                .environmentObject(connectivity)
         }
         .onAppear {
             session.player = Player(

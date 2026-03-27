@@ -2,27 +2,61 @@ import SwiftUI
 import UIKit
 import Lottie
 
-import SwiftUI
-import UIKit
-import Lottie
-
 struct SplashView: View {
 
- 
+    @State private var logoScale: CGFloat = 0.7
+    @State private var logoOpacity: Double = 0
+    @State private var titleOpacity: Double = 0
+    @State private var titleOffset: CGFloat = 20
+    @State private var taglineOpacity: Double = 0
+    @State private var taglineOffset: CGFloat = 20
 
     var body: some View {
         ZStack {
-            Color(red: 0.97, green: 0.94, blue: 0.90)
+            Color(.light3)
                 .ignoresSafeArea()
 
-            VStack(spacing: 0) {
+            LottieAnimationViewRepresentable(fileName: "walkingshoes")
+                .frame(width: 300, height: 300)
+                .scaleEffect(logoScale)
+                .opacity(logoOpacity)
+//                        .background(Color(.light1).opacity(0.1))
+                .offset(x: 0, y: -20)
 
-                LottieAnimationViewRepresentable(fileName: "walkingshoes")
-                    .frame(width: 320, height: 320)
-                   
+            VStack (spacing: 5) {
+                Spacer()
+
+                Rectangle()
+                    .frame(height: 150)
+                    .foregroundStyle(.clear)
+
+                Text("Walk. Compete. Win.")
+                    .font(.custom("RussoOne-Regular", size: 16))
+                    .foregroundColor(.light1)
+                    .opacity(taglineOpacity)
+                    .offset(y: taglineOffset)
+
+                Spacer()
+            }
+            
+         
+        }
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.4)) {
+                logoScale = 1.0
+                logoOpacity = 1
+            }
+
+            withAnimation(.easeOut(duration: 0.6).delay(0.4)) {
+                titleOpacity = 1
+                titleOffset = 0
+            }
+
+            withAnimation(.easeOut(duration: 0.6).delay(0.4)) {
+                taglineOpacity = 1
+                taglineOffset = 0
             }
         }
-       
     }
 }
 

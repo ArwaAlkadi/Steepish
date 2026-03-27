@@ -30,68 +30,78 @@ struct RootView: View {
 
     var body: some View {
         ZStack {
-            NavigationStack {
-                Group {
+            if didFinishBootstrap {
+                NavigationStack {
+                    Group {
 
-                    // MARK: - Splash (Initial Bootstrap Loading)
-                    if !didFinishBootstrap {
-                        SplashView()
-                    }
+                        // MARK: - Onboarding Flow
+                        if showOnboardingNow && !didShowOnboarding {
+                            OnboardingView(onFinish: {
+                                didShowOnboarding = true
+                                showOnboardingNow = false
+                            })
+                        }
 
-                    // MARK: - Onboarding Flow
-                    else if showOnboardingNow && !didShowOnboarding {
-                        OnboardingView(onFinish: {
-                            didShowOnboarding = true
-                            showOnboardingNow = false
-                        })
-                    }
+                        // MARK: - Require Player Name
+                        else if session.player == nil {
+                            EnterNameView()
+                        }
 
-                    // MARK: - Require Player Name
-                    else if session.player == nil {
-                        EnterNameView()
-                    }
+                        // MARK: - HealthKit Not Authorized
+                        else if !health.isAuthorized {
+                            StartView()
+                        }
 
-                    // MARK: - HealthKit Not Authorized
-                    else if !health.isAuthorized {
-                        StartView()
-                    }
+                        // MARK: - No Active or Available Challenges
+                        else if session.challenge == nil && session.challenges.isEmpty {
+                            StartView()
+                        }
 
-                    // MARK: - No Active or Available Challenges
-                    else if session.challenge == nil && session.challenges.isEmpty {
-                        StartView()
-                    }
-
-                    // MARK: - Challenge Routing
-                    else {
-                        challengeRouter
+                        // MARK: - Challenge Routing
+                        else {
+                            challengeRouter
+                        }
                     }
                 }
+                .id(routerKey)
+                .transition(.opacity)
+
+            } else {
+
+                // MARK: - Splash (Initial Bootstrap Loading)
+                SplashView()
+                    .transition(.opacity)
             }
-            .id(routerKey)
-            .task {
+        }
+        .animation(.easeInOut(duration: 0.4), value: didFinishBootstrap)
+        .task {
 
-                // MARK: - App Bootstrap
-                if !didFinishBootstrap {
-                    await session.bootstrap()
-                    await health.refreshAuthorizationState()
+            // MARK: - App Bootstrap
+            if !didFinishBootstrap {
+                async let bootstrap: () = session.bootstrap()
+                async let healthRefresh: () = health.refreshAuthorizationState()
+                async let minDelay: () = Task.sleep(nanoseconds: 1_800_000_000)
 
-                    didFinishBootstrap = true
+                _ = try? await (bootstrap, healthRefresh, minDelay)
 
-                    if !didShowOnboarding {
-                        showOnboardingNow = true
-                    }
+                didFinishBootstrap = true
+
+                if !didShowOnboarding {
+                    showOnboardingNow = true
                 }
-                
-                await checkVersion()
             }
 
-            // MARK: - Refresh Health Authorization On App Active
-            .onChange(of: scenePhase) { _, newPhase in
-                guard newPhase == .active else { return }
-                Task { await health.refreshAuthorizationState() }
-            }
-            
-            // MARK: - Update Alert Overlay
+            await checkVersion()
+        }
+
+        // MARK: - Refresh Health Authorization On App Active
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            Task { await health.refreshAuthorizationState() }
+        }
+
+        // MARK: - Update Alert Overlay
+        .overlay {
             if showUpdateAlert {
                 UpdateAlertView(
                     message: updateMessage,
@@ -190,4 +200,4 @@ struct RootView: View {
             UIApplication.shared.open(url)
         }
     }
-    }
+}

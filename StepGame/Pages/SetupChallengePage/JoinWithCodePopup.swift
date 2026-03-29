@@ -55,12 +55,12 @@ struct JoinCodePopup: View {
                         TextField(
                             "",
                             text: $code,
-                            prompt: Text("ex: QU123Z...")
+                            prompt: Text("Code")
                                 .foregroundColor(Color.light1.opacity(0.3))
                         )
                         .textInputAutocapitalization(.characters)
                         .autocorrectionDisabled()
-                        .font(.custom("RussoOne-Regular", size: 18))
+                        .font(.custom("RussoOne-Regular", size: 16))
                         .foregroundStyle(Color.light1)
                         .padding(.horizontal, 16)
                             .focused($focused)

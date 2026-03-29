@@ -76,7 +76,7 @@ struct SetupChallengeView: View {
                             TextField(
                                 "",
                                 text: $vm.challengeName,
-                                prompt: Text("Ex: Go ahead 💪🏻")
+                                prompt: Text("Ex: Go Ahead")
                                     .foregroundColor(Color.light1.opacity(0.4))
                             )
                             .font(.custom("RussoOne-Regular", size: 16))

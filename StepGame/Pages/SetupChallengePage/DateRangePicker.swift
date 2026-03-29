@@ -54,7 +54,7 @@ struct DateRangePicker: View {
                     } label: {
                         Text(hasSelectedEndDate
                              ? endDate.formatted(date: .abbreviated, time: .omitted)
-                             : "e.g: 6 Mar 2026")
+                             : "Ex: 6 Mar 2026")
                             .font(.custom("RussoOne-Regular", size: 14))
                             .foregroundStyle(
                                 hasSelectedEndDate

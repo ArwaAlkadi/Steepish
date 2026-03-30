@@ -2,7 +2,6 @@
 //  StepGameApp.swift
 //  StepGame
 //
-//
 
 import SwiftUI
 import FirebaseCore
@@ -25,30 +24,20 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
     ) -> Bool {
-        
         FirebaseApp.configure()
         application.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
-        
         UNUserNotificationCenter.current().delegate = self
         Messaging.messaging().delegate = self
-        
         return true
     }
     
     // MARK: - APNs Registration
-    
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
         let apnsToken = tokenParts.joined()
         print("✅ APNs Token:", apnsToken)
         Messaging.messaging().apnsToken = deviceToken
-        Task {
-            await NotificationDebugService.shared.logEvent(
-                type: "apns_token_registered",
-                extra: ["apnsToken": apnsToken]
-            )
-        }
     }
     
     func application(_ application: UIApplication,
@@ -57,24 +46,19 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     }
     
     // MARK: - FCM Token
-    
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else {
             print("❌ FCM token is nil")
             return
         }
-        print("✅ FCM Token from MessagingDelegate:", token)
+        print("✅ FCM Token:", token)
         Task {
             await NotificationService.shared.saveToken(token)
-            await NotificationDebugService.shared.logEvent(
-                type: "fcm_token_received",
-                extra: ["fcmToken": token]
-            )
         }
     }
     
     // MARK: - Remote Notification (Silent + Visible)
-    // MARK: - Remote Notification (Silent + Visible)
+    // السايلنت بش فقط يتسجل في Firestore عشان نتابعه
     func application(
         _ application: UIApplication,
         didReceiveRemoteNotification userInfo: [AnyHashable : Any],
@@ -120,7 +104,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     }
     
     // MARK: - Show notification when app is open
-    
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
@@ -130,7 +113,6 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     }
     
     // MARK: - Background Fetch
-    
     func application(
         _ application: UIApplication,
         performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
@@ -149,48 +131,39 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     }
     
     // MARK: - Background Sync
-    
     private func syncStepsInBackground() async -> Bool {
         guard let uid = Auth.auth().currentUser?.uid else {
             UserDefaults.standard.set(false, forKey: "lastSyncSuccess")
             UserDefaults.standard.set("No user logged in", forKey: "lastSyncError")
             return false
         }
-        
         guard let healthKit = Self.healthKitManager, healthKit.isAuthorized else {
             UserDefaults.standard.set(false, forKey: "lastSyncSuccess")
             UserDefaults.standard.set("HealthKit not authorized", forKey: "lastSyncError")
             return false
         }
-        
         do {
             let db = Firestore.firestore()
-            
             let challengeSnapshot = try await db
                 .collection("challenges")
                 .whereField("participants", arrayContains: uid)
                 .whereField("status", isEqualTo: "active")
                 .limit(to: 1)
                 .getDocuments()
-            
             guard let challengeDoc = challengeSnapshot.documents.first else {
                 UserDefaults.standard.set(false, forKey: "lastSyncSuccess")
                 UserDefaults.standard.set("No active challenge", forKey: "lastSyncError")
                 return false
             }
-            
             let challengeId = challengeDoc.documentID
             let challengeData = challengeDoc.data()
-            
             guard let startTimestamp = challengeData["startDate"] as? Timestamp else {
                 UserDefaults.standard.set(false, forKey: "lastSyncSuccess")
                 UserDefaults.standard.set("No start date", forKey: "lastSyncError")
                 return false
             }
-            
             let startDate = startTimestamp.dateValue()
             let steps = try await healthKit.fetchSteps(from: startDate, to: Date())
-            
             try await db
                 .collection("challenges")
                 .document(challengeId)
@@ -200,17 +173,13 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                     "steps": steps,
                     "lastSyncedAt": FieldValue.serverTimestamp()
                 ], merge: true)
-            
             UserDefaults.standard.set(true, forKey: "lastSyncSuccess")
             UserDefaults.standard.set(Date(), forKey: "lastSyncTime")
             UserDefaults.standard.removeObject(forKey: "lastSyncError")
-            
             return true
-            
         } catch {
             UserDefaults.standard.set(false, forKey: "lastSyncSuccess")
             UserDefaults.standard.set(error.localizedDescription, forKey: "lastSyncError")
-            
             return false
         }
     }
@@ -246,7 +215,6 @@ struct StepGameApp: App {
         }
     }
 }
-
 
 // MARK: - ConnectivityMonitor
 

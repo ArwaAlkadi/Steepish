@@ -43,6 +43,23 @@ final class GameSession: ObservableObject {
 
     private var stepSyncCancellable: AnyCancellable?
 
+    // MARK: - Init
+    
+    init() {
+        NotificationCenter.default.addObserver(
+            forName: .navigateToChallenge,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let self else { return }
+            if let challengeId = notification.userInfo?["challengeId"] as? String {
+                if let ch = self.challenges.first(where: { $0.id == challengeId }) {
+                    self.selectChallenge(ch)
+                }
+            }
+        }
+    }
+
     deinit {
         myChallengesListener?.remove()
         selectedChallengeListener?.remove()

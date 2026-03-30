@@ -20,18 +20,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     
     static var healthKitManager: HealthKitManager?
     
-    func application(
-      _ application: UIApplication,
-      didReceiveRemoteNotification userInfo: [AnyHashable : Any],
-      fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
-    ) {
-        print("📩 Silent push received")
-        Task {
-            let success = await syncStepsInBackground()
-            completionHandler(success ? .newData : .noData)
-        }
-    }
-    
+    // MARK: - Launch
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
@@ -54,6 +43,12 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         let apnsToken = tokenParts.joined()
         print("✅ APNs Token:", apnsToken)
         Messaging.messaging().apnsToken = deviceToken
+        Task {
+            await NotificationDebugService.shared.logEvent(
+                type: "apns_token_registered",
+                extra: ["apnsToken": apnsToken]
+            )
+        }
     }
     
     func application(_ application: UIApplication,
@@ -68,10 +63,60 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             print("❌ FCM token is nil")
             return
         }
-        print("✅ FCM Token:", token)
+        print("✅ FCM Token from MessagingDelegate:", token)
         Task {
             await NotificationService.shared.saveToken(token)
+            await NotificationDebugService.shared.logEvent(
+                type: "fcm_token_received",
+                extra: ["fcmToken": token]
+            )
         }
+    }
+    
+    // MARK: - Remote Notification (Silent + Visible)
+    // MARK: - Remote Notification (Silent + Visible)
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        let isSilentPush = (userInfo["aps"] as? [String: Any])?["content-available"] as? Int == 1
+
+        if isSilentPush {
+            print("🤫 Silent push received")
+            Task {
+                await NotificationDebugService.shared.logEvent(
+                    type: "silent_push_received",
+                    payload: userInfo
+                )
+                let success = await syncStepsInBackground()
+                await NotificationDebugService.shared.logEvent(
+                    type: success ? "silent_sync_success" : "silent_sync_failed"
+                )
+                completionHandler(success ? .newData : .noData)
+            }
+        } else {
+            print("🔔 Visible push received")
+            completionHandler(.noData)
+        }
+    }
+    
+    // MARK: - Notification Tap → Navigate to Challenge
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let userInfo = response.notification.request.content.userInfo
+        if let challengeId = userInfo["challengeId"] as? String, !challengeId.isEmpty {
+            print("🔔 Notification tapped — navigate to challenge:", challengeId)
+            NotificationCenter.default.post(
+                name: .navigateToChallenge,
+                object: nil,
+                userInfo: ["challengeId": challengeId]
+            )
+        }
+        completionHandler()
     }
     
     // MARK: - Show notification when app is open
@@ -169,6 +214,11 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             return false
         }
     }
+}
+
+// MARK: - Notification Name
+extension Notification.Name {
+    static let navigateToChallenge = Notification.Name("navigateToChallenge")
 }
 
 // MARK: - Main App

@@ -61,6 +61,7 @@
 		ECCF7E072F3A8F600003F772 /* RussoOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ECCB978E2F2D89E500DBC1F5 /* RussoOne-Regular.ttf */; };
 		ECCF7E0C2F3A934B0003F772 /* WidgetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCF7E0B2F3A934B0003F772 /* WidgetStore.swift */; };
 		ECCF7E122F3A97380003F772 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */; };
+		ECDA409E2F7A0C5D00EE3229 /* NotificationDebugService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDA409D2F7A0C5D00EE3229 /* NotificationDebugService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -138,6 +139,7 @@
 		ECCF7DFE2F3A8E4B0003F772 /* StepGameWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepGameWidgetBundle.swift; sourceTree = "<group>"; };
 		ECCF7E082F3A920A0003F772 /* StepGameWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepGameWidgetExtension.entitlements; sourceTree = "<group>"; };
 		ECCF7E0B2F3A934B0003F772 /* WidgetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStore.swift; sourceTree = "<group>"; };
+		ECDA409D2F7A0C5D00EE3229 /* NotificationDebugService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDebugService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -370,6 +372,7 @@
 				ECCB95D62F29484A00DBC1F5 /* HealthKitService.swift */,
 				EC9139FC2F5E5121008796CC /* AppConfig.swift */,
 				ECB9E7292F74A06500F36514 /* NotificationService.swift */,
+				ECDA409D2F7A0C5D00EE3229 /* NotificationDebugService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -570,6 +573,7 @@
 				ECCF7DCE2F3A5EA70003F772 /* WindTumbleweed.swift in Sources */,
 				EC26DE292F3D3992007DDE2B /* PuzzlePromptPopup.swift in Sources */,
 				EC6BAB1E2F315A3000BDBEC8 /* GameSession.swift in Sources */,
+				ECDA409E2F7A0C5D00EE3229 /* NotificationDebugService.swift in Sources */,
 				ECCB95E92F294C8F00DBC1F5 /* StartViewModel.swift in Sources */,
 				ECCF7E0C2F3A934B0003F772 /* WidgetStore.swift in Sources */,
 				ECCB95EF2F294CC900DBC1F5 /* MapView.swift in Sources */,
@@ -756,7 +760,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.2026.StepGame;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -801,7 +805,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = com.2026.StepGame;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;

@@ -41,6 +41,11 @@ async function getChallenge(challengeId) {
   return { id: doc.id, ...doc.data() };
 }
 
+async function getChallengeName(challengeId) {
+  const doc = await admin.firestore().collection("challenges").doc(challengeId).get();
+  return doc.data()?.name ?? "your challenge";
+}
+
 async function getChallengeParticipants(challengeId) {
   const snapshot = await admin
     .firestore()
@@ -300,6 +305,7 @@ exports.onChallengeParticipantUpdated = onDocumentUpdated(
     const challengeId = event.params.challengeId;
 
     const myToken = await getToken(uid);
+    const challengeName = await getChallengeName(challengeId);
 
     // 1) Attacked notification
     try {
@@ -312,8 +318,8 @@ exports.onChallengeParticipantUpdated = onDocumentUpdated(
             const attackerName = await getPlayerName(after?.sabotageByPlayerId);
             await sendNotification(
               myToken,
-              "You've been attacked!",
-              `${attackerName} sabotaged your character — fight back!`
+              "You've been attacked",
+              `${attackerName} sabotaged your character in ${challengeName} — fight back!`
             );
             await markNotificationSent(uid, "attacked");
           }
@@ -335,7 +341,7 @@ exports.onChallengeParticipantUpdated = onDocumentUpdated(
             await sendNotification(
               myToken,
               "Your character is lazy!",
-              "You're falling behind — walk more to get back on track!"
+              `You're falling behind in ${challengeName} — walk more to get back on track`
             );
             await markNotificationSent(uid, "lazy");
           }
@@ -371,7 +377,7 @@ exports.onChallengeParticipantUpdated = onDocumentUpdated(
         for (const targetUid of overtakenUsers) {
           const allowed = await canSendNotification(targetUid, "overtaken");
           if (!allowed) {
-            console.log(`Skip overtaken notification for ${targetUid} بسبب cooldown`);
+            console.log(`Skip overtaken notification for ${targetUid} cooldown`);
             continue;
           }
 
@@ -380,8 +386,8 @@ exports.onChallengeParticipantUpdated = onDocumentUpdated(
 
           await sendNotification(
             targetToken,
-            "You’ve been overtaken!",
-            `${overtakerName} passed you. Walk more to take your place back!`
+            "Someone passed you!",
+            `${overtakerName} passed you in ${challengeName}. Walk more to take your place back`
           );
 
           await markNotificationSent(targetUid, "overtaken");
@@ -421,7 +427,7 @@ exports.onChallengeParticipantUpdated = onDocumentUpdated(
             await sendNotification(
               token,
               "Attack opportunity!",
-              "Open the app and sabotage a friend before they get ahead."
+              `Open the app and sabotage your friend's character in ${challengeName}`
             );
             await markNotificationSent(uid, "attackOpportunity");
           }

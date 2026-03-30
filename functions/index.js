@@ -118,7 +118,7 @@ function isSameDay(a, b) {
 // Visible Push
 // =========================
 
-async function sendNotification(token, title, body) {
+async function sendNotification(token, title, body, challengeId) {
   if (!token) {
     console.log("No token found");
     return;
@@ -130,6 +130,9 @@ async function sendNotification(token, title, body) {
       notification: {
         title,
         body,
+      },
+      data: {
+        challengeId: challengeId ?? "",
       },
       apns: {
         payload: {
@@ -319,7 +322,8 @@ exports.onChallengeParticipantUpdated = onDocumentUpdated(
             await sendNotification(
               myToken,
               "You've been attacked",
-              `${attackerName} sabotaged your character in ${challengeName} — fight back!`
+              `${attackerName} sabotaged your character in ${challengeName} — fight back!`,
+              challengeId
             );
             await markNotificationSent(uid, "attacked");
           }
@@ -335,13 +339,16 @@ exports.onChallengeParticipantUpdated = onDocumentUpdated(
         const becameLazy =
           before?.characterState !== "lazy" && after?.characterState === "lazy";
 
-        if (becameLazy) {
+        const isLazyFromSabotage = after?.sabotageExpiresAt != null;
+
+        if (becameLazy && !isLazyFromSabotage) {
           const allowed = await canSendNotification(uid, "lazy");
           if (allowed) {
             await sendNotification(
               myToken,
               "Your character is lazy!",
-              `You're falling behind in ${challengeName} — walk more to get back on track`
+              `You're falling behind in ${challengeName} — walk more to get back on track`,
+              challengeId
             );
             await markNotificationSent(uid, "lazy");
           }
@@ -387,7 +394,8 @@ exports.onChallengeParticipantUpdated = onDocumentUpdated(
           await sendNotification(
             targetToken,
             "Someone passed you!",
-            `${overtakerName} passed you in ${challengeName}. Walk more to take your place back`
+            `${overtakerName} passed you in ${challengeName}. Walk more to take your place back`,
+            challengeId
           );
 
           await markNotificationSent(targetUid, "overtaken");
@@ -427,7 +435,8 @@ exports.onChallengeParticipantUpdated = onDocumentUpdated(
             await sendNotification(
               token,
               "Attack opportunity!",
-              `Open the app and sabotage your friend's character in ${challengeName}`
+              `Open the app and sabotage your friend's character in ${challengeName}`,
+              challengeId
             );
             await markNotificationSent(uid, "attackOpportunity");
           }

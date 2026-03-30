@@ -34,6 +34,9 @@ final class GameSession: ObservableObject {
     @Published private(set) var participants: [ChallengeParticipant] = []
     @Published private(set) var myParticipant: ChallengeParticipant? = nil
 
+    // MARK: - Pending Challenge
+    private var pendingChallengeId: String? = nil
+
     // MARK: - Private
     private let firebase = FirebaseService.shared
 
@@ -55,6 +58,8 @@ final class GameSession: ObservableObject {
             if let challengeId = notification.userInfo?["challengeId"] as? String {
                 if let ch = self.challenges.first(where: { $0.id == challengeId }) {
                     self.selectChallenge(ch)
+                } else {
+                    self.pendingChallengeId = challengeId
                 }
             }
         }
@@ -101,6 +106,13 @@ final class GameSession: ObservableObject {
             guard let self else { return }
             Task { @MainActor in
                 self.challenges = list
+
+                if let pendingId = self.pendingChallengeId,
+                   let ch = list.first(where: { $0.id == pendingId }) {
+                    self.selectChallenge(ch)
+                    self.pendingChallengeId = nil
+                    return
+                }
 
                 let selectedId = self.challenge?.id
                 let stillExists = selectedId.flatMap { id in

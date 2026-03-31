@@ -156,7 +156,7 @@ struct RootView: View {
                         onUpdate()
                     } label: {
                         Text("Update Now")
-                            .font(.custom("RussoOne-Regular", size: 16))
+                            .font(.custom("RussoOne-Regular", size: 14))
                             .foregroundStyle(.light3)
                             .frame(width: 160, height: 40)
                             .background(RoundedRectangle(cornerRadius: 22).fill(Color.light1))

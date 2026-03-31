@@ -30,7 +30,7 @@ struct PuzzleResultPopup: View {
 
             VStack(spacing: 15) {
                 Text(result.title)
-                    .font(.custom("RussoOne-Regular", size: 28))
+                    .font(.custom("RussoOne-Regular", size: 24))
                     .foregroundStyle(.light1)
                     .multilineTextAlignment(.center)
 
@@ -56,7 +56,7 @@ struct PuzzleResultPopup: View {
                 }
                 
                 Text(result.message)
-                    .font(.custom("RussoOne-Regular", size: 18))
+                    .font(.custom("RussoOne-Regular", size: 16))
                     .foregroundStyle(.light1)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 10)
@@ -114,7 +114,7 @@ struct PuzzleResultPopup: View {
     let session = GameSession()
     return PuzzleResultPopup(
         result: PuzzleResult(
-            context: .groupDefense,
+            context: .solo,
             success: true,
             myTime: 1.23,
             opponentTime: 1.88,

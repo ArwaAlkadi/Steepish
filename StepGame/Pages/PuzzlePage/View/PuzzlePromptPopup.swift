@@ -27,9 +27,9 @@ struct SoloLatePopupView: View {
 
             Spacer()
 
-            VStack(spacing: 20) {
+            VStack(spacing: 14) {
                 Text("You're Falling Behind")
-                    .font(.custom("RussoOne-Regular", size: 24))
+                    .font(.custom("RussoOne-Regular", size: 20))
                     .foregroundStyle(Color.light1)
                     .multilineTextAlignment(.center)
 
@@ -94,9 +94,9 @@ struct GroupAttackPopupView: View {
 
             Spacer()
 
-            VStack(spacing: 20) {
+            VStack(spacing: 14) {
                 Text("Take Your Chance")
-                    .font(.custom("RussoOne-Regular", size: 24))
+                    .font(.custom("RussoOne-Regular", size: 20))
                     .foregroundStyle(Color.light1)
                     .multilineTextAlignment(.center)
 
@@ -160,9 +160,9 @@ struct GroupDefensePopupView: View {
 
             Spacer()
 
-            VStack(spacing: 20) {
+            VStack(spacing: 14) {
                 Text("Defend Your Progress")
-                    .font(.custom("RussoOne-Regular", size: 24))
+                    .font(.custom("RussoOne-Regular", size: 20))
                     .foregroundStyle(Color.light1)
                     .multilineTextAlignment(.center)
 

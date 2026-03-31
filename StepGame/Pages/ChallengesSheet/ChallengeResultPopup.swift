@@ -30,7 +30,7 @@ struct ChallengeResultPopup: View {
                 }
 
                 Text(vm.titleText)
-                    .font(.custom("RussoOne-Regular", size: 30))
+                    .font(.custom("RussoOne-Regular", size: 24))
                     .foregroundStyle(Color.light1)
 
                 Group {
@@ -43,7 +43,7 @@ struct ChallengeResultPopup: View {
                 }
 
                 Text(vm.footerText)
-                    .font(.custom("RussoOne-Regular", size: 16))
+                    .font(.custom("RussoOne-Regular", size: 14))
                     .foregroundStyle(Color.light1)
                     .multilineTextAlignment(.center)
                     .padding()

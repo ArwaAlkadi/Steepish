@@ -454,7 +454,7 @@ exports.onChallengeParticipantUpdated = onDocumentUpdated(
 
 exports.dailySilentSync = onSchedule(
   {
-    schedule: "every 24 hours",
+    schedule: "every 6 hours",
     timeZone: "Asia/Riyadh",
   },
   async () => {

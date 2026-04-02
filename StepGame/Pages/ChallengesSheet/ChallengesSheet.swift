@@ -419,7 +419,7 @@ struct ConfirmPopup: View {
                     }
                     .disabled(isProcessing)
                     .opacity(isProcessing ? 0.7 : 1)
-                    .padding(.top, 10)
+                   
                 }
                
             }

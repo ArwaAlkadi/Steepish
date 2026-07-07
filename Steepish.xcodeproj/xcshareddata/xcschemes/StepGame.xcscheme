@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "ECCAEE272F21888B0047C5DF"
-               BuildableName = "StepGame.app"
-               BlueprintName = "StepGame"
-               ReferencedContainer = "container:StepGame.xcodeproj">
+               BuildableName = "Steepish.app"
+               BlueprintName = "Steepish"
+               ReferencedContainer = "container:Steepish.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "ECCAEE272F21888B0047C5DF"
-            BuildableName = "StepGame.app"
-            BlueprintName = "StepGame"
-            ReferencedContainer = "container:StepGame.xcodeproj">
+            BuildableName = "Steepish.app"
+            BlueprintName = "Steepish"
+            ReferencedContainer = "container:Steepish.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "ECCAEE272F21888B0047C5DF"
-            BuildableName = "StepGame.app"
-            BlueprintName = "StepGame"
-            ReferencedContainer = "container:StepGame.xcodeproj">
+            BuildableName = "Steepish.app"
+            BlueprintName = "Steepish"
+            ReferencedContainer = "container:Steepish.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

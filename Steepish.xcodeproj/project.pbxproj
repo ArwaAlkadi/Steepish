@@ -56,7 +56,7 @@
 		ECCF7DCE2F3A5EA70003F772 /* WindTumbleweed.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCF7DCD2F3A5EA70003F772 /* WindTumbleweed.swift */; };
 		ECCF7DE62F3A8E3C0003F772 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECCF7DE52F3A8E3C0003F772 /* WidgetKit.framework */; };
 		ECCF7DE82F3A8E3C0003F772 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ECCF7DE72F3A8E3C0003F772 /* SwiftUI.framework */; };
-		ECCF7DF52F3A8E3D0003F772 /* StepGameWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = ECCF7DE32F3A8E3C0003F772 /* StepGameWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		ECCF7DF52F3A8E3D0003F772 /* SteepishWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = ECCF7DE32F3A8E3C0003F772 /* SteepishWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		ECCF7E042F3A8E4B0003F772 /* StepGameWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCF7DFE2F3A8E4B0003F772 /* StepGameWidgetBundle.swift */; };
 		ECCF7E072F3A8F600003F772 /* RussoOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ECCB978E2F2D89E500DBC1F5 /* RussoOne-Regular.ttf */; };
 		ECCF7E0C2F3A934B0003F772 /* WidgetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCF7E0B2F3A934B0003F772 /* WidgetStore.swift */; };
@@ -81,7 +81,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				ECCF7DF52F3A8E3D0003F772 /* StepGameWidgetExtension.appex in Embed Foundation Extensions */,
+				ECCF7DF52F3A8E3D0003F772 /* SteepishWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -107,7 +107,7 @@
 		EC9F96CA2F57B61F0046AE33 /* DateRangePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateRangePicker.swift; sourceTree = "<group>"; };
 		ECB380DF2F7519EB00E18E4D /* walkingshoes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = walkingshoes.json; sourceTree = "<group>"; };
 		ECB9E7292F74A06500F36514 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
-		ECCAEE282F21888B0047C5DF /* StepGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StepGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ECCAEE282F21888B0047C5DF /* Steepish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Steepish.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ECCAEE3F2F218AAA0047C5DF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ECCB95CB2F29478100DBC1F5 /* StepGameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepGameApp.swift; sourceTree = "<group>"; };
@@ -132,7 +132,7 @@
 		ECCB97892F2C3DB300DBC1F5 /* WaitingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingViewModel.swift; sourceTree = "<group>"; };
 		ECCB978E2F2D89E500DBC1F5 /* RussoOne-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "RussoOne-Regular.ttf"; sourceTree = "<group>"; };
 		ECCF7DCD2F3A5EA70003F772 /* WindTumbleweed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindTumbleweed.swift; sourceTree = "<group>"; };
-		ECCF7DE32F3A8E3C0003F772 /* StepGameWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StepGameWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		ECCF7DE32F3A8E3C0003F772 /* SteepishWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SteepishWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECCF7DE52F3A8E3C0003F772 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		ECCF7DE72F3A8E3C0003F772 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		ECCF7DFC2F3A8E4B0003F772 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -244,8 +244,8 @@
 		ECCAEE292F21888B0047C5DF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				ECCAEE282F21888B0047C5DF /* StepGame.app */,
-				ECCF7DE32F3A8E3C0003F772 /* StepGameWidgetExtension.appex */,
+				ECCAEE282F21888B0047C5DF /* Steepish.app */,
+				ECCF7DE32F3A8E3C0003F772 /* SteepishWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -434,9 +434,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		ECCAEE272F21888B0047C5DF /* StepGame */ = {
+		ECCAEE272F21888B0047C5DF /* Steepish */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = ECCAEE332F21888C0047C5DF /* Build configuration list for PBXNativeTarget "StepGame" */;
+			buildConfigurationList = ECCAEE332F21888C0047C5DF /* Build configuration list for PBXNativeTarget "Steepish" */;
 			buildPhases = (
 				ECCAEE242F21888B0047C5DF /* Sources */,
 				ECCAEE252F21888B0047C5DF /* Frameworks */,
@@ -448,7 +448,7 @@
 			dependencies = (
 				ECCF7DF42F3A8E3D0003F772 /* PBXTargetDependency */,
 			);
-			name = StepGame;
+			name = Steepish;
 			packageProductDependencies = (
 				ECCAEE392F218A8B0047C5DF /* FirebaseAuth */,
 				ECCAEE3B2F218A8B0047C5DF /* FirebaseFirestore */,
@@ -456,12 +456,12 @@
 				ECB380D52F75134600E18E4D /* Lottie */,
 			);
 			productName = StepGame;
-			productReference = ECCAEE282F21888B0047C5DF /* StepGame.app */;
+			productReference = ECCAEE282F21888B0047C5DF /* Steepish.app */;
 			productType = "com.apple.product-type.application";
 		};
-		ECCF7DE22F3A8E3C0003F772 /* StepGameWidgetExtension */ = {
+		ECCF7DE22F3A8E3C0003F772 /* SteepishWidgetExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = ECCF7DFA2F3A8E3D0003F772 /* Build configuration list for PBXNativeTarget "StepGameWidgetExtension" */;
+			buildConfigurationList = ECCF7DFA2F3A8E3D0003F772 /* Build configuration list for PBXNativeTarget "SteepishWidgetExtension" */;
 			buildPhases = (
 				ECCF7DDF2F3A8E3C0003F772 /* Sources */,
 				ECCF7DE02F3A8E3C0003F772 /* Frameworks */,
@@ -471,11 +471,11 @@
 			);
 			dependencies = (
 			);
-			name = StepGameWidgetExtension;
+			name = SteepishWidgetExtension;
 			packageProductDependencies = (
 			);
 			productName = StepGameWidgetExtension;
-			productReference = ECCF7DE32F3A8E3C0003F772 /* StepGameWidgetExtension.appex */;
+			productReference = ECCF7DE32F3A8E3C0003F772 /* SteepishWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -496,7 +496,7 @@
 					};
 				};
 			};
-			buildConfigurationList = ECCAEE232F21888B0047C5DF /* Build configuration list for PBXProject "StepGame" */;
+			buildConfigurationList = ECCAEE232F21888B0047C5DF /* Build configuration list for PBXProject "Steepish" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -514,8 +514,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				ECCAEE272F21888B0047C5DF /* StepGame */,
-				ECCF7DE22F3A8E3C0003F772 /* StepGameWidgetExtension */,
+				ECCAEE272F21888B0047C5DF /* Steepish */,
+				ECCF7DE22F3A8E3C0003F772 /* SteepishWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -605,7 +605,7 @@
 /* Begin PBXTargetDependency section */
 		ECCF7DF42F3A8E3D0003F772 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = ECCF7DE22F3A8E3C0003F772 /* StepGameWidgetExtension */;
+			target = ECCF7DE22F3A8E3C0003F772 /* SteepishWidgetExtension */;
 			targetProxy = ECCF7DF32F3A8E3D0003F772 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -889,7 +889,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		ECCAEE232F21888B0047C5DF /* Build configuration list for PBXProject "StepGame" */ = {
+		ECCAEE232F21888B0047C5DF /* Build configuration list for PBXProject "Steepish" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ECCAEE312F21888C0047C5DF /* Debug */,
@@ -898,7 +898,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		ECCAEE332F21888C0047C5DF /* Build configuration list for PBXNativeTarget "StepGame" */ = {
+		ECCAEE332F21888C0047C5DF /* Build configuration list for PBXNativeTarget "Steepish" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ECCAEE342F21888C0047C5DF /* Debug */,
@@ -907,7 +907,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		ECCF7DFA2F3A8E3D0003F772 /* Build configuration list for PBXNativeTarget "StepGameWidgetExtension" */ = {
+		ECCF7DFA2F3A8E3D0003F772 /* Build configuration list for PBXNativeTarget "SteepishWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ECCF7DF72F3A8E3D0003F772 /* Debug */,

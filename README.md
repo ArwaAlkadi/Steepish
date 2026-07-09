@@ -1,8 +1,12 @@
 # Steepish
-
 **Turn your daily steps into a race.**
 
 Steepish is an iOS fitness game that turns step counting into real-time competitive challenges. Steps sync automatically from HealthKit and move an animated character across a map — fall behind and it goes *lazy*, walk more and it powers up. Race friends, sabotage the player ahead of you, and defend yourself through a fast-paced wiring puzzle.
+
+
+<br>
+<img width="1920" height="1080" alt="Steepish" src="https://github.com/user-attachments/assets/744e1fc0-9a8a-4158-934f-534d8981d535" />
+<br>
 
 
 ## Features
@@ -17,8 +21,9 @@ Steepish is an iOS fitness game that turns step counting into real-time competit
 - **Home Screen widget** showing your character, your rival, and live progress
 - **Offline banner** and graceful sync recovery, plus a remote forced-update gate
 
-<img width="1920" height="1080" alt="Steepish" src="https://github.com/user-attachments/assets/744e1fc0-9a8a-4158-934f-534d8981d535" />
+<br>
 <img width="7680" height="4320" alt="Widget copy" src="https://github.com/user-attachments/assets/7c8f8f63-8056-4e71-ac86-74a6b6d16d73" />
+<br>
 
 ## How the Game Works
 

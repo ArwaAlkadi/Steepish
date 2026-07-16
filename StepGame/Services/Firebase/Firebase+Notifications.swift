@@ -1,5 +1,5 @@
 //
-//  NotificationDebugService.swift
+//  Firebase+Notifications.swift
 //  StepGame
 //
 
@@ -8,15 +8,19 @@ import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 
-@MainActor
-final class NotificationDebugService {
+extension FirebaseService {
 
-    static let shared = NotificationDebugService()
-    private init() {}
+    /// Saves the FCM token for the current user.
+    func saveFCMToken(_ token: String) async {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        try? await db.collection("players").document(uid).setData(
+            ["fcmToken": token],
+            merge: true
+        )
+    }
 
-    private let db = Firestore.firestore()
-
-    func logEvent(type: String, payload: [AnyHashable: Any] = [:], extra: [String: Any] = [:]) async {
+    /// Logs notification events to Firestore for debugging silent push delivery.
+    func logNotificationEvent(type: String, payload: [AnyHashable: Any] = [:]) async {
         let uid = Auth.auth().currentUser?.uid ?? "unknown"
 
         var safePayload: [String: Any] = [:]
@@ -24,7 +28,7 @@ final class NotificationDebugService {
             safePayload[String(describing: key)] = String(describing: value)
         }
 
-        var data: [String: Any] = [
+        let data: [String: Any] = [
             "uid": uid,
             "type": type,
             "payload": safePayload,
@@ -32,10 +36,6 @@ final class NotificationDebugService {
             "deviceName": UIDevice.current.name,
             "systemVersion": UIDevice.current.systemVersion
         ]
-
-        for (key, value) in extra {
-            data[key] = value
-        }
 
         do {
             try await db.collection("notificationDebugLogs").addDocument(data: data)
@@ -45,4 +45,3 @@ final class NotificationDebugService {
         }
     }
 }
-

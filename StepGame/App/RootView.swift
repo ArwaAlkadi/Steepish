@@ -176,7 +176,7 @@ struct RootView: View {
         let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
         
         do {
-            let config = try await AppConfig.fetch()
+            let config = try await FirebaseService.shared.fetchAppConfig()
             
             print("Current version: \(currentVersion)")
             print("Minimum version from Firebase: \(config.minimumVersion)")
@@ -199,5 +199,11 @@ struct RootView: View {
         if let url = URL(string: "https://apps.apple.com/app/id6759177856") {
             UIApplication.shared.open(url)
         }
+    }
+}
+
+extension String {
+    func isOlderThan(_ version: String) -> Bool {
+        return self.compare(version, options: .numeric) == .orderedAscending
     }
 }

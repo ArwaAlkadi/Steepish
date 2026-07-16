@@ -13,6 +13,60 @@ import Foundation
 import Network
 import Combine
 
+// MARK: - Main App
+
+@main
+struct StepGameApp: App {
+
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+
+    @StateObject private var session = GameSession()
+    @StateObject private var health = HealthKitManager()
+    @StateObject private var connectivity = ConnectivityMonitor()
+
+    init() {}
+
+    var body: some Scene {
+        WindowGroup {
+            RootView()
+                .environmentObject(session)
+                .environmentObject(health)
+                .environmentObject(connectivity)
+                .onAppear {
+                    AppDelegate.healthKitManager = health
+                }
+        }
+    }
+}
+
+// MARK: - Notification Name
+extension Notification.Name {
+    static let navigateToChallenge = Notification.Name("navigateToChallenge")
+}
+
+// MARK: - ConnectivityMonitor
+
+@MainActor
+final class ConnectivityMonitor: ObservableObject {
+    @Published private(set) var isOnline: Bool = true
+
+    private let monitor = NWPathMonitor()
+    private let queue = DispatchQueue(label: "ConnectivityMonitor")
+
+    init() {
+        monitor.pathUpdateHandler = { [weak self] path in
+            Task { @MainActor in
+                self?.isOnline = (path.status == .satisfied)
+            }
+        }
+        monitor.start(queue: queue)
+    }
+
+    deinit {
+        monitor.cancel()
+    }
+}
+
 // MARK: - App Delegate
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
@@ -36,7 +90,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
         let apnsToken = tokenParts.joined()
-        print("✅ APNs Token:", apnsToken)
+        print("APNs Token:", apnsToken)
         Messaging.messaging().apnsToken = deviceToken
     }
     
@@ -51,9 +105,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             print("❌ FCM token is nil")
             return
         }
-        print("✅ FCM Token:", token)
+        print("FCM Token:", token)
         Task {
-            await NotificationService.shared.saveToken(token)
+            await FirebaseService.shared.saveFCMToken(token)
         }
     }
     
@@ -67,20 +121,20 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         let isSilentPush = (userInfo["aps"] as? [String: Any])?["content-available"] as? Int == 1
 
         if isSilentPush {
-            print("🤫 Silent push received")
+            print("Silent push received")
             Task {
-                await NotificationDebugService.shared.logEvent(
+                await FirebaseService.shared.logNotificationEvent(
                     type: "silent_push_received",
                     payload: userInfo
                 )
                 let success = await syncStepsInBackground()
-                await NotificationDebugService.shared.logEvent(
+                await FirebaseService.shared.logNotificationEvent(
                     type: success ? "silent_sync_success" : "silent_sync_failed"
                 )
                 completionHandler(success ? .newData : .noData)
             }
         } else {
-            print("🔔 Visible push received")
+            print("Visible push received")
             completionHandler(.noData)
         }
     }
@@ -146,7 +200,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             let db = Firestore.firestore()
             let challengeSnapshot = try await db
                 .collection("challenges")
-                .whereField("participants", arrayContains: uid)
+                .whereField("playerIds", arrayContains: uid)
                 .whereField("status", isEqualTo: "active")
                 .limit(to: 1)
                 .getDocuments()
@@ -182,59 +236,5 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             UserDefaults.standard.set(error.localizedDescription, forKey: "lastSyncError")
             return false
         }
-    }
-}
-
-// MARK: - Notification Name
-extension Notification.Name {
-    static let navigateToChallenge = Notification.Name("navigateToChallenge")
-}
-
-// MARK: - Main App
-
-@main
-struct StepGameApp: App {
-
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-
-    @StateObject private var session = GameSession()
-    @StateObject private var health = HealthKitManager()
-    @StateObject private var connectivity = ConnectivityMonitor()
-
-    init() {}
-
-    var body: some Scene {
-        WindowGroup {
-            RootView()
-                .environmentObject(session)
-                .environmentObject(health)
-                .environmentObject(connectivity)
-                .onAppear {
-                    AppDelegate.healthKitManager = health
-                }
-        }
-    }
-}
-
-// MARK: - ConnectivityMonitor
-
-@MainActor
-final class ConnectivityMonitor: ObservableObject {
-    @Published private(set) var isOnline: Bool = true
-
-    private let monitor = NWPathMonitor()
-    private let queue = DispatchQueue(label: "ConnectivityMonitor")
-
-    init() {
-        monitor.pathUpdateHandler = { [weak self] path in
-            Task { @MainActor in
-                self?.isOnline = (path.status == .satisfied)
-            }
-        }
-        monitor.start(queue: queue)
-    }
-
-    deinit {
-        monitor.cancel()
     }
 }

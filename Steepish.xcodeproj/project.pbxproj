@@ -14,6 +14,15 @@
 		EC659334300949780097CC10 /* Challengeparticipant.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC659333300949750097CC10 /* Challengeparticipant.swift */; };
 		EC6593363009497F0097CC10 /* Challenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6593353009497E0097CC10 /* Challenge.swift */; };
 		EC659338300949820097CC10 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC659337300949820097CC10 /* Player.swift */; };
+		EC65934830094CCB0097CC10 /* Firebase+Listeners.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC65934430094B160097CC10 /* Firebase+Listeners.swift */; };
+		EC65934930094CCF0097CC10 /* Firebase+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC65934230094B120097CC10 /* Firebase+Notifications.swift */; };
+		EC65934A30094CD30097CC10 /* Firebase+Puzzle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC65934130094AFE0097CC10 /* Firebase+Puzzle.swift */; };
+		EC65934B30094CD70097CC10 /* Firebase+Participants.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC65934030094AFC0097CC10 /* Firebase+Participants.swift */; };
+		EC65934C30094CDB0097CC10 /* Firebase+Challenges.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC65933F30094AFA0097CC10 /* Firebase+Challenges.swift */; };
+		EC65934D30094CDF0097CC10 /* Firebase+Players.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC65933E30094AF70097CC10 /* Firebase+Players.swift */; };
+		EC65934E30094CE30097CC10 /* Firebase+Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC65933D30094AF40097CC10 /* Firebase+Auth.swift */; };
+		EC65934F30094CE70097CC10 /* Firebase+AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC65934730094BE90097CC10 /* Firebase+AppConfig.swift */; };
+		EC659351300952390097CC10 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6593503009522B0097CC10 /* AppConfig.swift */; };
 		EC6BAB1C2F3159E300BDBEC8 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6BAB1B2F3159E300BDBEC8 /* RootView.swift */; };
 		EC6BAB1E2F315A3000BDBEC8 /* GameSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6BAB1D2F315A3000BDBEC8 /* GameSession.swift */; };
 		EC7628CB2F395ADB008952D9 /* Puzzlehistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7628CA2F395ADB008952D9 /* Puzzlehistory.swift */; };
@@ -24,13 +33,11 @@
 		EC80F3CF2F3FB01200544443 /* ChallengeResultPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3CC2F3FB01200544443 /* ChallengeResultPopup.swift */; };
 		EC80F3D02F3FB01200544443 /* ChallengesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3CD2F3FB01200544443 /* ChallengesSheet.swift */; };
 		EC80F3D22F3FB44900544443 /* PuzzleWiringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3D12F3FB44900544443 /* PuzzleWiringView.swift */; };
-		EC9139FD2F5E5121008796CC /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9139FC2F5E5121008796CC /* AppConfig.swift */; };
 		EC9F96CB2F57B61F0046AE33 /* DateRangePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9F96CA2F57B61F0046AE33 /* DateRangePicker.swift */; };
 		ECB380D62F75134600E18E4D /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = ECB380D52F75134600E18E4D /* Lottie */; };
 		ECB380E02F7519EB00E18E4D /* walkingshoes.json in Resources */ = {isa = PBXBuildFile; fileRef = ECB380DF2F7519EB00E18E4D /* walkingshoes.json */; };
 		ECB380E12F7519EB00E18E4D /* walkingshoes.json in Resources */ = {isa = PBXBuildFile; fileRef = ECB380DF2F7519EB00E18E4D /* walkingshoes.json */; };
 		ECB9E7282F74989500F36514 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = ECB9E7272F74989500F36514 /* FirebaseMessaging */; };
-		ECB9E72A2F74A06500F36514 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECB9E7292F74A06500F36514 /* NotificationService.swift */; };
 		ECCAEE3A2F218A8B0047C5DF /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE392F218A8B0047C5DF /* FirebaseAuth */; };
 		ECCAEE3C2F218A8B0047C5DF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE3B2F218A8B0047C5DF /* FirebaseFirestore */; };
 		ECCAEE422F218AAA0047C5DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */; };
@@ -64,7 +71,6 @@
 		ECCF7E072F3A8F600003F772 /* RussoOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ECCB978E2F2D89E500DBC1F5 /* RussoOne-Regular.ttf */; };
 		ECCF7E0C2F3A934B0003F772 /* WidgetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCF7E0B2F3A934B0003F772 /* WidgetStore.swift */; };
 		ECCF7E122F3A97380003F772 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */; };
-		ECDA409E2F7A0C5D00EE3229 /* NotificationDebugService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECDA409D2F7A0C5D00EE3229 /* NotificationDebugService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,6 +105,15 @@
 		EC659333300949750097CC10 /* Challengeparticipant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Challengeparticipant.swift; sourceTree = "<group>"; };
 		EC6593353009497E0097CC10 /* Challenge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Challenge.swift; sourceTree = "<group>"; };
 		EC659337300949820097CC10 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		EC65933D30094AF40097CC10 /* Firebase+Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Auth.swift"; sourceTree = "<group>"; };
+		EC65933E30094AF70097CC10 /* Firebase+Players.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Players.swift"; sourceTree = "<group>"; };
+		EC65933F30094AFA0097CC10 /* Firebase+Challenges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Challenges.swift"; sourceTree = "<group>"; };
+		EC65934030094AFC0097CC10 /* Firebase+Participants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Participants.swift"; sourceTree = "<group>"; };
+		EC65934130094AFE0097CC10 /* Firebase+Puzzle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Puzzle.swift"; sourceTree = "<group>"; };
+		EC65934230094B120097CC10 /* Firebase+Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Notifications.swift"; sourceTree = "<group>"; };
+		EC65934430094B160097CC10 /* Firebase+Listeners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Listeners.swift"; sourceTree = "<group>"; };
+		EC65934730094BE90097CC10 /* Firebase+AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+AppConfig.swift"; sourceTree = "<group>"; };
+		EC6593503009522B0097CC10 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		EC6BAB1B2F3159E300BDBEC8 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		EC6BAB1D2F315A3000BDBEC8 /* GameSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSession.swift; sourceTree = "<group>"; };
 		EC7628CA2F395ADB008952D9 /* Puzzlehistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Puzzlehistory.swift; sourceTree = "<group>"; };
@@ -109,10 +124,8 @@
 		EC80F3CC2F3FB01200544443 /* ChallengeResultPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeResultPopup.swift; sourceTree = "<group>"; };
 		EC80F3CD2F3FB01200544443 /* ChallengesSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengesSheet.swift; sourceTree = "<group>"; };
 		EC80F3D12F3FB44900544443 /* PuzzleWiringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleWiringView.swift; sourceTree = "<group>"; };
-		EC9139FC2F5E5121008796CC /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		EC9F96CA2F57B61F0046AE33 /* DateRangePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateRangePicker.swift; sourceTree = "<group>"; };
 		ECB380DF2F7519EB00E18E4D /* walkingshoes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = walkingshoes.json; sourceTree = "<group>"; };
-		ECB9E7292F74A06500F36514 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		ECCAEE282F21888B0047C5DF /* Steepish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Steepish.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ECCAEE3F2F218AAA0047C5DF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -145,7 +158,6 @@
 		ECCF7DFE2F3A8E4B0003F772 /* StepGameWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepGameWidgetBundle.swift; sourceTree = "<group>"; };
 		ECCF7E082F3A920A0003F772 /* StepGameWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepGameWidgetExtension.entitlements; sourceTree = "<group>"; };
 		ECCF7E0B2F3A934B0003F772 /* WidgetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStore.swift; sourceTree = "<group>"; };
-		ECDA409D2F7A0C5D00EE3229 /* NotificationDebugService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDebugService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -207,6 +219,30 @@
 				EC26DE1F2F3D3873007DDE2B /* View */,
 			);
 			path = PuzzlePage;
+			sourceTree = "<group>";
+		};
+		EC65933A30094AA80097CC10 /* Firebase */ = {
+			isa = PBXGroup;
+			children = (
+				ECCB95D42F29483B00DBC1F5 /* FirebaseService.swift */,
+				EC65934730094BE90097CC10 /* Firebase+AppConfig.swift */,
+				EC65933D30094AF40097CC10 /* Firebase+Auth.swift */,
+				EC65933E30094AF70097CC10 /* Firebase+Players.swift */,
+				EC65933F30094AFA0097CC10 /* Firebase+Challenges.swift */,
+				EC65934030094AFC0097CC10 /* Firebase+Participants.swift */,
+				EC65934130094AFE0097CC10 /* Firebase+Puzzle.swift */,
+				EC65934230094B120097CC10 /* Firebase+Notifications.swift */,
+				EC65934430094B160097CC10 /* Firebase+Listeners.swift */,
+			);
+			path = Firebase;
+			sourceTree = "<group>";
+		};
+		EC65933C30094AB60097CC10 /* HealthKit */ = {
+			isa = PBXGroup;
+			children = (
+				ECCB95D62F29484A00DBC1F5 /* HealthKitService.swift */,
+			);
+			path = HealthKit;
 			sourceTree = "<group>";
 		};
 		EC80F3C32F3F802800544443 /* ViewModel */ = {
@@ -370,6 +406,7 @@
 				EC6593353009497E0097CC10 /* Challenge.swift */,
 				EC659333300949750097CC10 /* Challengeparticipant.swift */,
 				EC7628CA2F395ADB008952D9 /* Puzzlehistory.swift */,
+				EC6593503009522B0097CC10 /* AppConfig.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -377,11 +414,8 @@
 		ECCB95C82F29473600DBC1F5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				ECCB95D42F29483B00DBC1F5 /* FirebaseService.swift */,
-				ECCB95D62F29484A00DBC1F5 /* HealthKitService.swift */,
-				EC9139FC2F5E5121008796CC /* AppConfig.swift */,
-				ECB9E7292F74A06500F36514 /* NotificationService.swift */,
-				ECDA409D2F7A0C5D00EE3229 /* NotificationDebugService.swift */,
+				EC65933A30094AA80097CC10 /* Firebase */,
+				EC65933C30094AB60097CC10 /* HealthKit */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -564,40 +598,46 @@
 				EC80F3CF2F3FB01200544443 /* ChallengeResultPopup.swift in Sources */,
 				EC80F3D02F3FB01200544443 /* ChallengesSheet.swift in Sources */,
 				EC659338300949820097CC10 /* Player.swift in Sources */,
+				EC65934F30094CE70097CC10 /* Firebase+AppConfig.swift in Sources */,
 				ECCB97882F2C3DA100DBC1F5 /* WaitingView.swift in Sources */,
 				ECCB95E52F294C6100DBC1F5 /* EnterNameViewModel.swift in Sources */,
-				EC9139FD2F5E5121008796CC /* AppConfig.swift in Sources */,
 				EC6593363009497F0097CC10 /* Challenge.swift in Sources */,
 				EC80F3C62F3F810800544443 /* MapView+Content.swift in Sources */,
 				ECCB95EB2F294CA700DBC1F5 /*  SetupChallengeView.swift in Sources */,
+				EC65934930094CCF0097CC10 /* Firebase+Notifications.swift in Sources */,
 				EC2548B32F34194E0003414C /* MapPathEditorHelper.swift in Sources */,
 				ECCB96032F294DFF00DBC1F5 /* JoinWithCodePopup.swift in Sources */,
 				ECCB978A2F2C3DB300DBC1F5 /* WaitingViewModel.swift in Sources */,
+				EC65934E30094CE30097CC10 /* Firebase+Auth.swift in Sources */,
 				EC80F3C82F3F812F00544443 /* MapView+Sheets.swift in Sources */,
 				ECCB95D72F29484A00DBC1F5 /* HealthKitService.swift in Sources */,
 				ECCB95DF2F294C3D00DBC1F5 /* OnboardingView.swift in Sources */,
 				ECCB96012F294DE900DBC1F5 /* ProfileView.swift in Sources */,
 				EC7628CB2F395ADB008952D9 /* Puzzlehistory.swift in Sources */,
 				ECCB95E72F294C8100DBC1F5 /* StartView.swift in Sources */,
+				EC65934D30094CDF0097CC10 /* Firebase+Players.swift in Sources */,
 				EC6BAB1C2F3159E300BDBEC8 /* RootView.swift in Sources */,
 				EC80F3D22F3FB44900544443 /* PuzzleWiringView.swift in Sources */,
 				ECCF7DCE2F3A5EA70003F772 /* WindTumbleweed.swift in Sources */,
+				EC65934C30094CDB0097CC10 /* Firebase+Challenges.swift in Sources */,
 				EC26DE292F3D3992007DDE2B /* PuzzlePromptPopup.swift in Sources */,
 				EC6BAB1E2F315A3000BDBEC8 /* GameSession.swift in Sources */,
-				ECDA409E2F7A0C5D00EE3229 /* NotificationDebugService.swift in Sources */,
 				ECCB95E92F294C8F00DBC1F5 /* StartViewModel.swift in Sources */,
+				EC65934830094CCB0097CC10 /* Firebase+Listeners.swift in Sources */,
 				ECCF7E0C2F3A934B0003F772 /* WidgetStore.swift in Sources */,
 				ECCB95EF2F294CC900DBC1F5 /* MapView.swift in Sources */,
 				ECCB95ED2F294CAE00DBC1F5 /*  SetupChallengeViewModel.swift in Sources */,
-				ECB9E72A2F74A06500F36514 /* NotificationService.swift in Sources */,
 				EC659334300949780097CC10 /* Challengeparticipant.swift in Sources */,
+				EC65934B30094CD70097CC10 /* Firebase+Participants.swift in Sources */,
 				EC26DE262F3D3873007DDE2B /* WiringGameViewModel.swift in Sources */,
 				ECCB95FF2F294DD900DBC1F5 /* ProfileViewModel.swift in Sources */,
 				ECCB95E12F294C4500DBC1F5 /* OnboardingViewModel.swift in Sources */,
+				EC65934A30094CD30097CC10 /* Firebase+Puzzle.swift in Sources */,
 				ECCB95CD2F29478100DBC1F5 /* StepGameApp.swift in Sources */,
 				ECCB95DB2F294C0F00DBC1F5 /* SplashView.swift in Sources */,
 				ECCB95DD2F294C2100DBC1F5 /* SplashViewModel.swift in Sources */,
 				EC80F3CA2F3F814300544443 /* MapView+Puzzle.swift in Sources */,
+				EC659351300952390097CC10 /* AppConfig.swift in Sources */,
 				ECCB95E32F294C5A00DBC1F5 /* EnterNameView.swift in Sources */,
 				ECCB95F12F294CD100DBC1F5 /* MapViewModel.swift in Sources */,
 				EC26DE2D2F3D3A01007DDE2B /* PuzzleResultPopUp.swift in Sources */,

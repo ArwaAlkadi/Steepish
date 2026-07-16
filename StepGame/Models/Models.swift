@@ -7,44 +7,30 @@ import Foundation
 import FirebaseFirestore
 import Combine
 
-// MARK: - Enums
-enum ChallengeMode: String, Codable {
-    case solo
-    case social
-}
+// MARK: - Player
+// Firestore: players/{uid}
 
-enum ChallengeStatus: String, Codable {
-    case waiting
-    case active
-    case ended
-}
-
-enum PuzzleMode: String, Codable {
-    case attack
-    case defense
-}
-
+/// The character skin a player has selected.
 enum CharacterType: String, Codable, CaseIterable {
     case character1, character2, character3
 
-    /// Image key for a specific character state
+    /// Returns the asset name for this character in a given state.
     func imageKey(state: CharacterState) -> String {
         "\(rawValue)_\(state.rawValue)"
     }
-}
 
-extension CharacterType {
-
-    /// Default normal image key
+    /// Returns the asset name for this character in the normal state.
     func normalKey() -> String {
-        switch self {
-        case .character1: return "character1_normal"
-        case .character2: return "character2_normal"
-        case .character3: return "character3_normal"
-        }
+        "\(rawValue)_normal"
+    }
+
+    /// Returns the asset name for the avatar version of this character.
+    func avatarKey() -> String {
+        "\(rawValue)_avatar"
     }
 }
 
+/// The visual and behavioral state of a player's character.
 enum CharacterState: String, Codable, CaseIterable {
     case active
     case normal
@@ -52,98 +38,77 @@ enum CharacterState: String, Codable, CaseIterable {
     case win
 }
 
-
-
-
-
-// MARK: - Avatar Helper
-extension CharacterType {
-
-    func avatarKey() -> String {
-        "\(rawValue)_avatar"
-    }
-}
-
-
-
-
-
-// MARK: - Player
+/// Represents a registered player in the app.
 struct Player: Identifiable, Codable {
 
     @DocumentID var id: String?
 
     var name: String
-
-    var totalChallenges: Int
-    var completedChallenges: Int
-    var totalSteps: Int
-
     var characterType: CharacterType
-
     var lastUpdated: Date
     var createdAt: Date
 
     init(
         id: String? = nil,
         name: String,
-        totalChallenges: Int = 0,
-        completedChallenges: Int = 0,
-        totalSteps: Int = 0,
         characterType: CharacterType = .character1,
         lastUpdated: Date = Date(),
         createdAt: Date = Date()
     ) {
         self.id = id
         self.name = name
-        self.totalChallenges = totalChallenges
-        self.completedChallenges = completedChallenges
-        self.totalSteps = totalSteps
         self.characterType = characterType
         self.lastUpdated = lastUpdated
         self.createdAt = createdAt
     }
 }
 
-
-
-
-
 // MARK: - Challenge
+// Firestore: challenges/{challengeId}
+
+/// The mode a challenge was created in.
+enum ChallengeMode: String, Codable {
+    case solo
+    case social
+}
+
+/// The current lifecycle state of a challenge.
+enum ChallengeStatus: String, Codable {
+    case waiting
+    case active
+    case ended
+}
+
+/// Represents a step challenge, either solo or group.
 struct Challenge: Identifiable, Codable {
 
     @DocumentID var id: String?
 
     var name: String
     var joinCode: String
-
     var mode: ChallengeMode
     var originalMode: ChallengeMode
-
     var goalSteps: Int
     var durationDays: Int
     var status: ChallengeStatus
-
     var createdBy: String
     var playerIds: [String]
-
     var startDate: Date
     var endDate: Date
     var extensionSeconds: Int
-
     var createdAt: Date
-    var startedAt: Date? = nil
+    var startedAt: Date?
+    var winnerId: String?
+    var winnerFinishedAt: Date?
 
-    /// Result fields
-    var winnerId: String? = nil
-    var winnerFinishedAt: Date? = nil
+    // MARK: - Computed
 
-    /// End date including any extension
+    /// End date including any time extension from puzzle rewards.
     var effectiveEndDate: Date {
         endDate.addingTimeInterval(TimeInterval(max(0, extensionSeconds)))
     }
 
-    /// Dynamic mode resolution
+    /// Resolves to solo if a social challenge ends up with only one player.
     var currentMode: ChallengeMode {
         if originalMode == .social && playerIds.count == 1 { return .solo }
         return mode
@@ -195,60 +160,106 @@ struct Challenge: Identifiable, Codable {
     }
 }
 
-
-
-
-
 // MARK: - ChallengeParticipant
+// Firestore: challenges/{challengeId}/participants/{uid}
+
+/// The context in which a puzzle is triggered.
+enum PuzzleMode: String, Codable {
+    case attack
+    case defense
+}
+
+/// Groups all puzzle-related timestamps for a participant into a single nested object.
+/// Stored as a nested map in Firestore under the key "puzzleHistory".
+struct PuzzleHistory: Codable {
+
+    // MARK: - Attempts
+    var soloAttemptedAt: Date?
+    var groupAttackAttemptedAt: Date?
+    var groupDefenseAttemptedAt: Date?
+
+    // MARK: - Dismissals
+    var soloDismissedAt: Date?
+    var groupAttackDismissedAt: Date?
+    var groupDefenseDismissedAt: Date?
+
+    // MARK: - Outcomes
+    var soloPuzzleFailedAt: Date?
+    var groupAttackPuzzleFailedAt: Date?
+    var groupAttackSucceededAt: Date?
+
+    init(
+        soloAttemptedAt: Date? = nil,
+        groupAttackAttemptedAt: Date? = nil,
+        groupDefenseAttemptedAt: Date? = nil,
+        soloDismissedAt: Date? = nil,
+        groupAttackDismissedAt: Date? = nil,
+        groupDefenseDismissedAt: Date? = nil,
+        soloPuzzleFailedAt: Date? = nil,
+        groupAttackPuzzleFailedAt: Date? = nil,
+        groupAttackSucceededAt: Date? = nil
+    ) {
+        self.soloAttemptedAt = soloAttemptedAt
+        self.groupAttackAttemptedAt = groupAttackAttemptedAt
+        self.groupDefenseAttemptedAt = groupDefenseAttemptedAt
+        self.soloDismissedAt = soloDismissedAt
+        self.groupAttackDismissedAt = groupAttackDismissedAt
+        self.groupDefenseDismissedAt = groupDefenseDismissedAt
+        self.soloPuzzleFailedAt = soloPuzzleFailedAt
+        self.groupAttackPuzzleFailedAt = groupAttackPuzzleFailedAt
+        self.groupAttackSucceededAt = groupAttackSucceededAt
+    }
+}
+
+/// Represents a single player's state within a challenge.
 struct ChallengeParticipant: Identifiable, Codable {
 
     @DocumentID var id: String?
 
     var challengeId: String
     var playerId: String
-
     var steps: Int
     var progress: Double
     var characterState: CharacterState
-
     var lastUpdated: Date
     var createdAt: Date
 
-    // Sabotage
+    // MARK: - Sabotage
     var sabotageState: CharacterState?
     var sabotageExpiresAt: Date?
     var sabotageByPlayerId: String?
     var sabotageAttackTimeSeconds: Double?
     var sabotageAppliedAt: Date?
-    
-    // Result tracking
+
+    // MARK: - Result
     var finishedAt: Date?
     var place: Int?
     var didShowResultPopup: Bool?
-
     var lastSyncedAt: Date?
-    
-    // Puzzle attempts
-    var soloAttemptedAt: Date?
-    var groupAttackAttemptedAt: Date?
-    var groupDefenseAttemptedAt: Date?
 
-    // Puzzle dismissals
-    var soloDismissedAt: Date?
-    var groupAttackDismissedAt: Date?
-    var groupDefenseDismissedAt: Date?
-    
-    // Puzzle failures
-    var soloPuzzleFailedAt: Date?
-    var groupAttackPuzzleFailedAt: Date?
-    
-    // Attack success
-    var groupAttackSucceededAt: Date?
-    
-    // Track when player left
+    // MARK: - Left Challenge
     var leftAt: Date?
     var leftAtSteps: Int?
-    
+
+    // MARK: - Puzzle History
+    /// All puzzle-related timestamps grouped in a single nested object.
+    var puzzleHistory: PuzzleHistory?
+
+    // MARK: - Computed
+
+    func effectiveState(now: Date = Date()) -> CharacterState {
+        if let s = sabotageState,
+           let exp = sabotageExpiresAt,
+           now < exp {
+            return s
+        }
+        return characterState
+    }
+
+    var hasShownResultPopup: Bool {
+        didShowResultPopup ?? false
+    }
+
     init(
         id: String? = nil,
         challengeId: String,
@@ -267,17 +278,9 @@ struct ChallengeParticipant: Identifiable, Codable {
         place: Int? = nil,
         didShowResultPopup: Bool? = nil,
         lastSyncedAt: Date? = nil,
-        soloAttemptedAt: Date? = nil,
-        groupAttackAttemptedAt: Date? = nil,
-        groupDefenseAttemptedAt: Date? = nil,
-        soloDismissedAt: Date? = nil,
-        groupAttackDismissedAt: Date? = nil,
-        groupDefenseDismissedAt: Date? = nil,
-        soloPuzzleFailedAt: Date? = nil,
-        groupAttackPuzzleFailedAt: Date? = nil,
-        groupAttackSucceededAt: Date? = nil,
         leftAt: Date? = nil,
-        leftAtSteps: Int? = nil
+        leftAtSteps: Int? = nil,
+        puzzleHistory: PuzzleHistory? = nil
     ) {
         self.id = id
         self.challengeId = challengeId
@@ -296,29 +299,9 @@ struct ChallengeParticipant: Identifiable, Codable {
         self.place = place
         self.didShowResultPopup = didShowResultPopup
         self.lastSyncedAt = lastSyncedAt
-        self.soloAttemptedAt = soloAttemptedAt
-        self.groupAttackAttemptedAt = groupAttackAttemptedAt
-        self.groupDefenseAttemptedAt = groupDefenseAttemptedAt
-        self.soloDismissedAt = soloDismissedAt
-        self.groupAttackDismissedAt = groupAttackDismissedAt
-        self.groupDefenseDismissedAt = groupDefenseDismissedAt
-        self.soloPuzzleFailedAt = soloPuzzleFailedAt
-        self.groupAttackPuzzleFailedAt = groupAttackPuzzleFailedAt
-        self.groupAttackSucceededAt = groupAttackSucceededAt
         self.leftAt = leftAt
         self.leftAtSteps = leftAtSteps
-    }
-
-    func effectiveState(now: Date = Date()) -> CharacterState {
-        if let s = sabotageState,
-           let exp = sabotageExpiresAt,
-           now < exp {
-            return s
-        }
-        return characterState
-    }
-    
-    var hasShownResultPopup: Bool {
-        didShowResultPopup ?? false
+        self.puzzleHistory = puzzleHistory
     }
 }
+

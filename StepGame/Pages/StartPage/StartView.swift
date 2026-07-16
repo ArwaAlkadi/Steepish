@@ -230,9 +230,6 @@ private struct StartViewPreviewHost: View {
             session.player = Player(
                 id: "preview_uid",
                 name: "Arwa",
-                totalChallenges: 0,
-                completedChallenges: 0,
-                totalSteps: 0,
                 characterType: .character1,
                 lastUpdated: Date(),
                 createdAt: Date()

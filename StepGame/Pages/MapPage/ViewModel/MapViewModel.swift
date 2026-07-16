@@ -398,8 +398,8 @@ final class MapViewModel: ObservableObject {
             guard hoursElapsed >= 3 else { return }
         }
 
-        if isLockedForThreeDays(myPart.soloAttemptedAt, now: now) { return }
-        if isCooldownActive(myPart.soloDismissedAt, seconds: dismissCooldown, now: now) { return }
+        if isLockedForThreeDays(myPart.puzzleHistory?.soloAttemptedAt, now: now) { return }
+        if isCooldownActive(myPart.puzzleHistory?.soloDismissedAt, seconds: dismissCooldown, now: now) { return }
 
         let expected = expectedProgressByTime(challenge: ch, now: now)
         let actual = CGFloat(myPart.steps) / CGFloat(max(ch.goalSteps, 1))
@@ -423,8 +423,8 @@ final class MapViewModel: ObservableObject {
             guard hoursElapsed >= 3 else { return }
         }
 
-        if isLockedToday(myPart.groupDefenseAttemptedAt, now: now) { return }
-        if isCooldownActive(myPart.groupDefenseDismissedAt, seconds: dismissCooldown, now: now) { return }
+        if isLockedToday(myPart.puzzleHistory?.groupDefenseAttemptedAt, now: now) { return }
+        if isCooldownActive(myPart.puzzleHistory?.groupDefenseDismissedAt, seconds: dismissCooldown, now: now) { return }
 
         if let exp = myPart.sabotageExpiresAt, now < exp {
             if !isWarmupActive, pendingMapPopup == nil {
@@ -446,8 +446,8 @@ final class MapViewModel: ObservableObject {
         }
 
         // Check cooldowns
-        if isLockedToday(myPart.groupAttackAttemptedAt, now: now) { return }
-        if isCooldownActive(myPart.groupAttackDismissedAt, seconds: dismissCooldown, now: now) { return }
+        if isLockedToday(myPart.puzzleHistory?.groupAttackAttemptedAt, now: now) { return }
+        if isCooldownActive(myPart.puzzleHistory?.groupAttackDismissedAt, seconds: dismissCooldown, now: now) { return }
 
         let goal = max(ch.goalSteps, 1)
         
@@ -609,7 +609,7 @@ final class MapViewModel: ObservableObject {
             friendImage: friendImage,
             isSoloChallenge: ch.currentMode.rawValue,
             startDate: (ch.startedAt ?? ch.startDate),
-            effectiveEndDate: ch.effectiveEndDate 
+            effectiveEndDate: ch.effectiveEndDate
         )
         WidgetCenter.shared.reloadAllTimelines()
     }
@@ -743,7 +743,7 @@ final class MapViewModel: ObservableObject {
             offsetX = 0
         } else {
             
-            let side = (idx % 2 == 1) ? -1 : 1 
+            let side = (idx % 2 == 1) ? -1 : 1
             let distance = CGFloat((idx + 1) / 2) * spacingX
             offsetX = CGFloat(side) * distance
         }
@@ -858,13 +858,8 @@ final class MapViewModel: ObservableObject {
 
             let goal = max(ch.goalSteps, 1)
             let progress = min(max(Double(stepsTotal) / Double(goal), 0), 1)
-            let state: CharacterState = {
-                if let part = myParticipant {
-                    return computedCharacterState(challenge: ch, participant: part)
-                }
-                return (progress >= 1) ? .active : .normal
-            }()
-            
+            let state: CharacterState = (progress >= 1) ? .active : .normal
+
             try await firebase.updateParticipantSteps(
                 challengeId: chId,
                 uid: uid,
@@ -1060,3 +1055,4 @@ final class MapViewModel: ObservableObject {
         return ch.originalMode == .social && activePlayers.count <= 1
     }
 }
+

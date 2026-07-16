@@ -11,9 +11,12 @@
 		EC26DE262F3D3873007DDE2B /* WiringGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC26DE202F3D3873007DDE2B /* WiringGameViewModel.swift */; };
 		EC26DE292F3D3992007DDE2B /* PuzzlePromptPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC26DE282F3D3992007DDE2B /* PuzzlePromptPopup.swift */; };
 		EC26DE2D2F3D3A01007DDE2B /* PuzzleResultPopUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC26DE2C2F3D3A01007DDE2B /* PuzzleResultPopUp.swift */; };
+		EC659334300949780097CC10 /* Challengeparticipant.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC659333300949750097CC10 /* Challengeparticipant.swift */; };
+		EC6593363009497F0097CC10 /* Challenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6593353009497E0097CC10 /* Challenge.swift */; };
+		EC659338300949820097CC10 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC659337300949820097CC10 /* Player.swift */; };
 		EC6BAB1C2F3159E300BDBEC8 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6BAB1B2F3159E300BDBEC8 /* RootView.swift */; };
 		EC6BAB1E2F315A3000BDBEC8 /* GameSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6BAB1D2F315A3000BDBEC8 /* GameSession.swift */; };
-		EC7628CB2F395ADB008952D9 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7628CA2F395ADB008952D9 /* Models.swift */; };
+		EC7628CB2F395ADB008952D9 /* Puzzlehistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7628CA2F395ADB008952D9 /* Puzzlehistory.swift */; };
 		EC77AE8E2F3B9A320056D261 /* OfflineBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC77AE8D2F3B9A320056D261 /* OfflineBanner.swift */; };
 		EC80F3C62F3F810800544443 /* MapView+Content.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3C52F3F810800544443 /* MapView+Content.swift */; };
 		EC80F3C82F3F812F00544443 /* MapView+Sheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3C72F3F812F00544443 /* MapView+Sheets.swift */; };
@@ -93,9 +96,12 @@
 		EC26DE202F3D3873007DDE2B /* WiringGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WiringGameViewModel.swift; sourceTree = "<group>"; };
 		EC26DE282F3D3992007DDE2B /* PuzzlePromptPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzlePromptPopup.swift; sourceTree = "<group>"; };
 		EC26DE2C2F3D3A01007DDE2B /* PuzzleResultPopUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PuzzleResultPopUp.swift; sourceTree = "<group>"; };
+		EC659333300949750097CC10 /* Challengeparticipant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Challengeparticipant.swift; sourceTree = "<group>"; };
+		EC6593353009497E0097CC10 /* Challenge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Challenge.swift; sourceTree = "<group>"; };
+		EC659337300949820097CC10 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		EC6BAB1B2F3159E300BDBEC8 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		EC6BAB1D2F315A3000BDBEC8 /* GameSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSession.swift; sourceTree = "<group>"; };
-		EC7628CA2F395ADB008952D9 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		EC7628CA2F395ADB008952D9 /* Puzzlehistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Puzzlehistory.swift; sourceTree = "<group>"; };
 		EC77AE8D2F3B9A320056D261 /* OfflineBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineBanner.swift; sourceTree = "<group>"; };
 		EC80F3C52F3F810800544443 /* MapView+Content.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapView+Content.swift"; sourceTree = "<group>"; };
 		EC80F3C72F3F812F00544443 /* MapView+Sheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapView+Sheets.swift"; sourceTree = "<group>"; };
@@ -360,7 +366,10 @@
 		ECCB95C72F29473600DBC1F5 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				EC7628CA2F395ADB008952D9 /* Models.swift */,
+				EC659337300949820097CC10 /* Player.swift */,
+				EC6593353009497E0097CC10 /* Challenge.swift */,
+				EC659333300949750097CC10 /* Challengeparticipant.swift */,
+				EC7628CA2F395ADB008952D9 /* Puzzlehistory.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -554,9 +563,11 @@
 				EC77AE8E2F3B9A320056D261 /* OfflineBanner.swift in Sources */,
 				EC80F3CF2F3FB01200544443 /* ChallengeResultPopup.swift in Sources */,
 				EC80F3D02F3FB01200544443 /* ChallengesSheet.swift in Sources */,
+				EC659338300949820097CC10 /* Player.swift in Sources */,
 				ECCB97882F2C3DA100DBC1F5 /* WaitingView.swift in Sources */,
 				ECCB95E52F294C6100DBC1F5 /* EnterNameViewModel.swift in Sources */,
 				EC9139FD2F5E5121008796CC /* AppConfig.swift in Sources */,
+				EC6593363009497F0097CC10 /* Challenge.swift in Sources */,
 				EC80F3C62F3F810800544443 /* MapView+Content.swift in Sources */,
 				ECCB95EB2F294CA700DBC1F5 /*  SetupChallengeView.swift in Sources */,
 				EC2548B32F34194E0003414C /* MapPathEditorHelper.swift in Sources */,
@@ -566,7 +577,7 @@
 				ECCB95D72F29484A00DBC1F5 /* HealthKitService.swift in Sources */,
 				ECCB95DF2F294C3D00DBC1F5 /* OnboardingView.swift in Sources */,
 				ECCB96012F294DE900DBC1F5 /* ProfileView.swift in Sources */,
-				EC7628CB2F395ADB008952D9 /* Models.swift in Sources */,
+				EC7628CB2F395ADB008952D9 /* Puzzlehistory.swift in Sources */,
 				ECCB95E72F294C8100DBC1F5 /* StartView.swift in Sources */,
 				EC6BAB1C2F3159E300BDBEC8 /* RootView.swift in Sources */,
 				EC80F3D22F3FB44900544443 /* PuzzleWiringView.swift in Sources */,
@@ -579,6 +590,7 @@
 				ECCB95EF2F294CC900DBC1F5 /* MapView.swift in Sources */,
 				ECCB95ED2F294CAE00DBC1F5 /*  SetupChallengeViewModel.swift in Sources */,
 				ECB9E72A2F74A06500F36514 /* NotificationService.swift in Sources */,
+				EC659334300949780097CC10 /* Challengeparticipant.swift in Sources */,
 				EC26DE262F3D3873007DDE2B /* WiringGameViewModel.swift in Sources */,
 				ECCB95FF2F294DD900DBC1F5 /* ProfileViewModel.swift in Sources */,
 				ECCB95E12F294C4500DBC1F5 /* OnboardingViewModel.swift in Sources */,

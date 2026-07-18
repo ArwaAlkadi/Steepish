@@ -7,6 +7,8 @@ Steepish is an iOS fitness game that turns step counting into real-time competit
 <br>
 <img width="1920" height="1080" alt="Steepish" src="https://github.com/user-attachments/assets/744e1fc0-9a8a-4158-934f-534d8981d535" />
 <br>
+<br>
+
 
 
 ## Features
@@ -24,6 +26,8 @@ Steepish is an iOS fitness game that turns step counting into real-time competit
 <br>
 <img width="7680" height="4320" alt="Widget copy" src="https://github.com/user-attachments/assets/7c8f8f63-8056-4e71-ac86-74a6b6d16d73" />
 <br>
+<br>
+
 
 ## How the Game Works
 
@@ -42,36 +46,14 @@ A 7-second shuffled color-matching puzzle that drives three mechanics:
 
 Attack vs. defense is decided by **solve time**, with attempt limits and cooldowns per puzzle type to keep it fair.
 
-
-## Architecture
-
-MVVM with a clear split between UI, state, and services:
-
-```
-Steepish
-├── StepGame/            # Main iOS app
-│   ├── App/             # Entry, RootView router, GameSession
-│   ├── Models/          # Player, Challenge, ChallengeParticipant
-│   ├── Pages/           # Feature screens (View + ViewModel):
-│   │                    # Map, Puzzle, SetupChallenge, Challenges,
-│   │                    # Onboarding, Splash, Start, Profile, Waiting
-│   ├── Services/        # Firebase, HealthKit, Notifications, AppConfig
-│   └── Widget/          # WidgetStore (App Group bridge)
-├── StepGameWidget/      # WidgetKit extension
-└── functions/           # Firebase Cloud Functions (Node.js)
-```
-
-- **`GameSession`** — single `@MainActor` object owning auth, player, challenges, and participants, kept live via Firestore listeners
-- **`FirebaseService`** — anonymous sign-in, challenge CRUD, atomic winner claiming, sabotage writes, real-time listeners
-- **`HealthKitManager`** — verifies authorization by *actually attempting a read*, not trusting the status API
-- **`RootView`** — state-driven router rebuilt from a composite key (player → HealthKit → challenge status)
-- **`WidgetStore`** — serializes the race snapshot into a shared App Group for the widget
+<br>
 
 
 ## Backend — Cloud Functions
 
 - **`onChallengeParticipantUpdated`** — Firestore trigger powering four notifications, each with a **2-hour per-player cooldown**: **Attacked**, **Lazy** (inactivity, not sabotage), **Overtaken**, and **Attack opportunity**.
 - **`dailySilentSync`** — runs every 6 hours (`Asia/Riyadh`), sending silent pushes to active participants so the app syncs fresh HealthKit steps in the background and leaderboards/widgets stay accurate.
+<br>
 
 
 ## Tech Stack

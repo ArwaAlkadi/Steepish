@@ -32,7 +32,7 @@ final class WaitingRoomViewModel: ObservableObject {
 
     @Published private(set) var playersById: [String: Player] = [:]
 
-    private weak var session: GameSession?
+    private weak var session: UserSession?
     private let firebase = FirebaseService.shared
 
     private var challengeListener: ListenerRegistration?
@@ -91,7 +91,7 @@ final class WaitingRoomViewModel: ObservableObject {
 
     // MARK: - Bind / Unbind
 
-    func bind(session: GameSession) {
+    func bind(session: UserSession) {
         self.session = session
         unbind()
 
@@ -193,7 +193,7 @@ final class WaitingRoomViewModel: ObservableObject {
         }
     }
 
-    private func makeLobbyPlayers(challenge: Challenge, session: GameSession) -> [LobbyPlayer] {
+    private func makeLobbyPlayers(challenge: Challenge, session: UserSession) -> [LobbyPlayer] {
         let ids = Array(challenge.playerIds.prefix(4))
         let myId = session.player?.id ?? session.uid ?? ""
 

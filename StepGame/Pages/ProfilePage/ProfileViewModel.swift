@@ -88,7 +88,7 @@ final class ProfileViewModel: ObservableObject {
     }
 
     // MARK: - Save
-    func save(session: GameSession, currentPlayer: Player) async {
+    func save(session: UserSession, currentPlayer: Player) async {
         guard validateDraft() else { return }
 
         isSaving = true

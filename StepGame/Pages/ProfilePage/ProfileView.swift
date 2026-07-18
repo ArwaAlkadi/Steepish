@@ -10,7 +10,7 @@ import Combine
 // MARK: - Profile View
 struct ProfileView: View {
 
-    @EnvironmentObject private var session: GameSession
+    @EnvironmentObject private var session: UserSession
     @EnvironmentObject private var connectivity: ConnectivityMonitor
 
     @StateObject private var vm = ProfileViewModel()

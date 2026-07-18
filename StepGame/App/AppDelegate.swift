@@ -1,71 +1,14 @@
 //
-//  StepGameApp.swift
+//  AppDelegate.swift
 //  StepGame
 //
 
-import SwiftUI
+import UIKit
 import FirebaseCore
 import FirebaseAuth
 import FirebaseFirestore
 import FirebaseMessaging
 import UserNotifications
-import Foundation
-import Network
-import Combine
-
-// MARK: - Main App
-
-@main
-struct StepGameApp: App {
-
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-
-    @StateObject private var session = GameSession()
-    @StateObject private var health = HealthKitManager()
-    @StateObject private var connectivity = ConnectivityMonitor()
-
-    init() {}
-
-    var body: some Scene {
-        WindowGroup {
-            RootView()
-                .environmentObject(session)
-                .environmentObject(health)
-                .environmentObject(connectivity)
-                .onAppear {
-                    AppDelegate.healthKitManager = health
-                }
-        }
-    }
-}
-
-// MARK: - Notification Name
-extension Notification.Name {
-    static let navigateToChallenge = Notification.Name("navigateToChallenge")
-}
-
-// MARK: - ConnectivityMonitor
-
-@MainActor
-final class ConnectivityMonitor: ObservableObject {
-    @Published private(set) var isOnline: Bool = true
-
-    private let monitor = NWPathMonitor()
-    private let queue = DispatchQueue(label: "ConnectivityMonitor")
-
-    init() {
-        monitor.pathUpdateHandler = { [weak self] path in
-            Task { @MainActor in
-                self?.isOnline = (path.status == .satisfied)
-            }
-        }
-        monitor.start(queue: queue)
-    }
-
-    deinit {
-        monitor.cancel()
-    }
-}
 
 // MARK: - App Delegate
 
@@ -238,3 +181,4 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         }
     }
 }
+

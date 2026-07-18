@@ -9,7 +9,7 @@ import Combine
 struct WaitingRoomView: View {
 
     @EnvironmentObject private var connectivity: ConnectivityMonitor
-    @EnvironmentObject private var session: GameSession
+    @EnvironmentObject private var session: UserSession
     @StateObject private var vm = WaitingRoomViewModel()
 
     @State private var showLeavePopup = false

@@ -9,7 +9,7 @@ struct PuzzleResultPopup: View {
     let result: PuzzleResult
     let onClose: () -> Void
 
-    @EnvironmentObject private var session: GameSession
+    @EnvironmentObject private var session: UserSession
 
     var body: some View {
         ZStack {
@@ -111,7 +111,7 @@ struct PuzzleResultPopup: View {
 
 #Preview("PuzzleResultSheet") {
     // Dummy session for preview
-    let session = GameSession()
+    let session = UserSession()
     return PuzzleResultPopup(
         result: PuzzleResult(
             context: .solo,

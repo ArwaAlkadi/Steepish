@@ -52,7 +52,7 @@ final class SetupChallengeViewModel: ObservableObject {
     }
 
     // MARK: - Create Challenge
-    func createChallenge(session: GameSession) async -> Outcome {
+    func createChallenge(session: UserSession) async -> Outcome {
         errorMessage = nil
 
         let trimmed = challengeName.trimmingCharacters(in: .whitespacesAndNewlines)

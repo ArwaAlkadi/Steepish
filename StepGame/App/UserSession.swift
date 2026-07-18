@@ -8,7 +8,7 @@ import Combine
 import FirebaseFirestore
 
 @MainActor
-final class GameSession: ObservableObject {
+final class UserSession: ObservableObject {
 
     // MARK: - UI State
     @Published var isLoading: Bool = false

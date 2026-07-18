@@ -12,7 +12,7 @@ struct SetupChallengeView: View {
     var onDismissWithoutCreating: (() -> Void)? = nil
 
     @EnvironmentObject private var connectivity: ConnectivityMonitor
-    @EnvironmentObject var session: GameSession
+    @EnvironmentObject var session: UserSession
     @StateObject private var vm = SetupChallengeViewModel()
 
     @State private var showOfflineBanner: Bool = true
@@ -286,7 +286,7 @@ private struct ModeChip: View {
 private struct SetupChallengePreviewHost: View {
     @State private var presented: Bool = true
 
-    @StateObject private var session = GameSession()
+    @StateObject private var session = UserSession()
     @StateObject private var health = HealthKitManager()
     @StateObject private var connectivity = ConnectivityMonitor()
 

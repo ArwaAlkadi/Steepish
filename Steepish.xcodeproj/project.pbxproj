@@ -23,8 +23,10 @@
 		EC65934E30094CE30097CC10 /* Firebase+Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC65933D30094AF40097CC10 /* Firebase+Auth.swift */; };
 		EC65934F30094CE70097CC10 /* Firebase+AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC65934730094BE90097CC10 /* Firebase+AppConfig.swift */; };
 		EC659351300952390097CC10 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6593503009522B0097CC10 /* AppConfig.swift */; };
+		EC659355300C10B90097CC10 /* ConnectivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC659354300C10B80097CC10 /* ConnectivityMonitor.swift */; };
+		EC659357300C13A80097CC10 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC659356300C13A60097CC10 /* AppDelegate.swift */; };
 		EC6BAB1C2F3159E300BDBEC8 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6BAB1B2F3159E300BDBEC8 /* RootView.swift */; };
-		EC6BAB1E2F315A3000BDBEC8 /* GameSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6BAB1D2F315A3000BDBEC8 /* GameSession.swift */; };
+		EC6BAB1E2F315A3000BDBEC8 /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6BAB1D2F315A3000BDBEC8 /* UserSession.swift */; };
 		EC7628CB2F395ADB008952D9 /* Puzzlehistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7628CA2F395ADB008952D9 /* Puzzlehistory.swift */; };
 		EC77AE8E2F3B9A320056D261 /* OfflineBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC77AE8D2F3B9A320056D261 /* OfflineBanner.swift */; };
 		EC80F3C62F3F810800544443 /* MapView+Content.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC80F3C52F3F810800544443 /* MapView+Content.swift */; };
@@ -42,7 +44,7 @@
 		ECCAEE3C2F218A8B0047C5DF /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = ECCAEE3B2F218A8B0047C5DF /* FirebaseFirestore */; };
 		ECCAEE422F218AAA0047C5DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */; };
 		ECCAEE432F218AAA0047C5DF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ECCAEE3F2F218AAA0047C5DF /* GoogleService-Info.plist */; };
-		ECCB95CD2F29478100DBC1F5 /* StepGameApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95CB2F29478100DBC1F5 /* StepGameApp.swift */; };
+		ECCB95CD2F29478100DBC1F5 /* SteepishApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95CB2F29478100DBC1F5 /* SteepishApp.swift */; };
 		ECCB95D52F29483B00DBC1F5 /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95D42F29483B00DBC1F5 /* FirebaseService.swift */; };
 		ECCB95D72F29484A00DBC1F5 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95D62F29484A00DBC1F5 /* HealthKitService.swift */; };
 		ECCB95DB2F294C0F00DBC1F5 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCB95DA2F294C0F00DBC1F5 /* SplashView.swift */; };
@@ -114,8 +116,10 @@
 		EC65934430094B160097CC10 /* Firebase+Listeners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+Listeners.swift"; sourceTree = "<group>"; };
 		EC65934730094BE90097CC10 /* Firebase+AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firebase+AppConfig.swift"; sourceTree = "<group>"; };
 		EC6593503009522B0097CC10 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		EC659354300C10B80097CC10 /* ConnectivityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityMonitor.swift; sourceTree = "<group>"; };
+		EC659356300C13A60097CC10 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EC6BAB1B2F3159E300BDBEC8 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
-		EC6BAB1D2F315A3000BDBEC8 /* GameSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSession.swift; sourceTree = "<group>"; };
+		EC6BAB1D2F315A3000BDBEC8 /* UserSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
 		EC7628CA2F395ADB008952D9 /* Puzzlehistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Puzzlehistory.swift; sourceTree = "<group>"; };
 		EC77AE8D2F3B9A320056D261 /* OfflineBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineBanner.swift; sourceTree = "<group>"; };
 		EC80F3C52F3F810800544443 /* MapView+Content.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MapView+Content.swift"; sourceTree = "<group>"; };
@@ -129,7 +133,7 @@
 		ECCAEE282F21888B0047C5DF /* Steepish.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Steepish.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ECCAEE3D2F218AAA0047C5DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ECCAEE3F2F218AAA0047C5DF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		ECCB95CB2F29478100DBC1F5 /* StepGameApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepGameApp.swift; sourceTree = "<group>"; };
+		ECCB95CB2F29478100DBC1F5 /* SteepishApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SteepishApp.swift; sourceTree = "<group>"; };
 		ECCB95D42F29483B00DBC1F5 /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
 		ECCB95D62F29484A00DBC1F5 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		ECCB95DA2F294C0F00DBC1F5 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
@@ -187,9 +191,10 @@
 		EC2548B12F34193E0003414C /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				EC2548B22F34194E0003414C /* MapPathEditorHelper.swift */,
+				EC659354300C10B80097CC10 /* ConnectivityMonitor.swift */,
 				EC77AE8D2F3B9A320056D261 /* OfflineBanner.swift */,
 				ECCF7DCD2F3A5EA70003F772 /* WindTumbleweed.swift */,
+				EC2548B22F34194E0003414C /* MapPathEditorHelper.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -300,6 +305,7 @@
 				ECCB95C72F29473600DBC1F5 /* Models */,
 				ECCB95C62F29472F00DBC1F5 /* Pages */,
 				ECCF7E0A2F3A93350003F772 /* Widget */,
+				EC2548B12F34193E0003414C /* Helpers */,
 				ECCB95C12F29472F00DBC1F5 /* Resources */,
 			);
 			path = StepGame;
@@ -394,7 +400,6 @@
 				EC80F3CE2F3FB01200544443 /* ChallengesSheet */,
 				EC26DE222F3D3873007DDE2B /* PuzzlePage */,
 				ECCB95BF2F29472F00DBC1F5 /* ProfilePage */,
-				EC2548B12F34193E0003414C /* Helpers */,
 			);
 			path = Pages;
 			sourceTree = "<group>";
@@ -423,9 +428,10 @@
 		ECCB95CC2F29478100DBC1F5 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				ECCB95CB2F29478100DBC1F5 /* StepGameApp.swift */,
+				ECCB95CB2F29478100DBC1F5 /* SteepishApp.swift */,
+				EC659356300C13A60097CC10 /* AppDelegate.swift */,
 				EC6BAB1B2F3159E300BDBEC8 /* RootView.swift */,
-				EC6BAB1D2F315A3000BDBEC8 /* GameSession.swift */,
+				EC6BAB1D2F315A3000BDBEC8 /* UserSession.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -607,6 +613,7 @@
 				EC65934930094CCF0097CC10 /* Firebase+Notifications.swift in Sources */,
 				EC2548B32F34194E0003414C /* MapPathEditorHelper.swift in Sources */,
 				ECCB96032F294DFF00DBC1F5 /* JoinWithCodePopup.swift in Sources */,
+				EC659357300C13A80097CC10 /* AppDelegate.swift in Sources */,
 				ECCB978A2F2C3DB300DBC1F5 /* WaitingViewModel.swift in Sources */,
 				EC65934E30094CE30097CC10 /* Firebase+Auth.swift in Sources */,
 				EC80F3C82F3F812F00544443 /* MapView+Sheets.swift in Sources */,
@@ -621,7 +628,7 @@
 				ECCF7DCE2F3A5EA70003F772 /* WindTumbleweed.swift in Sources */,
 				EC65934C30094CDB0097CC10 /* Firebase+Challenges.swift in Sources */,
 				EC26DE292F3D3992007DDE2B /* PuzzlePromptPopup.swift in Sources */,
-				EC6BAB1E2F315A3000BDBEC8 /* GameSession.swift in Sources */,
+				EC6BAB1E2F315A3000BDBEC8 /* UserSession.swift in Sources */,
 				ECCB95E92F294C8F00DBC1F5 /* StartViewModel.swift in Sources */,
 				EC65934830094CCB0097CC10 /* Firebase+Listeners.swift in Sources */,
 				ECCF7E0C2F3A934B0003F772 /* WidgetStore.swift in Sources */,
@@ -633,9 +640,10 @@
 				ECCB95FF2F294DD900DBC1F5 /* ProfileViewModel.swift in Sources */,
 				ECCB95E12F294C4500DBC1F5 /* OnboardingViewModel.swift in Sources */,
 				EC65934A30094CD30097CC10 /* Firebase+Puzzle.swift in Sources */,
-				ECCB95CD2F29478100DBC1F5 /* StepGameApp.swift in Sources */,
+				ECCB95CD2F29478100DBC1F5 /* SteepishApp.swift in Sources */,
 				ECCB95DB2F294C0F00DBC1F5 /* SplashView.swift in Sources */,
 				ECCB95DD2F294C2100DBC1F5 /* SplashViewModel.swift in Sources */,
+				EC659355300C10B90097CC10 /* ConnectivityMonitor.swift in Sources */,
 				EC80F3CA2F3F814300544443 /* MapView+Puzzle.swift in Sources */,
 				EC659351300952390097CC10 /* AppConfig.swift in Sources */,
 				ECCB95E32F294C5A00DBC1F5 /* EnterNameView.swift in Sources */,

@@ -9,7 +9,7 @@ import Combine
 
 struct StartView: View {
 
-    @EnvironmentObject var session: GameSession
+    @EnvironmentObject var session: UserSession
     @EnvironmentObject var health: HealthKitManager
     @StateObject private var vm = StartViewModel()
     @EnvironmentObject private var connectivity: ConnectivityMonitor
@@ -215,7 +215,7 @@ private struct HealthPermissionGate: View {
 
 // MARK: - Preview Host
 private struct StartViewPreviewHost: View {
-    @StateObject private var session = GameSession()
+    @StateObject private var session = UserSession()
     @StateObject private var health = HealthKitManager()
     @StateObject private var connectivity = ConnectivityMonitor()
 

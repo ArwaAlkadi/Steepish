@@ -4,7 +4,7 @@ import UIKit
 
 struct RootView: View {
 
-    @EnvironmentObject private var session: GameSession
+    @EnvironmentObject private var session: UserSession
     @EnvironmentObject private var health: HealthKitManager
 
     @Environment(\.scenePhase) private var scenePhase

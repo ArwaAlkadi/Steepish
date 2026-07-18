@@ -9,7 +9,7 @@ import Combine
 
 struct EnterNameView: View {
 
-    @EnvironmentObject var session: GameSession
+    @EnvironmentObject var session: UserSession
     @EnvironmentObject private var connectivity: ConnectivityMonitor
 
     @StateObject private var vm = EnterNameViewModel()
@@ -145,7 +145,7 @@ struct EnterNameView: View {
 
 // MARK: - Preview Host
 private struct EnterNamePreviewHost: View {
-    @StateObject private var session = GameSession()
+    @StateObject private var session = UserSession()
     @StateObject private var connectivity = ConnectivityMonitor()
 
     var body: some View {

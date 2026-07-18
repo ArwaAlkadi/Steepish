@@ -10,7 +10,7 @@ import UserNotifications
 
 struct MapView: View {
 
-    @EnvironmentObject var session: GameSession
+    @EnvironmentObject var session: UserSession
     @EnvironmentObject var health: HealthKitManager
     @EnvironmentObject var connectivity: ConnectivityMonitor
 

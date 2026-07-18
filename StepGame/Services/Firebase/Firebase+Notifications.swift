@@ -7,6 +7,7 @@ import Foundation
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
+import UserNotifications
 
 extension FirebaseService {
 
@@ -44,4 +45,9 @@ extension FirebaseService {
             print("❌ Failed to save notification debug log:", error)
         }
     }
+}
+
+// MARK: - Notification Name
+extension Notification.Name {
+    static let navigateToChallenge = Notification.Name("navigateToChallenge")
 }

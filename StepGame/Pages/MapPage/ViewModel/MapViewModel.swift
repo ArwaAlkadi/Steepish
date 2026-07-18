@@ -64,7 +64,7 @@ final class MapViewModel: ObservableObject {
     // MARK: - Dependencies
 
     private let firebase = FirebaseService.shared
-    private weak var session: GameSession?
+    private weak var session: UserSession?
 
     private var challengeListener: ListenerRegistration?
     private var participantsListener: ListenerRegistration?
@@ -292,7 +292,7 @@ final class MapViewModel: ObservableObject {
 
     // MARK: - Bind / Unbind
 
-    func bind(session: GameSession) {
+    func bind(session: UserSession) {
         self.session = session
         unbind()
 

@@ -11,7 +11,7 @@ import FirebaseFirestore
 
 struct ChallengesSheet: View {
 
-    @EnvironmentObject private var session: GameSession
+    @EnvironmentObject private var session: UserSession
 
     var onTapCreate: () -> Void = {}
     var onTapJoin: () -> Void = {}
@@ -444,7 +444,7 @@ struct ConfirmPopup: View {
 
 struct ChallengesCard: View {
 
-    @EnvironmentObject private var session: GameSession
+    @EnvironmentObject private var session: UserSession
 
     let challenge: Challenge
     var badgeText: String? = nil

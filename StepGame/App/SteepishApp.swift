@@ -8,7 +8,7 @@ import SwiftUI
 // MARK: - Main App
 
 @main
-struct StepGameApp: App {
+struct SteepishApp: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 

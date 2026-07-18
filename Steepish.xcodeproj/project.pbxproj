@@ -25,6 +25,8 @@
 		EC659351300952390097CC10 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6593503009522B0097CC10 /* AppConfig.swift */; };
 		EC659355300C10B90097CC10 /* ConnectivityMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC659354300C10B80097CC10 /* ConnectivityMonitor.swift */; };
 		EC659357300C13A80097CC10 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC659356300C13A60097CC10 /* AppDelegate.swift */; };
+		EC65936A300C17840097CC10 /* Documentation.docc in Sources */ = {isa = PBXBuildFile; fileRef = EC659369300C17840097CC10 /* Documentation.docc */; };
+		EC65936B300C180F0097CC10 /* Documentation.docc in Sources */ = {isa = PBXBuildFile; fileRef = EC659369300C17840097CC10 /* Documentation.docc */; };
 		EC6BAB1C2F3159E300BDBEC8 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6BAB1B2F3159E300BDBEC8 /* RootView.swift */; };
 		EC6BAB1E2F315A3000BDBEC8 /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6BAB1D2F315A3000BDBEC8 /* UserSession.swift */; };
 		EC7628CB2F395ADB008952D9 /* Puzzlehistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7628CA2F395ADB008952D9 /* Puzzlehistory.swift */; };
@@ -118,6 +120,7 @@
 		EC6593503009522B0097CC10 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		EC659354300C10B80097CC10 /* ConnectivityMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectivityMonitor.swift; sourceTree = "<group>"; };
 		EC659356300C13A60097CC10 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		EC659369300C17840097CC10 /* Documentation.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = Documentation.docc; sourceTree = "<group>"; };
 		EC6BAB1B2F3159E300BDBEC8 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		EC6BAB1D2F315A3000BDBEC8 /* UserSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
 		EC7628CA2F395ADB008952D9 /* Puzzlehistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Puzzlehistory.swift; sourceTree = "<group>"; };
@@ -307,6 +310,7 @@
 				ECCF7E0A2F3A93350003F772 /* Widget */,
 				EC2548B12F34193E0003414C /* Helpers */,
 				ECCB95C12F29472F00DBC1F5 /* Resources */,
+				EC659369300C17840097CC10 /* Documentation.docc */,
 			);
 			path = StepGame;
 			sourceTree = "<group>";
@@ -621,6 +625,7 @@
 				ECCB95DF2F294C3D00DBC1F5 /* OnboardingView.swift in Sources */,
 				ECCB96012F294DE900DBC1F5 /* ProfileView.swift in Sources */,
 				EC7628CB2F395ADB008952D9 /* Puzzlehistory.swift in Sources */,
+				EC65936A300C17840097CC10 /* Documentation.docc in Sources */,
 				ECCB95E72F294C8100DBC1F5 /* StartView.swift in Sources */,
 				EC65934D30094CDF0097CC10 /* Firebase+Players.swift in Sources */,
 				EC6BAB1C2F3159E300BDBEC8 /* RootView.swift in Sources */,
@@ -657,6 +662,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ECCF7E042F3A8E4B0003F772 /* StepGameWidgetBundle.swift in Sources */,
+				EC65936B300C180F0097CC10 /* Documentation.docc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

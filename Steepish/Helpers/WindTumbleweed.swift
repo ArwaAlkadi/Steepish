@@ -1,12 +1,13 @@
 //
 //  WindTumbleweed.swift
-//  StepGame
-//
+//  Steepish
 //
 
 import SwiftUI
 
 // MARK: - Single Wind
+
+/// A single tumbleweed sprite that drifts and spins along a looping path across the map.
 struct WindTumbleweed: View {
 
     let mapSize: CGSize
@@ -22,7 +23,7 @@ struct WindTumbleweed: View {
     var timeOffset: Double = 0.0
 
     var reversePath: Bool = false
-    
+
     var loopPath: [CGPoint] = [
         .init(x: 0.12, y: 0.92),
         .init(x: 0.78, y: 0.80),
@@ -64,6 +65,8 @@ struct WindTumbleweed: View {
     }
 
     // MARK: - Path Math
+
+    /// Interpolated point along `loopPath` for a normalized progress value `t` in `0...1`.
     private func pointOnPath(t: CGFloat) -> CGPoint {
         let pts = pathPixels
         guard pts.count >= 2 else { return .zero }
@@ -93,36 +96,37 @@ struct WindTumbleweed: View {
 }
 
 // MARK: - Double Wind Layer
+
+/// Combines two offset `WindTumbleweed` instances into a single layered effect.
 struct WindTumbleweedView: View {
     let mapSize: CGSize
 
     var body: some View {
         ZStack {
-     
-               
-                WindTumbleweed(
-                    mapSize: mapSize,
-                    sizeRatio: 0.10,
-                    duration: 100,
-                    spinSpeed: 70,
-                    swayAmplitude: 10,
-                    swayWaves: 1.7,
-                    pathShiftY: 0.28,
-                    timeOffset: 0,
-                    reversePath: false
-                )
 
-                WindTumbleweed(
-                    mapSize: mapSize,
-                    sizeRatio: 0.10,
-                    duration: 100,
-                    spinSpeed: 70,
-                    swayAmplitude: 18,
-                    swayWaves: 2.4,
-                    pathShiftY: -0.28,
-                    timeOffset: 25,
-                    reversePath: true
-                )
+            WindTumbleweed(
+                mapSize: mapSize,
+                sizeRatio: 0.10,
+                duration: 100,
+                spinSpeed: 70,
+                swayAmplitude: 10,
+                swayWaves: 1.7,
+                pathShiftY: 0.28,
+                timeOffset: 0,
+                reversePath: false
+            )
+
+            WindTumbleweed(
+                mapSize: mapSize,
+                sizeRatio: 0.10,
+                duration: 100,
+                spinSpeed: 70,
+                swayAmplitude: 18,
+                swayWaves: 2.4,
+                pathShiftY: -0.28,
+                timeOffset: 25,
+                reversePath: true
+            )
         }
     }
 }
@@ -140,3 +144,4 @@ struct WindTumbleweedView: View {
     }
     .background(Color.light2)
 }
+

@@ -1,10 +1,12 @@
 //
 //  Firebase+Listeners.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
 import FirebaseFirestore
+
+// MARK: - Listeners
 
 extension FirebaseService {
 
@@ -55,3 +57,4 @@ extension FirebaseService {
             }
     }
 }
+

@@ -1,6 +1,6 @@
 //
 //  MapView+Sheets.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
@@ -9,6 +9,7 @@ extension MapView {
 
     // MARK: - Sheets
 
+    /// Builds the bottom sheet listing the player's challenges.
     func makeChallengesSheet() -> some View {
         ChallengesSheet(
             onTapCreate: {
@@ -36,6 +37,7 @@ extension MapView {
         .interactiveDismissDisabled(true)
     }
 
+    /// Builds the join-with-code popup.
     func makeJoinPopup() -> some View {
         JoinCodePopup(
             isPresented: $showJoinPopup,
@@ -47,6 +49,7 @@ extension MapView {
         )
     }
 
+    /// Builds the new-challenge setup flow.
     func makeSetupView() -> some View {
         SetupChallengeView(
             isPresented: $showSetupPage,
@@ -57,6 +60,7 @@ extension MapView {
         .environmentObject(session)
     }
 
+    /// Builds the player's profile screen.
     func makeProfileView() -> some View {
         NavigationStack {
             ProfileView()
@@ -64,3 +68,4 @@ extension MapView {
         }
     }
 }
+

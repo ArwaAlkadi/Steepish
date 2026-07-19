@@ -1,12 +1,14 @@
 //
 //  PuzzlePromptPopup.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
 
 // MARK: - Solo Late Popup
 
+/// Prompt shown when the caller is falling behind pace in a solo challenge, offering the
+/// extension puzzle.
 struct SoloLatePopupView: View {
     var onClose: () -> Void
     var onConfirm: () -> Void
@@ -73,6 +75,7 @@ struct SoloLatePopupView: View {
 
 // MARK: - Group Attack Popup
 
+/// Prompt offering the caller a chance to sabotage the player currently ahead of them.
 struct GroupAttackPopupView: View {
     var targetPlayerName: String
     var onClose: () -> Void
@@ -140,6 +143,7 @@ struct GroupAttackPopupView: View {
 
 // MARK: - Group Defense Popup
 
+/// Prompt offering the caller a chance to remove an active sabotage by solving the defense puzzle.
 struct GroupDefensePopupView: View {
     var onClose: () -> Void
     var onConfirm: () -> Void
@@ -206,6 +210,7 @@ struct GroupDefensePopupView: View {
 
 // MARK: - Components
 
+/// Pill-shaped choice button used across the puzzle prompt popups.
 private struct PopupChipButton: View {
     let title: String
     let isSelected: Bool
@@ -237,3 +242,4 @@ private struct PopupChipButton: View {
             .padding()
     }
 }
+

@@ -1,32 +1,35 @@
 //
 //  DateRangePicker.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
 
+// MARK: - Date Range Picker
+
+/// Lets the user view a fixed start date (always today) and select an end date via a sheet.
 struct DateRangePicker: View {
-    
+
     @Binding var startDate: Date
     @Binding var endDate: Date
     @Binding var hasSelectedEndDate: Bool
     @Binding var showError: Bool
     @State private var showEndPicker = false
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            
+
             Text("Period")
                 .font(.custom("RussoOne-Regular", size: 18))
                 .foregroundStyle(Color.light1)
-            
+
             HStack(spacing: 16) {
                 // From Date (Disabled - Always Today)
                 VStack(alignment: .leading, spacing: 4) {
                     Text("From")
                         .font(.custom("RussoOne-Regular", size: 12))
                         .foregroundStyle(Color.light2)
-                    
+
                     // Display only - not clickable
                     Text(startDate.formatted(date: .abbreviated, time: .omitted))
                         .font(.custom("RussoOne-Regular", size: 14))
@@ -42,13 +45,13 @@ struct DateRangePicker: View {
                                 )
                         )
                 }
-                
+
                 // To Date (User can select)
                 VStack(alignment: .leading, spacing: 4) {
                     Text("To")
                         .font(.custom("RussoOne-Regular", size: 12))
                         .foregroundStyle(Color.light2)
-                    
+
                     Button {
                         showEndPicker.toggle()
                     } label: {
@@ -59,7 +62,7 @@ struct DateRangePicker: View {
                             .foregroundStyle(
                                 hasSelectedEndDate
                                     ? Color.light1
-                                    : Color.light1.opacity(0.6) 
+                                    : Color.light1.opacity(0.6)
                             )
                             .frame(maxWidth: .infinity)
                             .frame(height: 44)
@@ -97,15 +100,17 @@ struct DateRangePicker: View {
 }
 
 // MARK: - Date Picker Sheet
+
+/// Modal graphical date picker used to select the challenge end date.
 private struct DatePickerSheet: View {
-    
+
     let title: String
     @Binding var selectedDate: Date
     let minimumDate: Date?
     let maximumDate: Date?
-    
+
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
@@ -118,7 +123,7 @@ private struct DatePickerSheet: View {
                 .datePickerStyle(.graphical)
                 .tint(Color.light2)
                 .padding()
-                
+
                 Button {
                     dismiss()
                 } label: {
@@ -140,7 +145,8 @@ private struct DatePickerSheet: View {
             .navigationBarTitleDisplayMode(.inline)
         }
     }
-    
+
+    /// Clamps the picker's selectable range to the configured minimum/maximum dates.
     private func dateRange() -> ClosedRange<Date> {
         let min = minimumDate ?? Date.distantPast
         let max = maximumDate ?? Date.distantFuture
@@ -154,7 +160,7 @@ private struct DatePickerSheet: View {
         @State private var end = Calendar.current.date(byAdding: .day, value: 7, to: Date()) ?? Date()
         @State private var hasSelected = false
         @State private var showError = false
-        
+
         var body: some View {
             ZStack {
                 Color.light3.ignoresSafeArea()
@@ -168,7 +174,7 @@ private struct DatePickerSheet: View {
             }
         }
     }
-    
+
     return PreviewWrapper()
 }
 

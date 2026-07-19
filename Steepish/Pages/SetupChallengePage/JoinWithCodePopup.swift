@@ -1,11 +1,14 @@
 //
 //  JoinCodePopup.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
 import Combine
 
+// MARK: - Join With Code Popup
+
+/// Modal for joining an existing challenge by entering its 6-character code.
 struct JoinCodePopup: View {
 
     @Binding var isPresented: Bool
@@ -17,6 +20,7 @@ struct JoinCodePopup: View {
     @State private var isSubmitting: Bool = false
 
     // MARK: - Join Action Callback
+
     /// Return:
     /// - nil  => success (close popup)
     /// - msg  => failure (show msg)
@@ -63,13 +67,13 @@ struct JoinCodePopup: View {
                         .font(.custom("RussoOne-Regular", size: 16))
                         .foregroundStyle(Color.light1)
                         .padding(.horizontal, 16)
-                            .focused($focused)
-                            .disabled(isSubmitting)
-                            .onChange(of: code) { _, newValue in
-                                let filtered = newValue.uppercased().filter { $0.isLetter || $0.isNumber }
-                                code = String(filtered.prefix(6))
-                                errorText = nil
-                            }
+                        .focused($focused)
+                        .disabled(isSubmitting)
+                        .onChange(of: code) { _, newValue in
+                            let filtered = newValue.uppercased().filter { $0.isLetter || $0.isNumber }
+                            code = String(filtered.prefix(6))
+                            errorText = nil
+                        }
                     }
 
                     if let errorText {
@@ -85,7 +89,6 @@ struct JoinCodePopup: View {
                         .padding(.horizontal, 10)
                     }
                 }
-               
 
                 Button {
                     Task {
@@ -128,7 +131,9 @@ struct JoinCodePopup: View {
         }
     }
 
+    /// Dismisses the popup.
     private func close() {
         withAnimation(.easeInOut) { isPresented = false }
     }
 }
+

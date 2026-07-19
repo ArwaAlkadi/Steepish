@@ -1,7 +1,6 @@
 //
 //  WaitingViewModel.swift
-//  StepGame
-//
+//  Steepish
 //
 
 import Foundation
@@ -12,6 +11,7 @@ import FirebaseFirestore
 
 // MARK: - Lobby Player
 
+/// Display data for a single player shown in the waiting room lobby.
 struct LobbyPlayer: Identifiable, Equatable {
     let id: String
     let name: String
@@ -21,6 +21,8 @@ struct LobbyPlayer: Identifiable, Equatable {
 
 // MARK: - Waiting Room ViewModel
 
+/// Backs `WaitingRoomView`: binds to the selected challenge and its participants, and
+/// exposes the host start/leave actions.
 final class WaitingRoomViewModel: ObservableObject {
 
     @Published private(set) var lobbyPlayers: [LobbyPlayer] = []
@@ -40,13 +42,16 @@ final class WaitingRoomViewModel: ObservableObject {
 
     deinit { unbind() }
 
+    /// The challenge's display name, or a placeholder while loading.
     var titleText: String { challenge?.name ?? "Waiting..." }
 
+    /// "N Steps" label for the challenge's goal.
     var goalStepsText: String {
         guard let ch = challenge else { return "" }
         return "\(ch.goalSteps.formatted()) Steps"
     }
 
+    /// "N Days" label for the challenge's duration.
     var durationText: String {
         guard let ch = challenge else { return "" }
         let days = ch.durationDays
@@ -54,18 +59,23 @@ final class WaitingRoomViewModel: ObservableObject {
         return "\(days) \(word)"
     }
 
+    /// Combined "N Steps in N Days" label.
     var goalAndDurationText: String {
         guard let ch = challenge else { return "" }
         let steps = "\(ch.goalSteps.formatted()) Steps"
         let days = durationText
         return "\(steps) in \(days)"
     }
+
+    /// The challenge's join code, uppercased for display.
     var joinCodeText: String { (challenge?.joinCode ?? "").uppercased() }
 
+    /// Footer copy shown to non-host players.
     var footerTextForPlayer: String {
         "Waiting for the host to\nstart the challenge"
     }
 
+    /// Whether the challenge currently has enough players (and is still waiting) to be started.
     var canStart: Bool {
         guard let ch = challenge else { return false }
         guard ch.status == .waiting else { return false }
@@ -79,18 +89,22 @@ final class WaitingRoomViewModel: ObservableObject {
         return ch.createdBy == myId
     }
 
+    /// Title for the leave/delete confirmation, depending on host status.
     var leaveAlertTitle: String { isHostComputed ? "Delete Challenge?" : "Leave Challenge?" }
 
+    /// Message for the leave/delete confirmation, depending on host status.
     var leaveAlertMessage: String {
         isHostComputed
             ? "This will permanently delete the challenge for everyone."
             : "You will leave this challenge."
     }
 
+    /// Action button title for the leave/delete confirmation, depending on host status.
     var leaveAlertActionTitle: String { isHostComputed ? "Delete" : "Leave" }
 
     // MARK: - Bind / Unbind
 
+    /// Binds to the session's selected challenge and attaches its Firestore listeners.
     func bind(session: UserSession) {
         self.session = session
         unbind()
@@ -121,6 +135,7 @@ final class WaitingRoomViewModel: ObservableObject {
         }
     }
 
+    /// Removes the Firestore listeners attached in `bind(session:)`.
     func unbind() {
         challengeListener?.remove()
         challengeListener = nil
@@ -130,11 +145,13 @@ final class WaitingRoomViewModel: ObservableObject {
 
     // MARK: - Actions
 
+    /// Copies the join code to the clipboard with a light haptic tap.
     func copyJoinCode() {
         UIPasteboard.general.string = joinCodeText
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
 
+    /// Starts the challenge, if eligible.
     func startChallenge() async {
         guard canStart else { return }
         guard let session else { return }
@@ -145,6 +162,7 @@ final class WaitingRoomViewModel: ObservableObject {
         await session.startSelectedChallengeIfHost()
     }
 
+    /// Deletes the challenge (host) or leaves it (non-host participant).
     func leaveOrDeleteChallenge() async {
         guard let session else { return }
         guard let ch = challenge else { return }
@@ -218,15 +236,17 @@ final class WaitingRoomViewModel: ObservableObject {
         }
     }
 
-    /// Shortens a uid for display
+    /// Shortens a uid for display.
     private func shortId(_ id: String) -> String {
         if id.count <= 6 { return id }
         return "\(id.prefix(3))...\(id.suffix(3))"
     }
-    
+
+    /// "current/max" player count label.
     var playerCountText: String {
         let current = challenge?.playerIds.count ?? lobbyPlayers.count
         let max = challenge?.maxPlayers ?? 4
         return "\(current)/\(max)"
     }
 }
+

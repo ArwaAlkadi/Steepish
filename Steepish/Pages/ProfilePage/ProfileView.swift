@@ -1,13 +1,15 @@
 //
 //  ProfileView.swift
-//  StepGame
-//
+//  Steepish
 //
 
 import SwiftUI
 import Combine
 
 // MARK: - Profile View
+
+/// Displays the player's avatar and name, with an inline editing mode for changing
+/// the character and display name.
 struct ProfileView: View {
 
     @EnvironmentObject private var session: UserSession
@@ -54,6 +56,7 @@ struct ProfileView: View {
     }
 
     // MARK: - Top Bar
+
     private var topBar: some View {
         HStack {
             if vm.isEditing {
@@ -93,6 +96,7 @@ struct ProfileView: View {
     }
 
     // MARK: - View Mode Content
+
     private var viewContent: some View {
         VStack(spacing: 16) {
             ZStack(alignment: .bottomTrailing) {
@@ -118,6 +122,7 @@ struct ProfileView: View {
     }
 
     // MARK: - Editing Content
+
     private var editingContent: some View {
         VStack(spacing: 20) {
             CharacterCarousel(
@@ -193,6 +198,8 @@ struct ProfileView: View {
     }
 
     // MARK: - Actions
+
+    /// Validates and saves the profile edits, showing the offline banner if there's no connection.
     private func doneTapped() async {
 
         guard connectivity.isOnline else {
@@ -210,6 +217,8 @@ struct ProfileView: View {
 }
 
 // MARK: - Avatar Circle
+
+/// Circular avatar image on a soft background circle.
 private struct AvatarCircle: View {
     let imageName: String
     let size: CGFloat
@@ -229,6 +238,8 @@ private struct AvatarCircle: View {
 }
 
 // MARK: - Character Carousel
+
+/// Swipeable carousel for choosing between the available character types.
 private struct CharacterCarousel: View {
 
     @Binding var selection: CharacterType
@@ -248,6 +259,8 @@ private struct CharacterCarousel: View {
 }
 
 // MARK: - Capsule Indicator
+
+/// Row of capsule dots indicating the selected index within a fixed total.
 private struct CapsuleIndicator: View {
     let currentIndex: Int
     let total: Int
@@ -262,3 +275,4 @@ private struct CapsuleIndicator: View {
         }
     }
 }
+

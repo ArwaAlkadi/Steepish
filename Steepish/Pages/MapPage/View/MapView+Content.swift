@@ -1,6 +1,6 @@
 //
 //  MapView+Content.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
@@ -9,6 +9,7 @@ extension MapView {
 
     // MARK: - Content
 
+    /// The scrollable map image with player/flag overlays and the wind tumbleweed effect.
     var mapContent: some View {
         ScrollView(showsIndicators: false) {
             Image("Map")
@@ -27,9 +28,10 @@ extension MapView {
         .ignoresSafeArea()
     }
 
+    /// Positions the milestone flags and player markers on top of the map image.
     func mapOverlay(size: CGSize) -> some View {
         ZStack {
-            
+
             ForEach(Array(vm.milestones.enumerated()), id: \.offset) { index, value in
                 FlagMarker(number: value, reached: vm.isFlagReached(value))
                     .position(vm.flagPosition(index: index, mapSize: size))
@@ -66,6 +68,7 @@ extension MapView {
         }
     }
 
+    /// Top HUD showing challenge title, goal, avatars, and (if active) the steps/days remaining pills.
     var hudLayer: some View {
         MapHUDLayer(
             title: vm.titleText,
@@ -88,6 +91,7 @@ extension MapView {
 
     // MARK: - Puzzle Result Popup
 
+    /// Overlay shown after a puzzle finishes, summarizing its outcome.
     @ViewBuilder
     var puzzleResultOverlay: some View {
         if let res = puzzleResult {
@@ -108,6 +112,7 @@ extension MapView {
 
     // MARK: - Result Popup
 
+    /// Overlay shown when a challenge has ended and the result popup hasn't been dismissed yet.
     @ViewBuilder
     var resultPopup: some View {
         if vm.isShowingResultPopup, let popupVM = vm.resultPopupVM {
@@ -130,8 +135,9 @@ extension MapView {
 
     // MARK: - Map Popups
 
+    /// Overlay presenting the solo-late, group-attacker, or group-defender popup, when applicable.
     @ViewBuilder
-   var mapPopupLayer: some View {
+    var mapPopupLayer: some View {
 
         if connectivity.isOnline,
            let popup = activeMapPopup {
@@ -179,6 +185,7 @@ extension MapView {
 
 // MARK: - Components
 
+/// Top HUD bar: title, goal, group avatars, and status pills.
 private struct MapHUDLayer: View {
     var title: String
     var isGroup: Bool
@@ -231,8 +238,10 @@ private struct MapHUDLayer: View {
 }
 
 // MARK: - Player Marker
+
+/// Map pin for a single player: badge (name/place/status), sprite, and shadow.
 private struct MapPlayerMarker: View {
-    
+
     let id: String
     let mapSprite: String
     let name: String
@@ -250,18 +259,18 @@ private struct MapPlayerMarker: View {
     let leftAt: Date?
     let goalSteps: Int
     let onTap: () -> Void
-    
+
     @Binding var activePlayerBubbleId: String?
     @State private var showInfoIcon = true
     @GestureState private var dragOffset: CGSize = .zero
 
     private var showBubble: Bool {
-           activePlayerBubbleId == id
-       }
-    
+        activePlayerBubbleId == id
+    }
+
     var body: some View {
         VStack(spacing: 0) {
-            
+
             if showBubble {
                 PlayerInfoBubble(
                     name: name,
@@ -294,20 +303,20 @@ private struct MapPlayerMarker: View {
                         if let place,
                            (isGroup && (1...3).contains(place)) ||
                            (!isGroup && place == 1) {
-                            
+
                             Image(placeAssetName(place))
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 16, height: 16)
                         }
-                        
+
                         if showInfoIcon && !hasLeft {
                             Image(systemName: "info.circle.fill")
                                 .font(.system(size: 12))
                                 .foregroundStyle(.light1)
                                 .transition(.opacity)
                         }
-                        
+
                         if hasLeft {
                             Image(systemName: "rectangle.portrait.and.arrow.right")
                                 .font(.system(size: 10, weight: .bold))
@@ -320,14 +329,14 @@ private struct MapPlayerMarker: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(hasLeft ? Color.red1 : Color.light3)
                     )
-                    
+
                     // Timer badge if under attack (only if NOT left)
                     if !hasLeft && isUnderSabotage, let expires = sabotageExpiresAt {
                         HStack(spacing: 4) {
                             Image(systemName: "clock.fill")
                                 .font(.system(size: 9))
                                 .foregroundStyle(.white)
-                            
+
                             Text(timeRemainingString(until: expires))
                                 .font(.custom("RussoOne-Regular", size: 10))
                                 .foregroundStyle(.white)
@@ -340,20 +349,18 @@ private struct MapPlayerMarker: View {
                 .padding(.bottom, 8)
                 .transition(.scale.combined(with: .opacity))
             }
-            
+
             // Character sprite with red overlay if left
-                Image(mapSprite)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 80, height: 80)
-           
+            Image(mapSprite)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80, height: 80)
+
             Ellipse()
                 .fill(Color.black.opacity(0.18))
                 .frame(width: 44, height: 14)
                 .blur(radius: 1)
                 .offset(y: -10)
-               
-               
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -393,17 +400,18 @@ private struct MapPlayerMarker: View {
             }
         }
     }
-    
+
     // MARK: - Helper Functions
-    
-    // Truncate name to first 5 characters
+
+    /// Truncates the display name to 5 characters for the compact map badge.
     private var truncatedName: String {
         if name.count <= 5 {
             return name
         }
         return String(name.prefix(5))
     }
-    
+
+    /// Formats the remaining sabotage duration as e.g. "1h30m" or "45m".
     private func timeRemainingString(until date: Date) -> String {
         let remaining = Int(date.timeIntervalSince(Date()))
         if remaining <= 0 { return "0m" }
@@ -411,12 +419,13 @@ private struct MapPlayerMarker: View {
         let minutes = (remaining % 3600) / 60
         return hours > 0 ? "\(hours)h\(minutes)m" : "\(minutes)m"
     }
-    
+
+    /// Podium badge asset for a given place, accounting for solo vs. group mode.
     private func placeAssetName(_ place: Int) -> String {
         if !isGroup {
             return "PlaceSolo"  // Solo place badge
         }
-        
+
         switch place {
         case 1: return "Place1"
         case 2: return "Place2"
@@ -428,6 +437,7 @@ private struct MapPlayerMarker: View {
 
 // MARK: - Player Info Bubble
 
+/// Expanded info card shown when a player marker is tapped: name, steps, distance, sync/left/attack status.
 private struct PlayerInfoBubble: View {
     let name: String
     let steps: Int
@@ -476,19 +486,17 @@ private struct PlayerInfoBubble: View {
                         .font(.custom("RussoOne-Regular", size: 12))
                         .foregroundStyle(.light1)
                 }
-                
+
                 HStack(spacing: 4) {
                     Image("km")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 14, height: 14)
-                        
+
                     Text("≈ \(estimatedKmString(from: steps))")
                         .font(.custom("RussoOne-Regular", size: 10))
                         .foregroundStyle(.light1)
-                    
                 }
-                
             }
 
             // Left info (replaces last sync)
@@ -546,11 +554,13 @@ private struct PlayerInfoBubble: View {
 
     // MARK: - KM Estimation
 
+    /// Converts a step count into an estimated distance in kilometers.
     private func estimatedKilometers(from steps: Int) -> Double {
         let averageStepLength: Double = 0.75
         return (Double(steps) * averageStepLength) / 1000.0
     }
 
+    /// Formatted "X.XX km" string for a step count.
     private func estimatedKmString(from steps: Int) -> String {
         let km = estimatedKilometers(from: steps)
         return String(format: "%.2f km", km)
@@ -558,6 +568,7 @@ private struct PlayerInfoBubble: View {
 
     // MARK: - Existing Helpers
 
+    /// Phrasing for when a player left, e.g. "today", "on Mar 4".
     private func leftText(_ date: Date) -> String {
         let formatted = formatDisplayDate(date)
         if formatted == "Today" || formatted == "Yesterday" {
@@ -567,7 +578,8 @@ private struct PlayerInfoBubble: View {
         }
     }
 
-    private func formatDisplayDate (_ date: Date?) -> String {
+    /// Human-friendly relative/absolute date label: "Today", "Yesterday", weekday, or full date.
+    private func formatDisplayDate(_ date: Date?) -> String {
         guard let date else { return "No Data" }
 
         let calendar = Calendar.current
@@ -597,6 +609,7 @@ private struct PlayerInfoBubble: View {
         return formatter.string(from: date)
     }
 
+    /// Podium badge asset for a given place, accounting for solo vs. group mode.
     private func placeAssetName(_ place: Int) -> String {
         if !isGroup { return "PlaceSolo" }
 
@@ -611,6 +624,7 @@ private struct PlayerInfoBubble: View {
 
 // MARK: - Flag Marker
 
+/// Milestone flag marker: raised/lowered artwork with the milestone number.
 private struct FlagMarker: View {
     let number: Int
     let reached: Bool
@@ -633,6 +647,8 @@ private struct FlagMarker: View {
 }
 
 // MARK: - HUD Components
+
+/// Title, goal, group avatars, and the caller's profile avatar button.
 private struct MapTopHUD: View {
     var title: String
     var durationText: String
@@ -643,11 +659,11 @@ private struct MapTopHUD: View {
     var onTapMyAvatar: () -> Void
 
     var body: some View {
-        
+
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 12) {
-                
-                VStack (alignment: .leading, spacing: 6) {
+
+                VStack(alignment: .leading, spacing: 6) {
                     Text(title)
                         .font(.custom("RussoOne-Regular", size: 28))
                         .foregroundStyle(.white)
@@ -656,7 +672,7 @@ private struct MapTopHUD: View {
                         .font(.custom("RussoOne-Regular", size: 14))
                         .foregroundStyle(.white)
                 }
-              
+
                 if isGroup {
                     HStack(spacing: -10) {
                         ForEach(Array(avatars.prefix(6).enumerated()), id: \.offset) { _, a in
@@ -677,6 +693,7 @@ private struct MapTopHUD: View {
     }
 }
 
+/// Small circular avatar used in the group HUD row.
 private struct PlayerAvatar: View {
     var imageName: String
     var size: CGFloat = 44
@@ -691,6 +708,7 @@ private struct PlayerAvatar: View {
     }
 }
 
+/// Capsule-shaped stat pill (icon + text) used for steps-left / days-left indicators.
 private struct InfoPill: View {
     var icon: String
     var text: String
@@ -711,6 +729,7 @@ private struct InfoPill: View {
     }
 }
 
+/// Circular tappable avatar button used for opening the caller's profile.
 private struct ProfileAvatarButton: View {
     var imageName: String
     var size: CGFloat = 54
@@ -729,3 +748,4 @@ private struct ProfileAvatarButton: View {
         .buttonStyle(.plain)
     }
 }
+

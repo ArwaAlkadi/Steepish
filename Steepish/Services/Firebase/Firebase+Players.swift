@@ -1,10 +1,12 @@
 //
 //  Firebase+Players.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
 import FirebaseFirestore
+
+// MARK: - Players
 
 extension FirebaseService {
 
@@ -76,3 +78,4 @@ extension FirebaseService {
         return try await fetchPlayer(uid: uid)
     }
 }
+

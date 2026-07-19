@@ -1,24 +1,28 @@
 //
 //  StartView.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
 import UIKit
 import Combine
 
+// MARK: - Start View
+
+/// Home screen shown once a player has a name and no active challenge: greeting, HealthKit
+/// permission gate, and actions to start or join a challenge.
 struct StartView: View {
 
     @EnvironmentObject var session: UserSession
     @EnvironmentObject var health: HealthKitManager
     @StateObject private var vm = StartViewModel()
     @EnvironmentObject private var connectivity: ConnectivityMonitor
-    
+
     @State private var showSetup = false
     @State private var showProfile = false
     @State private var hasCheckedHealth = false
     @State private var showOfflineBanner: Bool = true
-    
+
     var body: some View {
         ZStack {
 
@@ -127,11 +131,11 @@ struct StartView: View {
                 .transition(.opacity)
                 .zIndex(3)
             }
-            
+
             if !connectivity.isOnline {
                 OfflineBanner(isVisible: $showOfflineBanner)
             }
-            
+
         }
         .sheet(isPresented: $showSetup) {
             SetupChallengeView(isPresented: $showSetup)
@@ -166,6 +170,7 @@ struct StartView: View {
 
 // MARK: - UI Helpers
 
+/// Filled capsule-style button label used for the primary start-screen actions.
 private struct BigButtonLabel: View {
     let title: String
 
@@ -179,6 +184,7 @@ private struct BigButtonLabel: View {
     }
 }
 
+/// Card prompting the user to grant HealthKit step access, with a shortcut to system Settings.
 private struct HealthPermissionGate: View {
     let onAllow: () -> Void
     let onOpenSettings: () -> Void
@@ -214,6 +220,7 @@ private struct HealthPermissionGate: View {
 }
 
 // MARK: - Preview Host
+
 private struct StartViewPreviewHost: View {
     @StateObject private var session = UserSession()
     @StateObject private var health = HealthKitManager()
@@ -238,3 +245,4 @@ private struct StartViewPreviewHost: View {
         }
     }
 }
+

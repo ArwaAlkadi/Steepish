@@ -1,56 +1,58 @@
 //
 //  OfflineBanner.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
 
+// MARK: - Offline Banner
+
+/// Dismissible banner shown at the top of the screen while the device has no network connection.
 struct OfflineBanner: View {
 
-    @Binding var isVisible: Bool  
+    @Binding var isVisible: Bool
 
     var body: some View {
 
         if isVisible {
-            
+
             VStack {
-            HStack(spacing: 10) {
-                Image("WI-FI")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 60, height: 60)
-                   
-                
-                Text("Oh! You’re Offline..")
-                    .font(.custom("RussoOne-Regular", size: 14))
-                    .foregroundStyle(.light3)
+                HStack(spacing: 10) {
+                    Image("WI-FI")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 60, height: 60)
 
-                Spacer()
-
-                Button {
-                    withAnimation(.easeInOut) {
-                        isVisible = false
-                    }
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 20, weight: .bold))
+                    Text("Oh! You’re Offline..")
+                        .font(.custom("RussoOne-Regular", size: 14))
                         .foregroundStyle(.light3)
-                        .padding(12)
+
+                    Spacer()
+
+                    Button {
+                        withAnimation(.easeInOut) {
+                            isVisible = false
+                        }
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundStyle(.light3)
+                            .padding(12)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
-            }
-            .foregroundStyle(.light3)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 14)
-                    .fill(Color.light1)
-            )
-            .padding(.horizontal, 14)
-            .padding(.top, 20)
-                
+                .foregroundStyle(.light3)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 14)
+                        .fill(Color.light1)
+                )
+                .padding(.horizontal, 14)
+                .padding(.top, 20)
+
                 Spacer()
-          }
+            }
         }
     }
 }
@@ -61,6 +63,9 @@ struct OfflineBanner: View {
     }
 }
 
+// MARK: - Stateful Preview Wrapper
+
+/// Generic preview helper that wraps a `@State` value in a `Binding` for SwiftUI previews.
 struct StatefulPreviewWrapper<Value, Content: View>: View {
     @State private var value: Value
     private let content: (Binding<Value>) -> Content
@@ -74,3 +79,4 @@ struct StatefulPreviewWrapper<Value, Content: View>: View {
         content($value)
     }
 }
+

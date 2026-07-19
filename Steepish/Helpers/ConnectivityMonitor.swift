@@ -1,12 +1,17 @@
-
+//
+//  ConnectivityMonitor.swift
+//  Steepish
+//
 
 import Network
 import Combine
 
-// MARK: - ConnectivityMonitor
+// MARK: - Connectivity Monitor
 
+/// Observes network reachability and publishes online/offline state for the UI to react to.
 @MainActor
 final class ConnectivityMonitor: ObservableObject {
+
     @Published private(set) var isOnline: Bool = true
 
     private let monitor = NWPathMonitor()
@@ -25,3 +30,4 @@ final class ConnectivityMonitor: ObservableObject {
         monitor.cancel()
     }
 }
+

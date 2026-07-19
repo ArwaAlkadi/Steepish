@@ -1,6 +1,6 @@
 //
 //  ChallengesSheet.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
@@ -9,6 +9,7 @@ import FirebaseFirestore
 
 // MARK: - Challenges Sheet
 
+/// Lists the user's active and ended challenges, with rename/delete/leave actions per challenge.
 struct ChallengesSheet: View {
 
     @EnvironmentObject private var session: UserSession
@@ -150,6 +151,7 @@ struct ChallengesSheet: View {
     }
 
     // MARK: - Header
+
     private var header: some View {
         HStack {
             Text("Challenges")
@@ -171,6 +173,8 @@ struct ChallengesSheet: View {
         .padding(.top)
     }
 
+    // MARK: - Empty State
+
     private var emptyState: some View {
         VStack(spacing: 12) {
             Text("No active challenges")
@@ -179,6 +183,9 @@ struct ChallengesSheet: View {
         }
     }
 
+    // MARK: - Helpers
+
+    /// Badge label for a challenge: mode for solo, lifecycle status otherwise.
     private func badgeForChallenge(_ ch: Challenge) -> String? {
         if ch.originalMode == .solo { return "Solo" }
         if ch.status == .waiting { return "Waiting" }
@@ -189,11 +196,12 @@ struct ChallengesSheet: View {
 
 // MARK: - Rename Popup
 
+/// Modal for renaming a challenge, with a 15-character limit and inline validation.
 struct RenamePopup: View {
     @Binding var isPresented: Bool
     @Binding var name: String
     var onDone: () async -> Void
-    
+
     @State private var isProcessing = false
     @State private var errorMessage: String? = nil
 
@@ -223,14 +231,12 @@ struct RenamePopup: View {
                     }
                     .buttonStyle(.plain)
                 }
-               
 
                 // Title
                 Text("Enter new challenge name")
                     .font(.custom("RussoOne-Regular", size: 18))
                     .foregroundStyle(Color.light1)
                     .multilineTextAlignment(.center)
-                   
 
                 // Text field + Counter
                 VStack(spacing: 8) {
@@ -253,7 +259,7 @@ struct RenamePopup: View {
                             }
                             errorMessage = nil
                         }
-                    
+
                     // Character counter
                     HStack {
                         // Error message
@@ -275,23 +281,23 @@ struct RenamePopup: View {
                     }
                     .padding(.horizontal, 18)
                 }
-                
+
                 // Done button
                 Button {
                     guard !isProcessing else { return }
-                    
+
                     let trimmed = name.trimmingCharacters(in: .whitespaces)
-                    
+
                     guard !trimmed.isEmpty else {
                         errorMessage = "Name cannot be empty."
                         return
                     }
-                    
+
                     guard trimmed.count <= 15 else {
                         errorMessage = "Name must be 15 characters or less."
                         return
                     }
-                    
+
                     Task {
                         isProcessing = true
                         await onDone()
@@ -323,6 +329,7 @@ struct RenamePopup: View {
         }
     }
 
+    /// Dismisses the popup and clears any validation error.
     private func dismiss() {
         errorMessage = nil
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
@@ -333,6 +340,7 @@ struct RenamePopup: View {
 
 // MARK: - Confirm Popup (Delete / Leave)
 
+/// Generic confirmation modal used for deleting (host) or leaving (non-host) a challenge.
 struct ConfirmPopup: View {
     @Binding var isPresented: Bool
     let title: String
@@ -340,7 +348,7 @@ struct ConfirmPopup: View {
     let actionTitle: String
     let cancelTitle: String
     var onConfirm: () async -> Void
-    
+
     @State private var isProcessing = false
 
     var body: some View {
@@ -365,21 +373,19 @@ struct ConfirmPopup: View {
                     }
                     .buttonStyle(.plain)
                 }
-              
 
                 // Title
                 Text(title)
                     .font(.custom("RussoOne-Regular", size: 18))
                     .foregroundStyle(Color.light1)
                     .multilineTextAlignment(.center)
-                
 
                 // Message
                 Text(message)
                     .font(.custom("RussoOne-Regular", size: 14))
                     .foregroundStyle(Color.light2)
                     .multilineTextAlignment(.center)
-                   
+
                 HStack(spacing: 12) {
                     // Cancel button
                     Button {
@@ -395,11 +401,11 @@ struct ConfirmPopup: View {
                                     .foregroundStyle(.light1)
                             )
                     }
-                    
+
                     // Confirm button
                     Button {
                         guard !isProcessing else { return }
-                        
+
                         Task {
                             isProcessing = true
                             await onConfirm()
@@ -419,9 +425,7 @@ struct ConfirmPopup: View {
                     }
                     .disabled(isProcessing)
                     .opacity(isProcessing ? 0.7 : 1)
-                   
                 }
-               
             }
             .padding(20)
             .padding(.bottom, 25)
@@ -433,6 +437,7 @@ struct ConfirmPopup: View {
         }
     }
 
+    /// Dismisses the popup.
     private func dismiss() {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
             isPresented = false
@@ -442,6 +447,7 @@ struct ConfirmPopup: View {
 
 // MARK: - Challenges Card
 
+/// Summary card for a single challenge: name, date range, goal, status badge, player count, and podium crown.
 struct ChallengesCard: View {
 
     @EnvironmentObject private var session: UserSession
@@ -564,6 +570,9 @@ struct ChallengesCard: View {
         }
     }
 
+    // MARK: - Helpers
+
+    /// Attaches a Firestore listener for the caller's placement, only for ended challenges.
     private func attachPlaceListenerIfNeeded() {
         guard challenge.status == .ended else {
             myPlaceForThisChallenge = nil
@@ -582,6 +591,7 @@ struct ChallengesCard: View {
         }
     }
 
+    /// Human-readable label for a challenge status.
     private func statusTitle(_ s: ChallengeStatus) -> String {
         switch s {
         case .waiting: return "Waiting"
@@ -590,6 +600,7 @@ struct ChallengesCard: View {
         }
     }
 
+    /// Badge color associated with a challenge status.
     private func statusColor(_ s: ChallengeStatus) -> Color {
         switch s {
         case .waiting: return .orange
@@ -598,10 +609,12 @@ struct ChallengesCard: View {
         }
     }
 
+    /// SF Symbol name reflecting solo vs. group player count.
     private func systemIconName(for count: Int) -> String {
         count <= 1 ? "person.fill" : "person.2.fill"
     }
 
+    /// Formats the challenge's start–end date range, omitting the year when it matches the current year.
     private func dateRangeText() -> String {
         let calendar = Calendar.current
         let currentYear = calendar.component(.year, from: Date())
@@ -620,6 +633,7 @@ struct ChallengesCard: View {
         return "\(start) - \(end)"
     }
 
+    /// Podium crown asset for the caller's placement, once the challenge has ended.
     private var crownImageName: String? {
         guard challenge.status == .ended else { return nil }
         guard let place = myPlaceForThisChallenge else { return nil }
@@ -635,3 +649,4 @@ struct ChallengesCard: View {
         }
     }
 }
+

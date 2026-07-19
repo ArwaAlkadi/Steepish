@@ -1,6 +1,6 @@
 //
 //  ChallengeResultPopupView.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
@@ -8,6 +8,7 @@ import Combine
 
 // MARK: - Challenge Result Popup
 
+/// Modal shown when a challenge ends, summarizing either the solo result or the full group standings.
 struct ChallengeResultPopup: View {
 
     @Binding var isPresented: Bool
@@ -47,8 +48,6 @@ struct ChallengeResultPopup: View {
                     .foregroundStyle(Color.light1)
                     .multilineTextAlignment(.center)
                     .padding()
-
-               
             }
             .padding(18)
             .frame(maxWidth: 350)
@@ -60,6 +59,7 @@ struct ChallengeResultPopup: View {
         }
     }
 
+    /// Scrollable list of group standings, with a divider inserted before the first player still racing.
     private var groupContent: some View {
         VStack(spacing: 12) {
             ZStack {
@@ -96,6 +96,7 @@ struct ChallengeResultPopup: View {
         }
     }
 
+    /// Single result image shown for solo challenges (win/lose artwork per character).
     private var soloContent: some View {
         VStack(spacing: 10) {
             Image(vm.soloResultImage)
@@ -106,6 +107,7 @@ struct ChallengeResultPopup: View {
         .frame(maxWidth: .infinity)
     }
 
+    /// Dismisses the popup.
     private func close() {
         withAnimation(.easeInOut) { isPresented = false }
     }
@@ -113,6 +115,7 @@ struct ChallengeResultPopup: View {
 
 // MARK: - Group Player Row
 
+/// A single row within the group standings list: avatar, place badge, name, steps, and left-challenge indicator.
 private struct GroupPlayerRow: View {
     let p: ChallengeResultPopupViewModel.Row
 
@@ -160,12 +163,14 @@ private struct GroupPlayerRow: View {
         .padding(.horizontal, 6)
     }
 
+    /// Short date string for when a player left the challenge.
     private func formatLeftDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         return formatter.string(from: date)
     }
 
+    /// Asset name for the podium badge (1st/2nd/3rd place).
     private func placeAssetName(_ place: Int) -> String {
         switch place {
         case 1: return "Place1"
@@ -178,7 +183,7 @@ private struct GroupPlayerRow: View {
 
 //
 //  ChallengeResultPopup.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
@@ -186,6 +191,8 @@ import SwiftUI
 import Combine
 
 // MARK: - Challenge Result Popup ViewModel
+
+/// Builds the title, footer, and (for group challenges) the standings rows shown by `ChallengeResultPopup`.
 @MainActor
 final class ChallengeResultPopupViewModel: ObservableObject {
 
@@ -193,6 +200,8 @@ final class ChallengeResultPopupViewModel: ObservableObject {
     enum State { case win, lose }
 
     // MARK: - Row Model
+
+    /// A single participant's display data for the group standings list.
     struct Row: Identifiable {
         let id = UUID()
         let name: String
@@ -205,6 +214,8 @@ final class ChallengeResultPopupViewModel: ObservableObject {
         let leftAt: Date?
     }
 
+    /// Sorts participants into finishers (by place, then steps) followed by non-finishers (by steps),
+    /// then maps each into a display `Row`.
     private func buildGroupRows() -> [Row] {
         let myId = me.id ?? ""
         let winnerId = challenge.winnerId
@@ -253,15 +264,20 @@ final class ChallengeResultPopupViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Dependencies
+
     private let challenge: Challenge
     private let me: Player
     private let myParticipant: ChallengeParticipant
     private let participants: [ChallengeParticipant]
     private let playersById: [String: Player]
 
+    /// Whether the challenge has ended, either by status or by passing its effective end date.
     var isChallengeEnded: Bool {
         challenge.status == .ended || Date() >= challenge.effectiveEndDate
     }
+
+    // MARK: - Published State
 
     @Published private(set) var mode: Mode
     @Published private(set) var state: State
@@ -272,6 +288,8 @@ final class ChallengeResultPopupViewModel: ObservableObject {
     @Published private(set) var rows: [Row] = []
 
     @Published private(set) var soloResultImage: String = ""
+
+    // MARK: - Init
 
     init(
         challenge: Challenge,
@@ -293,6 +311,8 @@ final class ChallengeResultPopupViewModel: ObservableObject {
     }
 
     // MARK: - Build UI
+
+    /// Computes the title, footer text, solo result image, and (for group mode) the standings rows.
     private func buildUI() {
         titleText = (state == .win) ? "Well Done!" : "Oops!"
 
@@ -336,6 +356,7 @@ final class ChallengeResultPopupViewModel: ObservableObject {
         }
     }
 
+    /// Number of days actually used to finish, measured from the challenge start day to the finish day (inclusive).
     private func daysUsedIfFinished() -> Int {
         guard let finishedAt = myParticipant.finishedAt else {
             return challenge.durationDays
@@ -351,18 +372,21 @@ final class ChallengeResultPopupViewModel: ObservableObject {
         return max(1, diff)
     }
 
-   
+    /// Avatar asset name for a given character type.
     private func avatarAsset(for type: CharacterType) -> String {
         "\(type.rawValue)_avatar"
     }
 
+    /// Win/lose result artwork asset name for a given character type.
     private func resultAsset(for type: CharacterType, didWin: Bool) -> String {
         let suffix = didWin ? "win" : "lose"
         return "\(type.rawValue)_\(suffix)"
     }
 
+    /// Abbreviates a player id for display when no display name is available.
     private func shortId(_ id: String) -> String {
         if id.count <= 6 { return id }
         return "\(id.prefix(3))...\(id.suffix(3))"
     }
 }
+

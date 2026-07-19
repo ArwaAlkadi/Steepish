@@ -1,6 +1,6 @@
 //
 //  Player.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
@@ -45,6 +45,8 @@ struct Player: Identifiable, Codable {
     var lastUpdated: Date
     var createdAt: Date
 
+    // MARK: - Init
+
     init(
         id: String? = nil,
         name: String,
@@ -59,3 +61,4 @@ struct Player: Identifiable, Codable {
         self.createdAt = createdAt
     }
 }
+

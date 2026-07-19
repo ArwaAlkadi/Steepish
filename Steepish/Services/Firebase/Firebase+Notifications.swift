@@ -1,6 +1,6 @@
 //
 //  Firebase+Notifications.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
@@ -8,6 +8,8 @@ import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 import UserNotifications
+
+// MARK: - Notifications
 
 extension FirebaseService {
 
@@ -40,14 +42,16 @@ extension FirebaseService {
 
         do {
             try await db.collection("notificationDebugLogs").addDocument(data: data)
-            print("📝 Debug log saved:", type)
+            print("Debug log saved:", type)
         } catch {
-            print("❌ Failed to save notification debug log:", error)
+            print("Failed to save notification debug log:", error)
         }
     }
 }
 
 // MARK: - Notification Name
+
 extension Notification.Name {
     static let navigateToChallenge = Notification.Name("navigateToChallenge")
 }
+

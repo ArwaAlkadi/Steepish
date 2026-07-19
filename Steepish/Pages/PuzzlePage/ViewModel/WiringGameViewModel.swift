@@ -1,6 +1,6 @@
 //
 //  WiringGameViewModel.swift
-//  StepGame
+//  Steepish
 //
 //  Created by Arwa Alkadi on 12/02/2026.
 //
@@ -10,6 +10,8 @@ import SwiftUI
 import Combine
 
 // MARK: - Puzzle Types
+
+/// Which wiring puzzle is currently being requested/presented.
 enum PuzzleRequest: Identifiable {
     case soloExtension
     case groupAttack
@@ -18,12 +20,14 @@ enum PuzzleRequest: Identifiable {
     var id: Int { hashValue }
 }
 
+/// The scoring/messaging context a puzzle result belongs to.
 enum PuzzleContext: String, Codable {
     case solo
     case groupAttack
     case groupDefense
 }
 
+/// Which map popup is currently pending presentation.
 enum MapPopupType: Identifiable {
     case soloLate
     case groupAttacker
@@ -33,6 +37,8 @@ enum MapPopupType: Identifiable {
 }
 
 // MARK: - Puzzle Result
+
+/// Why a puzzle attempt ended the way it did.
 enum PuzzleEndReason: Equatable {
     case solved
     case timeOut
@@ -41,6 +47,7 @@ enum PuzzleEndReason: Equatable {
     case opponentDidNotPlay
 }
 
+/// Outcome of a finished puzzle attempt, used to drive `PuzzleResultPopup`.
 struct PuzzleResult: Identifiable {
     let id = UUID()
 
@@ -56,6 +63,8 @@ struct PuzzleResult: Identifiable {
 }
 
 // MARK: - Wire Types
+
+/// A named wire color option for the wiring puzzle.
 struct WireColor: Identifiable, Equatable {
     let id = UUID()
     let color: Color
@@ -72,6 +81,7 @@ struct WireColor: Identifiable, Equatable {
     }
 }
 
+/// A single wire endpoint node on the board.
 struct WiringCircle: Identifiable {
     let id = UUID()
     let color: Color
@@ -79,6 +89,7 @@ struct WiringCircle: Identifiable {
     let pairId: Int
 }
 
+/// A drawn (or in-progress) connection between two wire nodes.
 struct WiringLine: Identifiable {
     let id = UUID()
     let color: Color
@@ -91,6 +102,7 @@ struct WiringLine: Identifiable {
 
 // MARK: - Wiring Game State
 
+/// Holds the board layout and drag-to-connect gesture logic for the wiring puzzle.
 final class WiringGameState: ObservableObject {
 
     @Published var circles: [WiringCircle] = []
@@ -219,6 +231,8 @@ final class WiringGameState: ObservableObject {
 }
 
 // MARK: - Wiring Puzzle View Model
+
+/// Drives the countdown timer for the wiring puzzle and reports completion or timeout.
 final class WiringGameViewModel: ObservableObject {
 
     @Published var isComplete = false
@@ -267,3 +281,4 @@ final class WiringGameViewModel: ObservableObject {
         timer = nil
     }
 }
+

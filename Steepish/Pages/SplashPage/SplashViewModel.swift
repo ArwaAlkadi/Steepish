@@ -1,4 +1,8 @@
 //
+//  SplashViewModel.swift
+//  Steepish
+//
+
 //import SwiftUI
 //import Combine   // ←
 //final class SplashViewModel: ObservableObject {
@@ -26,3 +30,4 @@
 //    }
 //}
 //
+

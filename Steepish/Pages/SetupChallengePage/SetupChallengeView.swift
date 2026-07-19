@@ -1,11 +1,14 @@
 //
-//   SetupChallengeView.swift
-//  StepGame
+//  SetupChallengeView.swift
+//  Steepish
 //
 
 import SwiftUI
 import Combine
 
+// MARK: - Setup Challenge View
+
+/// Form for creating a new solo or group challenge: name, date range, step goal, and mode.
 struct SetupChallengeView: View {
 
     @Binding var isPresented: Bool
@@ -39,9 +42,7 @@ struct SetupChallengeView: View {
                         }
                         .buttonStyle(.plain)
                         .padding(.top, 40)
-                       
                     }
-            
 
                     HStack(spacing: 0) {
                         Text("Create a New Challenge")
@@ -57,10 +58,8 @@ struct SetupChallengeView: View {
                             .frame(width: 35, height: 35)
                             .minimumScaleFactor(0.7)
                             .lineLimit(1)
-                           
-
                     }
-                
+
                     // Challenge Name
                     VStack(alignment: .leading, spacing: 6) {
 
@@ -140,7 +139,7 @@ struct SetupChallengeView: View {
                             trackColor: Color.white
                         )
                         .onChange(of: vm.steps) { _, newValue in
-                            vm.steps = (newValue / 1000).rounded() * 1000 
+                            vm.steps = (newValue / 1000).rounded() * 1000
                         }
                         .frame(height: 34)
 
@@ -249,6 +248,7 @@ struct SetupChallengeView: View {
 
 // REMOVED: PeriodChip - not needed anymore
 
+/// Pill-shaped selector for choosing solo vs. group mode.
 private struct ModeChip: View {
     let title: String
     let systemIcon: String
@@ -278,11 +278,11 @@ private struct ModeChip: View {
 }
 
 // MARK: - Preview Host
+
 #Preview("SetupChallengeView") {
     SetupChallengePreviewHost()
 }
 
-// MARK: - Preview Host
 private struct SetupChallengePreviewHost: View {
     @State private var presented: Bool = true
 
@@ -310,8 +310,9 @@ private struct SetupChallengePreviewHost: View {
     }
 }
 
+// MARK: - Custom Flat Slider
 
-// MARK: - Custom flat slider
+/// Minimal draggable slider used for the step-goal selector.
 private struct CustomStepSlider: View {
 
     @Binding var value: Double
@@ -366,3 +367,4 @@ private struct CustomStepSlider: View {
         .accessibilityValue(Text("\(Int(value))"))
     }
 }
+

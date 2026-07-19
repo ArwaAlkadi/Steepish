@@ -1,10 +1,12 @@
 //
 //  Firebase+Auth.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
 import FirebaseAuth
+
+// MARK: - Auth
 
 extension FirebaseService {
 
@@ -15,3 +17,4 @@ extension FirebaseService {
         return result.user.uid
     }
 }
+

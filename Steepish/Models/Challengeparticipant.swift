@@ -1,6 +1,6 @@
 //
 //  ChallengeParticipant.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
@@ -43,6 +43,7 @@ struct ChallengeParticipant: Identifiable, Codable {
 
     // MARK: - Computed
 
+    /// The character state to display, factoring in any active sabotage effect.
     func effectiveState(now: Date = Date()) -> CharacterState {
         if let s = sabotageState,
            let exp = sabotageExpiresAt,
@@ -52,9 +53,12 @@ struct ChallengeParticipant: Identifiable, Codable {
         return characterState
     }
 
+    /// Whether the result popup has already been shown for this participant.
     var hasShownResultPopup: Bool {
         didShowResultPopup ?? false
     }
+
+    // MARK: - Init
 
     init(
         id: String? = nil,
@@ -100,3 +104,4 @@ struct ChallengeParticipant: Identifiable, Codable {
         self.puzzleHistory = puzzleHistory
     }
 }
+

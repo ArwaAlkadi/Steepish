@@ -1,10 +1,12 @@
 //
 //  Firebase+AppConfig.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
 import FirebaseFirestore
+
+// MARK: - App Config
 
 extension FirebaseService {
 
@@ -27,3 +29,4 @@ extension FirebaseService {
         )
     }
 }
+

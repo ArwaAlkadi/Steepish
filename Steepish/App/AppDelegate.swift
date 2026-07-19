@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  StepGame
+//  Steepish
 //
 
 import UIKit
@@ -12,14 +12,17 @@ import UserNotifications
 
 // MARK: - App Delegate
 
+/// Handles app lifecycle events, push notification registration, and background step syncing.
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
-    
+
     static var healthKitManager: HealthKitManager?
-    
+
     // MARK: - Launch
+
+    /// Configures Firebase, enables background fetch, and wires up notification delegates on launch.
     func application(
         _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         FirebaseApp.configure()
         application.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
@@ -27,8 +30,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         Messaging.messaging().delegate = self
         return true
     }
-    
+
     // MARK: - APNs Registration
+
+    /// Forwards the device's APNs token to Firebase Messaging.
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let tokenParts = deviceToken.map { data in String(format: "%02.2hhx", data) }
@@ -36,16 +41,19 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         print("APNs Token:", apnsToken)
         Messaging.messaging().apnsToken = deviceToken
     }
-    
+
+    /// Logs a failure to register for remote notifications.
     func application(_ application: UIApplication,
                      didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        print("❌ Failed to register for remote notifications:", error)
+        print("Failed to register for remote notifications:", error)
     }
-    
+
     // MARK: - FCM Token
+
+    /// Persists the FCM token whenever Firebase issues a new one.
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else {
-            print("❌ FCM token is nil")
+            print("FCM token is nil")
             return
         }
         print("FCM Token:", token)
@@ -53,12 +61,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             await FirebaseService.shared.saveFCMToken(token)
         }
     }
-    
+
     // MARK: - Remote Notification (Silent + Visible)
-    // السايلنت بش فقط يتسجل في Firestore عشان نتابعه
+
+    /// Handles incoming remote notifications. Silent pushes trigger a background step sync
+    /// and are logged to Firestore so their outcome can be tracked.
     func application(
         _ application: UIApplication,
-        didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
         let isSilentPush = (userInfo["aps"] as? [String: Any])?["content-available"] as? Int == 1
@@ -81,8 +91,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             completionHandler(.noData)
         }
     }
-    
+
     // MARK: - Notification Tap → Navigate to Challenge
+
+    /// Posts a navigation notification when the user taps a push notification tied to a challenge.
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
@@ -90,7 +102,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     ) {
         let userInfo = response.notification.request.content.userInfo
         if let challengeId = userInfo["challengeId"] as? String, !challengeId.isEmpty {
-            print("🔔 Notification tapped — navigate to challenge:", challengeId)
+            print("Notification tapped — navigate to challenge:", challengeId)
             NotificationCenter.default.post(
                 name: .navigateToChallenge,
                 object: nil,
@@ -99,8 +111,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         }
         completionHandler()
     }
-    
+
     // MARK: - Show notification when app is open
+
+    /// Displays a banner with sound for notifications received while the app is in the foreground.
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
@@ -108,8 +122,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     ) {
         completionHandler([.banner, .sound])
     }
-    
+
     // MARK: - Background Fetch
+
+    /// Triggers a background step sync during the system's periodic background fetch window.
     func application(
         _ application: UIApplication,
         performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
@@ -120,14 +136,18 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             completionHandler(success ? .newData : .noData)
         }
     }
-    
+
+    /// Re-syncs steps whenever the app returns to the foreground.
     func applicationWillEnterForeground(_ application: UIApplication) {
         Task {
             await syncStepsInBackground()
         }
     }
-    
+
     // MARK: - Background Sync
+
+    /// Fetches the user's active challenge, pulls the latest step count from HealthKit, and
+    /// writes it to Firestore. Sync status/diagnostics are cached to `UserDefaults`.
     private func syncStepsInBackground() async -> Bool {
         guard let uid = Auth.auth().currentUser?.uid else {
             UserDefaults.standard.set(false, forKey: "lastSyncSuccess")

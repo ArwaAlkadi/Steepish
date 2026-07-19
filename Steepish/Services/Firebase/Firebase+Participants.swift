@@ -1,10 +1,12 @@
 //
 //  Firebase+Participants.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
 import FirebaseFirestore
+
+// MARK: - Participants
 
 extension FirebaseService {
 
@@ -106,3 +108,4 @@ extension FirebaseService {
         ])
     }
 }
+

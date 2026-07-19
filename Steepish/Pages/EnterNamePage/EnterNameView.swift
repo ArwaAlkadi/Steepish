@@ -1,12 +1,15 @@
 //
 //  EnterNameView.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
 import UIKit
 import Combine
 
+// MARK: - Enter Name View
+
+/// First-run screen where the player enters their display name before starting.
 struct EnterNameView: View {
 
     @EnvironmentObject var session: UserSession
@@ -53,7 +56,6 @@ struct EnterNameView: View {
                             Text("Enter Your Name!")
                                 .font(.custom("RussoOne-Regular", size: 30))
                                 .foregroundStyle(.light3)
-                               
 
                             VStack(alignment: .trailing, spacing: 8) {
 
@@ -77,7 +79,7 @@ struct EnterNameView: View {
                                     }
                                 }
 
-                                // \\ Character Count
+                                // Character Count
                                 Text("\(vm.name.count)/\(vm.maxNameCount)")
                                     .font(.custom("RussoOne-Regular", size: 14))
                                     .foregroundStyle(.light3)
@@ -129,13 +131,11 @@ struct EnterNameView: View {
             if !connectivity.isOnline {
                 OfflineBanner(isVisible: $showOfflineBanner)
             }
-          
         }
         .onTapGesture {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder),
                                             to: nil, from: nil, for: nil)
         }
-       
     }
 }
 
@@ -144,6 +144,7 @@ struct EnterNameView: View {
 }
 
 // MARK: - Preview Host
+
 private struct EnterNamePreviewHost: View {
     @StateObject private var session = UserSession()
     @StateObject private var connectivity = ConnectivityMonitor()
@@ -161,6 +162,9 @@ private struct EnterNamePreviewHost: View {
     }
 }
 
+// MARK: - Keyboard Observer
+
+/// Publishes the current keyboard height so views can adjust their layout while it's visible.
 final class KeyboardObserver: ObservableObject {
     @Published var height: CGFloat = 0
     private var cancellables = Set<AnyCancellable>()
@@ -179,3 +183,4 @@ final class KeyboardObserver: ObservableObject {
             .store(in: &cancellables)
     }
 }
+

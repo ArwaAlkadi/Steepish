@@ -1,12 +1,16 @@
 //
-//  GameSession.swift
-//  StepGame
+//  UserSession.swift
+//  Steepish
 //
 
 import SwiftUI
 import Combine
 import FirebaseFirestore
 
+// MARK: - User Session
+
+/// App-wide observable session: authentication, the current player, the challenge list,
+/// and the currently selected challenge with its participants.
 @MainActor
 final class UserSession: ObservableObject {
 
@@ -47,7 +51,7 @@ final class UserSession: ObservableObject {
     private var stepSyncCancellable: AnyCancellable?
 
     // MARK: - Init
-    
+
     init() {
         NotificationCenter.default.addObserver(
             forName: .navigateToChallenge,
@@ -73,6 +77,8 @@ final class UserSession: ObservableObject {
     }
 
     // MARK: - Bootstrapping
+
+    /// Signs in (if needed) and loads the player's profile, starting the challenges listener.
     func bootstrap() async {
         if uid != nil { return }
 
@@ -99,6 +105,7 @@ final class UserSession: ObservableObject {
     }
 
     // MARK: - Challenge List Listener
+
     private func startMyChallengesListener(uid: String) {
         myChallengesListener?.remove()
 
@@ -138,6 +145,7 @@ final class UserSession: ObservableObject {
     }
 
     // MARK: - Selected Challenge Listener
+
     private func startSelectedChallengeListener(challengeId: String) {
         selectedChallengeListener?.remove()
 
@@ -173,6 +181,7 @@ final class UserSession: ObservableObject {
     }
 
     // MARK: - Participant Selection
+
     private func recomputeMyParticipant() {
         guard let uid else {
             myParticipant = nil
@@ -182,6 +191,8 @@ final class UserSession: ObservableObject {
     }
 
     // MARK: - Selection & Presentation
+
+    /// Selects a challenge as the active one and attaches its listeners.
     func selectChallenge(_ ch: Challenge) {
         challenge = ch
         participants = []
@@ -193,16 +204,21 @@ final class UserSession: ObservableObject {
         }
     }
 
+    /// Requests presentation of the new-challenge setup flow.
     func presentSetupChallenge() {
         isPresentingSetupChallenge = true
     }
 
     // MARK: - Results Helpers
+
+    /// Whether a challenge should be treated as finished (has a winner, is past its end date, or ended).
     func isChallengeInResultState(_ ch: Challenge, now: Date = Date()) -> Bool {
         (ch.winnerId != nil) || (now >= ch.effectiveEndDate) || (ch.status == .ended)
     }
 
     // MARK: - Player
+
+    /// Creates the player's profile with the given name and starts the challenges listener.
     func createPlayer(name: String) async {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
@@ -231,6 +247,8 @@ final class UserSession: ObservableObject {
     }
 
     // MARK: - Create Challenge
+
+    /// Creates a new challenge and selects it. Returns an error message on failure, or `nil` on success.
     @discardableResult
     func createNewChallenge(
         name: String,
@@ -266,6 +284,8 @@ final class UserSession: ObservableObject {
     }
 
     // MARK: - Join With Code
+
+    /// Joins a challenge by code and selects it. Returns an error message on failure, or `nil` on success.
     @discardableResult
     func joinWithCode(_ code: String) async -> String? {
         guard let uid else {
@@ -297,6 +317,8 @@ final class UserSession: ObservableObject {
     }
 
     // MARK: - Start Challenge (Host)
+
+    /// Starts the selected social challenge, if the caller is its host.
     func startSelectedChallengeIfHost() async {
         guard let uid else {
             errorMessage = "Missing user session."
@@ -323,6 +345,8 @@ final class UserSession: ObservableObject {
     }
 
     // MARK: - Steps Sync
+
+    /// Starts a repeating 30-second step sync for the selected challenge.
     func beginStepsSync(health: HealthKitManager) {
         stepSyncCancellable?.cancel()
 
@@ -335,11 +359,13 @@ final class UserSession: ObservableObject {
             }
     }
 
+    /// Stops the repeating step sync.
     func stopStepsSync() {
         stepSyncCancellable?.cancel()
         stepSyncCancellable = nil
     }
 
+    /// Fetches the caller's steps for the active challenge and uploads them to Firestore.
     func syncMyStepsOnce(health: HealthKitManager) async {
         guard let uid else { return }
         guard let ch = challenge, let challengeId = ch.id else { return }
@@ -367,7 +393,9 @@ final class UserSession: ObservableObject {
         }
     }
 
-    // MARK: - Delete / Leave / Waiting Logic/ Rename
+    // MARK: - Delete / Leave / Waiting Logic / Rename
+
+    /// Deletes a challenge, if the caller is its host.
     func deleteChallenge(_ ch: Challenge) async {
         guard let uid else {
             errorMessage = "Missing user session."
@@ -394,6 +422,7 @@ final class UserSession: ObservableObject {
         }
     }
 
+    /// Leaves a challenge as a non-host participant.
     func leaveChallenge(_ ch: Challenge) async {
         guard let uid else {
             errorMessage = "Missing user session."
@@ -416,6 +445,7 @@ final class UserSession: ObservableObject {
         }
     }
 
+    /// Cleans up a still-waiting challenge on exit: deletes it (host) or leaves it (participant).
     func handleExitWaitingRoomIfStillWaiting() async {
         guard let uid else { return }
         guard let ch = challenge, let id = ch.id else { return }
@@ -436,7 +466,8 @@ final class UserSession: ObservableObject {
             self.errorMessage = mapGenericError(error)
         }
     }
-    
+
+    /// Renames a challenge; the realtime listener will push the updated model back automatically.
     func renameChallenge(_ challenge: Challenge, newName: String) async {
         guard let id = challenge.id else { return }
         do {
@@ -448,16 +479,18 @@ final class UserSession: ObservableObject {
             // push the updated Challenge model back to activeChallenges /
             // endedChallenges, so no manual local mutation is needed.
         } catch {
-            print("❌ renameChallenge error: \(error.localizedDescription)")
+            print("renameChallenge error: \(error.localizedDescription)")
         }
     }
 
-
     // MARK: - Convenience
+
+    /// Clears the current error message.
     func clearError() {
         errorMessage = nil
     }
 
+    /// Updates the player's name and character type.
     func updateProfile(name: String, characterType: CharacterType) async {
         guard let uid else {
             errorMessage = "Missing user session."
@@ -482,6 +515,7 @@ final class UserSession: ObservableObject {
     }
 
     // MARK: - Error Mapping
+
     private func mapJoinError(_ error: Error) -> String {
         let ns = error as NSError
 
@@ -515,5 +549,5 @@ final class UserSession: ObservableObject {
 
         return ns.localizedDescription
     }
-    
 }
+

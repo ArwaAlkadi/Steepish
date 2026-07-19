@@ -1,10 +1,12 @@
 //
 //  StepGameWidget.swift
-//  StepGameWidgetExtension
+//  SteepishWidgetExtension
 //
 
 import WidgetKit
 import SwiftUI
+
+// MARK: - Widget
 
 @main
 struct StepGameWidget: Widget {
@@ -23,6 +25,7 @@ struct StepGameWidget: Widget {
 
 // MARK: - Entry Model
 
+/// Snapshot of challenge/step data rendered by the widget.
 struct StepEntry: TimelineEntry {
     let date: Date
     let challengeName: String
@@ -42,6 +45,7 @@ struct StepEntry: TimelineEntry {
 // MARK: - Custom Font
 
 extension Font {
+    /// The app's display font (RussoOne-Regular) at a given size.
     static func russo(_ size: CGFloat) -> Font {
         .custom("RussoOne-Regular", size: size)
     }
@@ -49,6 +53,7 @@ extension Font {
 
 // MARK: - Steps Formatter
 
+/// Formats a step count, abbreviating to "Xk" once it reaches 1000.
 private func formatSteps(_ steps: Int) -> String {
     guard steps >= 1000 else { return "\(steps)" }
     let k = Double(steps) / 1000.0
@@ -61,6 +66,8 @@ private func formatSteps(_ steps: Int) -> String {
 
 // MARK: - Provider
 
+/// Reads the shared widget payload written by `WidgetStore` from the app group and
+/// produces the widget's timeline.
 struct StepGameWidgetProvider: TimelineProvider {
 
     private let suite = "group.com.2026.StepGame.shared"
@@ -108,6 +115,7 @@ struct StepGameWidgetProvider: TimelineProvider {
         completion(Timeline(entries: [entry], policy: .after(Date().addingTimeInterval(60))))
     }
 
+    /// Decodes the shared payload written by the host app, if present.
     private func loadEntry() -> StepEntry? {
         guard
             let data = UserDefaults(suiteName: suite)?.data(forKey: payloadKey),
@@ -134,6 +142,7 @@ struct StepGameWidgetProvider: TimelineProvider {
 
 // MARK: - Player Card
 
+/// Single player's card within the widget: avatar, goal, name, and steps/duration summary.
 private struct PlayerCardView: View {
 
     @Environment(\.widgetRenderingMode) private var renderingMode
@@ -155,7 +164,7 @@ private struct PlayerCardView: View {
         let calendar = Calendar.current
         let startDay = calendar.startOfDay(for: startDate)
         let today = calendar.startOfDay(for: Date())
-        
+
         let diff = calendar.dateComponents([.day], from: startDay, to: today).day ?? 0
         let elapsed = max(1, diff + 1)
         return min(elapsed, totalDays)
@@ -165,7 +174,7 @@ private struct PlayerCardView: View {
         let calendar = Calendar.current
         let startDay = calendar.startOfDay(for: startDate)
         let endDay = calendar.startOfDay(for: effectiveEndDate)
-        
+
         let diff = calendar.dateComponents([.day], from: startDay, to: endDay).day ?? 0
         return max(1, diff)
     }
@@ -244,6 +253,7 @@ private struct PlayerCardView: View {
 
 // MARK: - Entry View
 
+/// Root widget view, switching between the solo layout and the side-by-side group layout.
 struct StepGameWidgetEntryView: View {
 
     let entry: StepEntry
@@ -299,3 +309,4 @@ struct StepGameWidgetEntryView: View {
         }
     }
 }
+

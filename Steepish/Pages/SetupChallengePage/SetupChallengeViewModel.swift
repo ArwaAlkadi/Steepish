@@ -1,6 +1,6 @@
 //
-//   SetupChallengeViewModel.swift
-//  StepGame
+//  SetupChallengeViewModel.swift
+//  Steepish
 //
 
 import Foundation
@@ -8,20 +8,22 @@ import SwiftUI
 import Combine
 
 // MARK: - Setup Challenge ViewModel
+
+/// Backs `SetupChallengeView`: validates form input and creates the challenge via `UserSession`.
 @MainActor
 final class SetupChallengeViewModel: ObservableObject {
 
     // MARK: - Inputs
     @Published var challengeName: String = ""
-    
+
     // NEW: Date picker instead of fixed periods
     @Published var startDate: Date = Date()
     @Published var endDate: Date = {
         Calendar.current.date(byAdding: .day, value: 3, to: Date()) ?? Date()
     }()
-    
+
     @Published var hasSelectedEndDate: Bool = false
-    
+
     @Published var steps: Double = 10000
     @Published var mode: ModeOption = .solo
 
@@ -29,22 +31,22 @@ final class SetupChallengeViewModel: ObservableObject {
     let maxNameCount: Int = 15
     @Published var errorMessage: String? = nil
 
-    /// Challenge creation outcome
+    /// Challenge creation outcome.
     enum Outcome {
         case soloCreated
         case groupCreated
         case failed
     }
 
-    /// Enforces maximum challenge name length
+    /// Enforces maximum challenge name length.
     func clampName() {
         if challengeName.count > maxNameCount {
             challengeName = String(challengeName.prefix(maxNameCount))
         }
     }
-    
-    /// Calculate duration in days from selected date range
-    /// This function returns the duration WITHOUT changing the models
+
+    /// Calculates duration in days from the selected date range.
+    /// This function returns the duration WITHOUT changing the models.
     private func calculateDuration() -> Int {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.day], from: startDate, to: endDate)
@@ -52,6 +54,8 @@ final class SetupChallengeViewModel: ObservableObject {
     }
 
     // MARK: - Create Challenge
+
+    /// Validates the form and creates the challenge, returning the resulting outcome.
     func createChallenge(session: UserSession) async -> Outcome {
         errorMessage = nil
 
@@ -60,7 +64,7 @@ final class SetupChallengeViewModel: ObservableObject {
             errorMessage = "Please enter a challenge name."
             return .failed
         }
-        
+
         // Validate dates
         guard endDate > startDate else {
             errorMessage = "End date must be after start date."
@@ -99,6 +103,8 @@ final class SetupChallengeViewModel: ObservableObject {
 }
 
 // MARK: - Mode Option
+
 enum ModeOption: Equatable {
     case solo, group
 }
+

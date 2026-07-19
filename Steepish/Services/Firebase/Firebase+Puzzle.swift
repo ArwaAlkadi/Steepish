@@ -1,13 +1,16 @@
 //
 //  Firebase+Puzzle.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
 import FirebaseFirestore
 
+// MARK: - Puzzle
+
 extension FirebaseService {
 
+    /// The kind of puzzle attempt being recorded, used to select the correct Firestore fields.
     enum PuzzleAttemptKind {
         case solo
         case groupAttack
@@ -31,6 +34,8 @@ extension FirebaseService {
             }
         }
     }
+
+    // MARK: - Attempt Tracking
 
     /// Records when a player opens a puzzle.
     func markPuzzleAttempted(challengeId: String, uid: String, kind: PuzzleAttemptKind) async throws {
@@ -82,6 +87,8 @@ extension FirebaseService {
         ], merge: true)
     }
 
+    // MARK: - Sabotage
+
     /// Applies a group attack sabotage to a target participant (3-hour duration).
     func applyGroupAttack(
         challengeId: String,
@@ -121,6 +128,8 @@ extension FirebaseService {
         ], merge: true)
     }
 
+    // MARK: - Time Extension
+
     /// Adds a 1-day extension to a challenge (solo puzzle reward).
     func addOneDayExtension(challengeId: String) async throws {
         let ref = db.collection("challenges").document(challengeId)
@@ -138,3 +147,4 @@ extension FirebaseService {
         }
     }
 }
+

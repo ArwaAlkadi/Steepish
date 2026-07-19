@@ -1,7 +1,16 @@
+//
+//  SplashView.swift
+//  Steepish
+//
+
 import SwiftUI
 import UIKit
 import Lottie
 
+// MARK: - Splash View
+
+/// Animated launch screen shown while the app bootstraps: a Lottie walking-shoes animation
+/// followed by a fading tagline.
 struct SplashView: View {
 
     @State private var logoScale: CGFloat = 0.7
@@ -23,7 +32,7 @@ struct SplashView: View {
 //                        .background(Color(.light1).opacity(0.1))
                 .offset(x: 0, y: -20)
 
-            VStack (spacing: 5) {
+            VStack(spacing: 5) {
                 Spacer()
 
                 Rectangle()
@@ -38,8 +47,6 @@ struct SplashView: View {
 
                 Spacer()
             }
-            
-         
         }
         .onAppear {
             withAnimation(.easeOut(duration: 0.4)) {
@@ -60,6 +67,9 @@ struct SplashView: View {
     }
 }
 
+// MARK: - Lottie Animation Representable
+
+/// Wraps a looping `LottieAnimationView` for use in SwiftUI.
 struct LottieAnimationViewRepresentable: UIViewRepresentable {
     let fileName: String
 

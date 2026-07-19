@@ -1,10 +1,13 @@
 //
 //  PuzzleResultPopup.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
 
+// MARK: - Puzzle Result Popup
+
+/// Modal summarizing the outcome of a finished puzzle (solo extension, group attack, or defense).
 struct PuzzleResultPopup: View {
     let result: PuzzleResult
     let onClose: () -> Void
@@ -54,15 +57,13 @@ struct PuzzleResultPopup: View {
                     .foregroundStyle(.light2)
                     .padding(.top, 6)
                 }
-                
+
                 Text(result.message)
                     .font(.custom("RussoOne-Regular", size: 16))
                     .foregroundStyle(.light1)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 10)
-
             }
-            
         }
         .padding(18)
         .padding(.bottom, 25)
@@ -95,6 +96,7 @@ struct PuzzleResultPopup: View {
 
     // MARK: - Helpers
 
+    /// Win/lose artwork asset for the caller's character, based on the puzzle outcome.
     private var characterImageName: String {
         let type = session.player?.characterType ?? .character1
         let base = type.rawValue
@@ -102,6 +104,7 @@ struct PuzzleResultPopup: View {
         return "\(base)_\(suffix)"
     }
 
+    /// Formats a time interval as e.g. "1.23s".
     private func fmt(_ t: Double) -> String {
         String(format: "%.2fs", t)
     }
@@ -126,3 +129,4 @@ struct PuzzleResultPopup: View {
     )
     .environmentObject(session)
 }
+

@@ -1,11 +1,15 @@
 //
 //  WaitingView.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
 import Combine
 
+// MARK: - Waiting Room View
+
+/// Lobby shown to a social challenge's players before it starts: join code, roster, and
+/// a start button for the host.
 struct WaitingRoomView: View {
 
     @EnvironmentObject private var connectivity: ConnectivityMonitor
@@ -151,6 +155,7 @@ struct WaitingRoomView: View {
 
 // MARK: - UI Parts
 
+/// Capsule label showing the challenge's goal steps and duration.
 private struct StepsPill: View {
     let text: String
 
@@ -170,6 +175,7 @@ private struct StepsPill: View {
     }
 }
 
+/// Capsule showing the join code with a copy button that flips to a checkmark briefly after copying.
 private struct JoinCodePill: View {
     let code: String
     let didCopy: Bool
@@ -202,6 +208,7 @@ private struct JoinCodePill: View {
     }
 }
 
+/// Tent illustration with up to four player avatars arranged around it.
 private struct LobbyCenter: View {
     let players: [LobbyPlayer]
 
@@ -227,6 +234,7 @@ private struct LobbyCenter: View {
         .frame(height: 360)
     }
 
+    /// Fixed positions for up to 4 avatar slots around the tent.
     private func slotPositions() -> [CGPoint] {
         [
             CGPoint(x: 90,  y: 120),
@@ -237,6 +245,7 @@ private struct LobbyCenter: View {
     }
 }
 
+/// A single lobby player's avatar and name.
 private struct LobbyAvatar: View {
     let image: String
     let name: String
@@ -256,6 +265,9 @@ private struct LobbyAvatar: View {
     }
 }
 
+// MARK: - Activity View
+
+/// UIKit share sheet wrapper for sharing the join code.
 struct ActivityView: UIViewControllerRepresentable {
     var activityItems: [Any]
 
@@ -268,3 +280,4 @@ struct ActivityView: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
+

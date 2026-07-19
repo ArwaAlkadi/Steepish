@@ -1,12 +1,14 @@
 //
-//  StepGameApp.swift
-//  StepGame
+//  SteepishApp.swift
+//  Steepish
 //
 
 import SwiftUI
 
 // MARK: - Main App
 
+/// App entry point: wires up the shared session/health/connectivity environment objects
+/// and hosts `RootView`.
 @main
 struct SteepishApp: App {
 

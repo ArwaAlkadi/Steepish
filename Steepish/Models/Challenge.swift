@@ -1,6 +1,6 @@
 //
 //  Challenge.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
@@ -44,7 +44,7 @@ struct Challenge: Identifiable, Codable {
 
     // MARK: - Computed
 
-    /// End date including any time extension from puzzle rewards.
+    /// End date including any time extension earned from puzzle rewards.
     var effectiveEndDate: Date {
         endDate.addingTimeInterval(TimeInterval(max(0, extensionSeconds)))
     }
@@ -55,12 +55,18 @@ struct Challenge: Identifiable, Codable {
         return mode
     }
 
+    /// Maximum number of players allowed based on the original mode.
     var maxPlayers: Int { originalMode == .solo ? 1 : 4 }
+
+    /// Whether the challenge has reached its player capacity.
     var isFull: Bool { playerIds.count >= maxPlayers }
 
+    /// Whether a new player can currently join this challenge.
     func canJoin() -> Bool {
         !isFull && (status == .active || status == .waiting)
     }
+
+    // MARK: - Init
 
     init(
         id: String? = nil,
@@ -100,3 +106,4 @@ struct Challenge: Identifiable, Codable {
         self.winnerFinishedAt = winnerFinishedAt
     }
 }
+

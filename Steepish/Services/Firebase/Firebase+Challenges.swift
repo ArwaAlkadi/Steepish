@@ -1,12 +1,16 @@
 //
 //  Firebase+Challenges.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
 import FirebaseFirestore
 
+// MARK: - Challenges
+
 extension FirebaseService {
+
+    // MARK: - Create / Join
 
     /// Creates a new challenge and adds the host as the first participant.
     func createChallenge(
@@ -138,6 +142,8 @@ extension FirebaseService {
         return try updatedDoc.data(as: Challenge.self)
     }
 
+    // MARK: - Lifecycle
+
     /// Starts a social challenge (host only).
     func startChallenge(challengeId: String, hostUid: String) async throws {
         try await db.collection("challenges").document(challengeId).updateData([
@@ -173,3 +179,4 @@ extension FirebaseService {
         ])
     }
 }
+

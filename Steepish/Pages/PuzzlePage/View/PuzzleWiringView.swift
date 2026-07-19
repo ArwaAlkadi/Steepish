@@ -1,10 +1,13 @@
 //
 //  PuzzleWiringView.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
 
+// MARK: - Puzzle Wiring View
+
+/// Timed wire-matching mini-game used for the solo extension, group attack, and defense puzzles.
 struct PuzzleWiringView: View {
 
     let timeLimit: Double
@@ -99,6 +102,7 @@ struct PuzzleWiringView: View {
 
     // MARK: - Finish
 
+    /// Reports the puzzle outcome to the caller exactly once, then dismisses.
     private func finish(success: Bool) {
         guard !didFinish else { return }
         didFinish = true
@@ -109,8 +113,10 @@ struct PuzzleWiringView: View {
         dismiss()
     }
 }
+
 // MARK: - Wiring Board View
 
+/// Renders the wire connections, in-progress drag, and node circles, and handles drag gestures.
 struct WiringBoardView: View {
     @ObservedObject var gameState: WiringGameState
 
@@ -150,6 +156,7 @@ struct WiringBoardView: View {
 
 // MARK: - Wavy Line Path
 
+/// A sine-wave-perturbed line between two points, used to draw the wiggly wires.
 struct WavyLinePath: Shape {
     let start: CGPoint
     let end: CGPoint
@@ -209,6 +216,7 @@ struct WavyLinePath: Shape {
 
 // MARK: - Wire Node Circle
 
+/// Glowing circle marking a wire endpoint, dimmed slightly while active.
 struct WireNodeCircle: View {
     let color: Color
     let isActive: Bool
@@ -231,5 +239,4 @@ struct WireNodeCircle: View {
         .opacity(isActive ? 0.9 : 1.0)
     }
 }
-
 

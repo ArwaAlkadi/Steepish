@@ -1,14 +1,17 @@
 //
 //  MapPathEditorHelper.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
 import SwiftUI
 
 // MARK: - Map Path Editor Helper
+
+/// Debug-only overlay that plots the map's walking path points on top of the map artwork,
+/// used to visually tune `pathPoints` coordinates.
 struct MapPathEditorHelper: View {
-    
+
     private let pathPoints: [CGPoint] = [
         .init(x: 0.714, y: 0.890), // 0
         .init(x: 0.726, y: 0.851), // 1
@@ -31,7 +34,7 @@ struct MapPathEditorHelper: View {
         .init(x: 0.790, y: 0.188), // 18
         .init(x: 0.790, y: 0.150), // 19
     ]
-    
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             Image("Map")
@@ -43,13 +46,13 @@ struct MapPathEditorHelper: View {
                             // Draw Path
                             Path { path in
                                 guard let first = pathPoints.first else { return }
-                                
+
                                 let startPoint = CGPoint(
                                     x: first.x * geo.size.width,
                                     y: first.y * geo.size.height
                                 )
                                 path.move(to: startPoint)
-                                
+
                                 for point in pathPoints.dropFirst() {
                                     let scaledPoint = CGPoint(
                                         x: point.x * geo.size.width,
@@ -59,7 +62,7 @@ struct MapPathEditorHelper: View {
                                 }
                             }
                             .stroke(Color.blue, lineWidth: 3)
-                            
+
                             // Draw Points
                             ForEach(Array(pathPoints.enumerated()), id: \.offset) { index, point in
                                 Circle()
@@ -86,3 +89,4 @@ struct MapPathEditorHelper: View {
 #Preview {
     MapPathEditorHelper()
 }
+

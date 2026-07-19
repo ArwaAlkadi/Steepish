@@ -1,6 +1,14 @@
+//
+//  OnboardingView.swift
+//  Steepish
+//
+
 import SwiftUI
 import Combine
 
+// MARK: - Onboarding View
+
+/// First-run walkthrough introducing the app's core loop across four swipeable pages.
 struct OnboardingView: View {
 
     @StateObject private var viewModel = OnboardingViewModel()
@@ -96,6 +104,7 @@ struct OnboardingView: View {
         )
     }
 
+    /// Builds a single onboarding page: title, character/avatars illustration, and subtitle.
     private func pageView(pageIndex: Int) -> some View {
 
         VStack {
@@ -130,8 +139,10 @@ struct OnboardingView: View {
 }
 
 // MARK: - Reusable Views
+
 extension OnboardingView {
 
+    /// Circular backdrop with a single character illustration.
     func characterView(imageName: String) -> some View {
         ZStack {
             Circle()
@@ -146,6 +157,7 @@ extension OnboardingView {
         }
     }
 
+    /// Circular backdrop showing all three character avatars, used on the "compete" page.
     var avatarsView: some View {
         ZStack {
             Circle()
@@ -158,6 +170,7 @@ extension OnboardingView {
         }
     }
 
+    /// A single positioned avatar image within `avatarsView`.
     func avatar(_ name: String, x: CGFloat, y: CGFloat) -> some View {
         Image(name)
             .resizable()
@@ -168,8 +181,10 @@ extension OnboardingView {
 }
 
 // MARK: - Page Content
+
 extension OnboardingView {
 
+    /// Title copy for a given onboarding page index.
     func titleText(for page: Int) -> String {
         switch page {
         case 0: return "Walk • Play • Win"
@@ -180,6 +195,7 @@ extension OnboardingView {
         }
     }
 
+    /// Subtitle copy for a given onboarding page index.
     func subtitleText(for page: Int) -> String {
         switch page {
         case 0: return "Turn your daily steps into an exciting game"
@@ -190,6 +206,7 @@ extension OnboardingView {
         }
     }
 
+    /// Character illustration asset for a given onboarding page index.
     func characterImage(for page: Int) -> String {
         switch page {
         case 0: return "lunawalk"
@@ -203,3 +220,4 @@ extension OnboardingView {
 #Preview {
     OnboardingView()
 }
+

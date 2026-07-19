@@ -1,6 +1,6 @@
 //
 //  MapView+Puzzle.swift
-//  StepGame
+//  Steepish
 //
 
 import SwiftUI
@@ -9,11 +9,13 @@ extension MapView {
 
     // MARK: - Helpers
 
+    /// Presents the challenges sheet at a small starting detent.
     func showChallengesSheet() {
         selectedDetent = .height(90)
         activeSheet = .challenges
     }
 
+    /// Dismisses any active sheet and map popup.
     func dismissSheetAndPopups() {
         activeSheet = nil
         activeMapPopup = nil
@@ -21,7 +23,8 @@ extension MapView {
 
     // MARK: - Puzzle Launchers
 
-   func recordDismiss(for popup: MapPopupType) {
+    /// Logs that the user dismissed a map popup without starting its puzzle.
+    func recordDismiss(for popup: MapPopupType) {
         guard let chId = session.challenge?.id, let uid = session.uid else { return }
 
         let kind: FirebaseService.PuzzleAttemptKind
@@ -33,7 +36,8 @@ extension MapView {
 
         Task { try? await FirebaseService.shared.markPuzzleDismissed(challengeId: chId, uid: uid, kind: kind) }
     }
-    
+
+    /// Records the solo puzzle attempt and opens the solo extension puzzle.
     func startSoloGameSafely() {
         guard connectivity.isOnline else { return }
         dismissSheetAndPopups()
@@ -49,6 +53,7 @@ extension MapView {
         }
     }
 
+    /// Records the group attack puzzle attempt and opens the attack puzzle.
     func startAttackerGameSafely() {
         guard connectivity.isOnline else { return }
         dismissSheetAndPopups()
@@ -64,6 +69,7 @@ extension MapView {
         }
     }
 
+    /// Records the group defense puzzle attempt and opens the defense puzzle.
     func startDefenderGameSafely() {
         guard connectivity.isOnline else { return }
         dismissSheetAndPopups()
@@ -81,6 +87,8 @@ extension MapView {
 
     // MARK: - Puzzle Finish
 
+    /// Resolves the outcome of a finished puzzle (solo extension, group attack, or group defense),
+    /// applying the corresponding Firestore side effect and building the `PuzzleResult` to display.
     func handlePuzzleFinish(
         req: PuzzleRequest,
         success: Bool,
@@ -260,3 +268,4 @@ extension MapView {
         }
     }
 }
+

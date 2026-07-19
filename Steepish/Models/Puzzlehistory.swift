@@ -1,6 +1,6 @@
 //
 //  PuzzleHistory.swift
-//  StepGame
+//  Steepish
 //
 
 import Foundation
@@ -30,6 +30,8 @@ struct PuzzleHistory: Codable {
     var groupAttackPuzzleFailedAt: Date?
     var groupAttackSucceededAt: Date?
 
+    // MARK: - Init
+
     init(
         soloAttemptedAt: Date? = nil,
         groupAttackAttemptedAt: Date? = nil,
@@ -52,3 +54,4 @@ struct PuzzleHistory: Codable {
         self.groupAttackSucceededAt = groupAttackSucceededAt
     }
 }
+

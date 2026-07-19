@@ -1,7 +1,16 @@
+//
+//  RootView.swift
+//  Steepish
+//
+
 import SwiftUI
 import Combine
 import UIKit
 
+// MARK: - Root View
+
+/// Top-level router: shows splash during bootstrap, then routes between onboarding, name entry,
+/// HealthKit setup, the start screen, or the active challenge based on session state.
 struct RootView: View {
 
     @EnvironmentObject private var session: UserSession
@@ -18,7 +27,8 @@ struct RootView: View {
     @State private var showOnboardingNow: Bool = false
 
     // MARK: - Router Identity Key
-    /// Forces NavigationStack to rebuild when critical session/health state changes
+
+    /// Forces NavigationStack to rebuild when critical session/health state changes.
     private var routerKey: String {
         let id = session.challenge?.id ?? "no_ch"
         let status = session.challenge?.status.rawValue ?? "none"
@@ -116,6 +126,7 @@ struct RootView: View {
     }
 
     // MARK: - Challenge Router
+
     @ViewBuilder
     private var challengeRouter: some View {
         if let ch = session.challenge {
@@ -128,30 +139,31 @@ struct RootView: View {
             SplashView()
         }
     }
-    
+
     // MARK: - Update Alert View
 
+    /// Blocking alert prompting the user to update the app when it falls below the minimum version.
     struct UpdateAlertView: View {
         let message: String
         let onUpdate: () -> Void
-        
+
         var body: some View {
             ZStack {
                 Color.black.opacity(0.35)
                     .ignoresSafeArea()
-                
+
                 VStack(spacing: 15) {
-                    
+
                     Text("Update Required")
                         .font(.custom("RussoOne-Regular", size: 18))
                         .foregroundStyle(.light1)
-                    
+
                     Text(message)
                         .font(.custom("RussoOne-Regular", size: 12))
                         .foregroundStyle(.light2)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
-                    
+
                     Button {
                         onUpdate()
                     } label: {
@@ -172,15 +184,17 @@ struct RootView: View {
 
     // MARK: - Version Check
 
+    /// Fetches the minimum required version from Firestore and shows the update alert if
+    /// the running app is older.
     private func checkVersion() async {
         let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
-        
+
         do {
             let config = try await FirebaseService.shared.fetchAppConfig()
-            
+
             print("Current version: \(currentVersion)")
             print("Minimum version from Firebase: \(config.minimumVersion)")
-            
+
             if currentVersion.isOlderThan(config.minimumVersion) {
                 print("Update required")
                 await MainActor.run {
@@ -195,6 +209,7 @@ struct RootView: View {
         }
     }
 
+    /// Opens the App Store listing for this app.
     private func openAppStore() {
         if let url = URL(string: "https://apps.apple.com/app/id6759177856") {
             UIApplication.shared.open(url)
@@ -203,7 +218,9 @@ struct RootView: View {
 }
 
 extension String {
+    /// Numerically compares this version string against another, e.g. "1.2.0" vs "1.10.0".
     func isOlderThan(_ version: String) -> Bool {
         return self.compare(version, options: .numeric) == .orderedAscending
     }
 }
+

@@ -1,6 +1,5 @@
 const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
-const { onRequest } = require("firebase-functions/v2/https");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const admin = require("firebase-admin");
 
@@ -497,70 +496,3 @@ exports.dailySilentSync = onSchedule(
     console.log("Daily silent sync finished");
   }
 );
-
-// =========================
-// Migration: puzzleHistory
-// Run once then delete this function
-// =========================
-
-const PUZZLE_FIELDS = [
-  "soloAttemptedAt",
-  "groupAttackAttemptedAt",
-  "groupDefenseAttemptedAt",
-  "soloDismissedAt",
-  "groupAttackDismissedAt",
-  "groupDefenseDismissedAt",
-  "soloPuzzleFailedAt",
-  "groupAttackPuzzleFailedAt",
-  "groupAttackSucceededAt",
-];
-
-exports.runMigration = onRequest(async (req, res) => {
-  console.log("Starting puzzleHistory migration...");
-
-  const db = admin.firestore();
-  const challengesSnap = await db.collection("challenges").get();
-
-  let totalMigrated = 0;
-  let totalSkipped = 0;
-
-  for (const challengeDoc of challengesSnap.docs) {
-    const participantsSnap = await db
-      .collection("challenges")
-      .doc(challengeDoc.id)
-      .collection("participants")
-      .get();
-
-    for (const partDoc of participantsSnap.docs) {
-      const data = partDoc.data();
-
-      const hasFlatFields = PUZZLE_FIELDS.some((field) => data[field] != null);
-
-      if (!hasFlatFields) {
-        totalSkipped++;
-        continue;
-      }
-
-      const puzzleHistory = {};
-      const deleteFields = {};
-
-      for (const field of PUZZLE_FIELDS) {
-        if (data[field] != null) {
-          puzzleHistory[field] = data[field];
-          deleteFields[field] = admin.firestore.FieldValue.delete();
-        }
-      }
-
-      await partDoc.ref.set(
-        { puzzleHistory, ...deleteFields },
-        { merge: true }
-      );
-
-      totalMigrated++;
-      console.log(`✅ Migrated ${partDoc.id} in challenge ${challengeDoc.id}`);
-    }
-  }
-
-  console.log(`Migration complete. Migrated: ${totalMigrated}, Skipped: ${totalSkipped}`);
-  res.send(`Migration complete. Migrated: ${totalMigrated}, Skipped: ${totalSkipped}`);
-});

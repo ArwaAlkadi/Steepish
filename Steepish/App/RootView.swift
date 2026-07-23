@@ -75,6 +75,7 @@ struct RootView: View {
                 }
                 .id(routerKey)
                 .transition(.opacity)
+                .disabled(showUpdateAlert)
 
             } else {
 
@@ -216,6 +217,8 @@ struct RootView: View {
         }
     }
 }
+
+// MARK: - String Version Comparison
 
 extension String {
     /// Numerically compares this version string against another, e.g. "1.2.0" vs "1.10.0".

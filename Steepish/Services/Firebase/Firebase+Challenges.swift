@@ -70,11 +70,17 @@ extension FirebaseService {
             didShowResultPopup: false
         )
 
+        // puzzleHistory is written as an empty map so Firestore dot-notation
+        // updates (e.g. "puzzleHistory.soloAttemptedAt") always land inside a
+        // nested object instead of becoming flat string-keyed fields.
+        var partData = try Firestore.Encoder().encode(part)
+        partData["puzzleHistory"] = [String: Any]()
+
         try await db.collection("challenges")
             .document(ref.documentID)
             .collection("participants")
             .document(hostUid)
-            .setData(from: part)
+            .setData(partData)
 
         return saved
     }
@@ -120,6 +126,9 @@ extension FirebaseService {
                 tx.updateData(["playerIds": FieldValue.arrayUnion([uid])], forDocument: chRef)
 
                 let now = Date()
+
+                // puzzleHistory initialized as empty map so dot-notation writes
+                // always create nested fields, not flat string keys.
                 tx.setData([
                     "challengeId": challengeId,
                     "playerId": uid,
@@ -128,7 +137,8 @@ extension FirebaseService {
                     "characterState": CharacterState.normal.rawValue,
                     "lastUpdated": Timestamp(date: now),
                     "createdAt": Timestamp(date: now),
-                    "didShowResultPopup": false
+                    "didShowResultPopup": false,
+                    "puzzleHistory": [String: Any]()
                 ], forDocument: partRef, merge: true)
 
                 return nil
@@ -179,4 +189,3 @@ extension FirebaseService {
         ])
     }
 }
-

@@ -1,5 +1,6 @@
 const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
+const { onRequest } = require("firebase-functions/v2/https");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const admin = require("firebase-admin");
 
@@ -496,3 +497,72 @@ exports.dailySilentSync = onSchedule(
     console.log("Daily silent sync finished");
   }
 );
+
+// =========================
+// Fix: puzzleHistory nested map
+// Run once then delete this function
+// =========================
+
+const FLAT_PUZZLE_FIELDS = [
+  "puzzleHistory.soloAttemptedAt",
+  "puzzleHistory.groupAttackAttemptedAt",
+  "puzzleHistory.groupDefenseAttemptedAt",
+  "puzzleHistory.soloDismissedAt",
+  "puzzleHistory.groupAttackDismissedAt",
+  "puzzleHistory.groupDefenseDismissedAt",
+  "puzzleHistory.soloPuzzleFailedAt",
+  "puzzleHistory.groupAttackPuzzleFailedAt",
+  "puzzleHistory.groupAttackSucceededAt",
+];
+
+exports.fixPuzzleHistory = onRequest(async (req, res) => {
+  console.log("Starting fixPuzzleHistory...");
+
+  const db = admin.firestore();
+  const challengesSnap = await db.collection("challenges").get();
+
+  let totalFixed = 0;
+  let totalSkipped = 0;
+
+  for (const challengeDoc of challengesSnap.docs) {
+    const participantsSnap = await db
+      .collection("challenges")
+      .doc(challengeDoc.id)
+      .collection("participants")
+      .get();
+
+    for (const partDoc of participantsSnap.docs) {
+      const data = partDoc.data();
+
+      const hasFlatFields = FLAT_PUZZLE_FIELDS.some((field) => data[field] != null);
+
+      if (!hasFlatFields) {
+        totalSkipped++;
+        continue;
+      }
+
+      const puzzleHistory = data["puzzleHistory"] || {};
+      const deleteFields = {};
+
+      for (const flatKey of FLAT_PUZZLE_FIELDS) {
+        if (data[flatKey] != null) {
+          const subKey = flatKey.replace("puzzleHistory.", "");
+          puzzleHistory[subKey] = data[flatKey];
+          deleteFields[flatKey] = admin.firestore.FieldValue.delete();
+        }
+      }
+
+      await partDoc.ref.set(
+        { puzzleHistory, ...deleteFields },
+        { merge: true }
+      );
+
+      totalFixed++;
+      console.log(`Fixed ${partDoc.id} in challenge ${challengeDoc.id}`);
+    }
+  }
+
+  const msg = `Done. Fixed: ${totalFixed}, Skipped: ${totalSkipped}`;
+  console.log(msg);
+  res.send(msg);
+});
